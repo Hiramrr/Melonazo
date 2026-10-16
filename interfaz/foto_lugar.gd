@@ -1,14 +1,13 @@
 class_name FotoLugar
 extends VBoxContainer
-## Fotografía real de un lugar de Xalapa, con su nombre, atribución y enlaces a la
+## Fotografía real de un lugar de la ruta, con su nombre, atribución y enlaces a la
 ## fuente y a la licencia. No tiene escena: se crea por código.
 ##
 ## Uso:
 ##   var foto := FotoLugar.new()
 ##   foto.configurar(arte.fotografias[id])   # ArteXalapa (recursos/arte_xalapa.tres)
 ##   contenedor.add_child(foto)
-## Lo usan la postal de Resultados (pantallas/resultados/postal_resultados.gd) y el
-## pasaporte del Taller.
+## La usa exclusivamente la postal de Resultados (pantallas/resultados/postal_resultados.gd).
 ##
 ## Hijos que crea configurar(), en orden:
 ##   Imagen     TextureRect con la foto (las pruebas de capturas lo buscan por nombre)

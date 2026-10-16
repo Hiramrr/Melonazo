@@ -14,7 +14,7 @@ extends CanvasLayer
 ##   Efectos       una ficha por efecto activo del melón, con sus segundos
 ##   Lanzamiento   barra de fuerza con la zona perfecta marcada
 ##   Aviso         tecla dibujada (%Tecla) y qué hace ahora (%Indicacion)
-##   Ayuda         teclas del juego; solo antes de lanzar
+##   Ayuda         teclas del juego; disponibles después del puente
 ##   Pausa         menú de pausa con controles y créditos del fondo
 ##
 ## No guarda estado de la carrera: Recorrido llama a actualizar(self) cada cuadro.
@@ -22,7 +22,7 @@ extends CanvasLayer
 const ESCENA_TALLER := "res://pantallas/taller/taller.tscn"
 const ARTE: ArteXalapa = preload("res://recursos/arte_xalapa.tres")
 const CONTROLES := [["A  D", "Mover y girar"], ["Espacio", "Saltar y rebotar"], ["E", "Papalote o empujón"],
-	["1  2  3", "Usar accesorios"], ["Esc", "Pausa"]]
+	["S / Abajo", "Slam sobre otro melón"], ["1  2  3", "Usar accesorios"], ["Esc", "Pausa"]]
 const AMARILLO := Color("ffc83d")
 const VERDE := Color("6cc35f")
 const ROJO := Color("e8553f")
@@ -61,7 +61,7 @@ func _ready() -> void:
 	resistencia.draw.connect(_dibujar_resistencia)
 	_relleno_resistencia = (resistencia.get_theme_stylebox("fill") as StyleBoxFlat).duplicate()
 	resistencia.add_theme_stylebox_override("fill", _relleno_resistencia)
-	for parte in [["A", "D"], ["Mover"], ["Espacio"], ["Saltar"], ["E"], ["Papalote"], ["1", "2", "3"], ["Accesorios"]]:
+	for parte in [["A", "D"], ["Mover"], ["Espacio"], ["Saltar"], ["S"], ["Slam"], ["E"], ["Papalote"], ["1", "2", "3"], ["Accesorios"]]:
 		_agregar_ayuda(parte)
 	for control in CONTROLES:
 		%Controles.add_child(Iconos.tecla(control[0]))
@@ -125,7 +125,7 @@ func actualizar(r: Recorrido) -> void:
 	_actualizar_lugar(metros, r.altura_m, r.altura_max_m)
 	_actualizar_efectos(melon)
 	lanzamiento.visible = r.fase == Recorrido.Fase.FUERZA
-	ayuda.visible = r.fase == Recorrido.Fase.ANGULO or r.fase == Recorrido.Fase.FUERZA
+	ayuda.visible = r.fase == Recorrido.Fase.RECORRIDO
 	medidor.value = r.fuerza * 100.0
 	var en_zona := r.fuerza >= Config.zona_perfecta.x and r.fuerza <= Config.zona_perfecta.y
 	_relleno_fuerza.bg_color = VERDE if en_zona else AMARILLO.lerp(Color("e8553f"), r.fuerza)
@@ -170,35 +170,30 @@ func _actualizar_equipo(melon: Melon) -> void:
 		slots[i].mostrar(_slots_mostrados[i])
 
 
-## Postal actual, barra de avance hasta la siguiente y metros que faltan.
+## La barra siempre mide el viaje completo, incluso durante los objetivos de altura.
 func _actualizar_lugar(metros: float, altura: float, altura_max: float) -> void:
 	var actual := "Barrio de Xallitic"
-	var desde := 0.0
-	var siguiente := "¡Colección de postales completa!"
-	var avance := 1.0
+	var siguiente := "¡Llegaste a la meta!"
 	for postal in Config.postales:
 		if metros >= float(postal["metros"]):
-			actual = postal["nombre"]
-			desde = float(postal["metros"])
+			actual = postal.get("nombre_corto", postal["nombre"])
 		else:
 			var hasta := float(postal["metros"])
-			siguiente = "Siguiente: %s · %d m" % [postal["nombre"], int(hasta) - int(metros)]
-			avance = (metros - desde) / maxf(1.0, hasta - desde)
+			siguiente = "Siguiente: %s · %d m" % [postal.get("nombre_corto", postal["nombre"]), ceili(hasta - metros)]
 			break
-	if altura >= Config.zonas_cielo[0]["metros"]:
+	if altura >= Config.zonas_cielo[0]["metros"] and metros < Config.salida_xalapa_m:
 		siguiente = "Altura máxima: %d m · Bono +%d" % [int(altura_max), int(altura_max * Config.aplausos_por_metro_altura)]
-		avance = 1.0
 		for zona in Config.zonas_cielo:
 			if altura >= zona["metros"]:
 				actual = zona["nombre"]
-				desde = zona["metros"]
 			else:
 				siguiente = "Sube a %d m · %s" % [int(zona["metros"]), zona["nombre"]]
-				avance = (altura - desde) / (zona["metros"] - desde)
 				break
+	%Destino.text = "Meta CUCosta · faltan %d m" % ceili(maxf(0.0, Config.meta_m - metros))
+	%Destino.tooltip_text = "%s\n%s\nXalapa a Puerto Vallarta · %d m de juego" % [Config.nombre_meta, Config.institucion_meta, int(Config.meta_m)]
 	%LugarActual.text = actual
 	%Siguiente.text = siguiente
-	%Ruta.value = avance
+	%Ruta.value = clampf(metros / Config.meta_m, 0.0, 1.0)
 	if actual != _postal_mostrada:
 		if _postal_mostrada != "":
 			Animacion.rebotar(lugar, 1.12)
@@ -228,16 +223,23 @@ func _actualizar_indicacion(r: Recorrido) -> void:
 	aviso.visible = true
 	tecla.visible = true
 	match r.fase:
-		Recorrido.Fase.ANGULO:
-			_indicar("Espacio", "Fijar el ángulo · %d°" % int(r.angulo))
 		Recorrido.Fase.FUERZA:
-			_indicar("Espacio", "¡Lanzar! · Fuerza %d%%" % int(r.fuerza * 100))
+			_indicar("Espacio", "Soltar · Potencia %d%%" % int(r.fuerza * 100))
 			urgente = r.fuerza >= Config.zona_perfecta.x
+		Recorrido.Fase.BAJADA:
+			_indicar("", "Bajando Xallitic · Controles después del puente")
+			tecla.visible = false
 		Recorrido.Fase.FIN:
 			_indicar("", r.texto_fin)
 			tecla.visible = false
 		Recorrido.Fase.RECORRIDO:
-			if is_instance_valid(r.papalote_cercano) and not r.papalote_cercano.usado:
+			if melon.slam_activo:
+				_indicar("", "¡Apunta a un melón! El suelo frena")
+				tecla.visible = false
+			elif _hay_melon_debajo(r) and melon.t_slam <= 0.0:
+				_indicar("S", "¡Slam sobre el melón!")
+				urgente = true
+			elif is_instance_valid(r.papalote_cercano) and not r.papalote_cercano.usado:
 				_indicar("E", "%s: impulso y escudo" % r.papalote_cercano.nombre())
 				urgente = true
 			elif melon.rebotes <= 0:
@@ -253,6 +255,21 @@ func _actualizar_indicacion(r: Recorrido) -> void:
 	var pulso := 1.0 + 0.06 * absf(sin(Time.get_ticks_msec() * 0.012)) if urgente else 1.0
 	aviso.scale = Vector2.ONE * pulso
 	indicacion.add_theme_color_override("font_color", AMARILLO if urgente else Color("fff9ec"))
+
+
+func _hay_melon_debajo(r: Recorrido) -> bool:
+	if r.melon.en_suelo:
+		return false
+	for otro in r.terreno.melones:
+		var diferencia := otro.global_position - r.melon.global_position
+		if diferencia.y <= 0.0 or diferencia.y >= 450.0:
+			continue
+		var radios: float = otro.radio + r.melon.radio
+		var tiempo := maxf(0.0, diferencia.y - radios * 0.5) / maxf(Config.slam_caida, r.melon.linear_velocity.y)
+		var al_caer: float = diferencia.x + (otro.velocidad - r.melon.linear_velocity.x) * tiempo
+		if absf(al_caer) < radios + otro.margen_slam(r.melon) * 0.5:
+			return true
+	return false
 
 
 func _indicar(p_tecla: String, texto: String) -> void:

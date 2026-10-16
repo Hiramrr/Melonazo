@@ -260,7 +260,7 @@ anchor_right = 0.5
 offset_left = -190.0
 offset_top = 14.0
 offset_right = 190.0
-offset_bottom = 90.0
+offset_bottom = 112.0
 grow_horizontal = 2
 mouse_filter = 2
 theme_override_styles/panel = SubResource("Oscuro")
@@ -269,6 +269,14 @@ theme_override_styles/panel = SubResource("Oscuro")
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 4
+
+[node name="Destino" type="Label" parent="Pantalla/Lugar/Caja"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TextoHUD"
+theme_override_font_sizes/font_size = 16
+text = "Meta CUCosta · faltan 2600 m"
+horizontal_alignment = 1
 
 [node name="Fila" type="HBoxContainer" parent="Pantalla/Lugar/Caja"]
 layout_mode = 2
@@ -286,9 +294,12 @@ stretch_mode = 5
 [node name="LugarActual" type="Label" parent="Pantalla/Lugar/Caja/Fila"]
 unique_name_in_owner = true
 layout_mode = 2
+size_flags_horizontal = 3
 theme_type_variation = &"TextoHUD"
 theme_override_font_sizes/font_size = 19
 text = "Barrio de Xallitic"
+horizontal_alignment = 1
+text_overrun_behavior = 3
 
 [node name="Ruta" type="ProgressBar" parent="Pantalla/Lugar/Caja"]
 unique_name_in_owner = true
@@ -298,6 +309,7 @@ mouse_filter = 2
 theme_override_styles/background = SubResource("BarraRuta")
 theme_override_styles/fill = SubResource("RellenoRuta")
 max_value = 1.0
+step = 0.0
 show_percentage = false
 
 [node name="Siguiente" type="Label" parent="Pantalla/Lugar/Caja"]
@@ -419,13 +431,20 @@ anchor_top = 1.0
 anchor_right = 0.5
 anchor_bottom = 1.0
 offset_left = -270.0
-offset_top = -200.0
+offset_top = -238.0
 offset_right = 270.0
 offset_bottom = -110.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
 theme_override_constants/separation = 2
+
+[node name="TituloPotencia" type="Label" parent="Pantalla/Lanzamiento"]
+layout_mode = 2
+theme_type_variation = &"TextoHUD"
+theme_override_font_sizes/font_size = 24
+text = "Elige la potencia del lanzamiento"
+horizontal_alignment = 1
 
 [node name="ZonaPerfecta" type="Label" parent="Pantalla/Lanzamiento"]
 unique_name_in_owner = true
@@ -443,6 +462,13 @@ mouse_filter = 2
 theme_override_styles/background = SubResource("BarraFuerza")
 theme_override_styles/fill = SubResource("RellenoFuerza")
 show_percentage = false
+
+[node name="InstruccionBajada" type="Label" parent="Pantalla/Lanzamiento"]
+layout_mode = 2
+theme_type_variation = &"TextoHUD"
+theme_override_font_sizes/font_size = 16
+text = "Más potencia, más distancia. Controles después del puente."
+horizontal_alignment = 1
 
 [node name="Aviso" type="PanelContainer" parent="Pantalla"]
 unique_name_in_owner = true
@@ -479,7 +505,7 @@ unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"TextoHUD"
 theme_override_font_sizes/font_size = 22
-text = "Fijar el ángulo"
+text = "Elegir la fuerza"
 vertical_alignment = 1
 
 [node name="Ayuda" type="HBoxContainer" parent="Pantalla"]
@@ -549,7 +575,7 @@ custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_type_variation = &"Subtitulo"
 theme_override_font_sizes/font_size = 20
-text = "Un respiro."
+text = "De Xalapa al CUCosta"
 horizontal_alignment = 1
 vertical_alignment = 2
 

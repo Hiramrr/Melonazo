@@ -1,10 +1,12 @@
 class_name Recorrido
 extends Node2D
-## Pantalla de la carrera: del lanzamiento en el puente de Xallitic hasta que
-## el melón se detiene o se rompe. Coordina los nodos de recorrido.tscn:
+## Pantalla de la carrera: de la bajada de Xallitic hasta que
+## la llegada al CUCosta, o hasta que el melón se detiene o se rompe.
+## Coordina los nodos de recorrido.tscn:
 ##
 ##   Paisaje                  fondo con paralaje (mundo/paisaje/)
 ##   Mundo
+##     BajadaXallitic         cuesta de salida, antes del puente
 ##     Puente                 salida, con colisión propia
 ##     LimiteDeSalida         pared invisible detrás del puente
 ##     Terreno                GeneradorTerreno: crea los tramos como hijos
@@ -13,12 +15,12 @@ extends Node2D
 ##   Efectos                  EfectosRecorrido: flecha de puntería y avisos
 ##   Interfaz                 HUD (hud/hud.tscn): datos, lanzamiento y pausa
 ##
-## Fases: ANGULO → FUERZA (Espacio dos veces) → RECORRIDO → FIN.
+## Fases: FUERZA → BAJADA sin controles → RECORRIDO al cruzar el puente → FIN.
 ## Este script aplica las reglas de la carrera: lanzamiento, cuándo termina,
 ## efectos de obstáculos, empujones del público, papalotes, poderes y postales.
 ## Al terminar registra el resultado en Juego y pasa a Resultados.
 
-enum Fase { ANGULO, FUERZA, RECORRIDO, FIN }
+enum Fase { FUERZA, BAJADA, RECORRIDO, FIN }
 
 const ESCENA_RESULTADOS := "res://pantallas/resultados/resultados.tscn"
 const RADIO_IMAN := 240.0              # la flor atrae aplausos a esta distancia
@@ -30,11 +32,13 @@ const MARGEN_INTERACCION := 400.0      # solo se revisan tramos a esta distancia
 @onready var camara: CamaraRecorrido = %Camara
 @onready var efectos: EfectosRecorrido = %Efectos
 @onready var hud: HUD = %Interfaz
+@onready var bajada: BajadaXallitic = $Mundo/BajadaXallitic
 
-var fase := Fase.ANGULO
-var angulo := 0.0                      # grados, elegido en la fase ANGULO
+var fase := Fase.FUERZA
 var fuerza := 0.0                      # 0..1, elegida en la fase FUERZA
-var _t_oscilacion := 0.0               # reloj de la flecha y de la barra de fuerza
+var _t_oscilacion := 0.0               # reloj de la barra de fuerza
+var _velocidad_salida := 0.0
+var _x_bajada := 0.0
 
 # Marcador de la carrera
 var mejor_x := 0.0                     # punto más lejano alcanzado (px)
@@ -56,10 +60,19 @@ var _t_fin := 0.0                      # espera antes de pasar a Resultados
 func _ready() -> void:
 	PhysicsServer2D.area_set_param(get_world_2d().space, PhysicsServer2D.AREA_PARAM_GRAVITY, Config.gravedad)
 	terreno.iniciar()
+	terreno.preparar_corredores(bajada)
 	melon.configurar(Juego.tamano, Juego.accesorios, Juego.resistencia_max(), Juego.rebotes_max())
-	melon.position = Vector2(0, -melon.radio - 1.0)
+	melon.colision_accesorios(false)
+	var pendiente := bajada.pendiente(Config.bajada_inicio.x)
+	var normal := Vector2(sin(pendiente), -cos(pendiente))
+	_x_bajada = Config.bajada_inicio.x
+	melon.position = Vector2(_x_bajada, bajada.altura(_x_bajada)) + normal * melon.radio
+	mejor_x = melon.position.x
 	$Paisaje.configurar(camara)
+	camara.limit_left = floori(bajada.x0)
 	camara.make_current()
+	camara.actualizar(melon, false, 0.0)
+	camara.reset_smoothing()
 	hud.actualizar(self)
 
 
@@ -68,35 +81,33 @@ func _ready() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if not event.is_action_pressed("rebote") or event.is_echo():
 		return
-	if fase == Fase.ANGULO:
-		fase = Fase.FUERZA
-		_t_oscilacion = 0.0
-	elif fase == Fase.FUERZA:
+	if fase == Fase.FUERZA:
 		_lanzar()
 
 
-## Suelta al melón con el ángulo y la fuerza elegidos.
+## Empuja al melón cuesta abajo con la fuerza elegida.
 func _lanzar() -> void:
+	if fase != Fase.FUERZA:
+		return
 	var perfecto := fuerza >= Config.zona_perfecta.x and fuerza <= Config.zona_perfecta.y
 	var vel := lerpf(Config.lanz_vel_min, Config.lanz_vel_max, fuerza) * Juego.mult_fuerza()
 	vel *= float(melon.datos()["mult_lanzamiento"])
 	if perfecto:
 		vel *= Config.bonus_perfecto
 		efectos.avisar("¡Lanzamiento perfecto!", melon.global_position + Vector2(0, -60))
-	melon.freeze = false
-	melon.fijar_velocidad(Vector2.from_angle(-deg_to_rad(angulo)) * vel)
-	melon.t_bloqueo = 0.3            # que el mismo Espacio no cuente como rebote
-	melon.controlable = true
-	fase = Fase.RECORRIDO
+	bajada.abrir_salida()
+	_velocidad_salida = vel
+	for rival in terreno.melones:
+		rival.soltar(vel)
+	melon.en_suelo = true
+	melon.controlable = false
+	fase = Fase.BAJADA
 
 
 # --- Ciclo por cuadro --------------------------------------------------------
 
 func _process(delta: float) -> void:
 	match fase:
-		Fase.ANGULO:
-			_t_oscilacion += delta
-			angulo = lerpf(Config.angulo_min, Config.angulo_max, 0.5 - 0.5 * cos(_t_oscilacion * TAU * Config.angulo_freq))
 		Fase.FUERZA:
 			_t_oscilacion += delta
 			fuerza = 0.5 - 0.5 * cos(_t_oscilacion * TAU * Config.fuerza_freq)
@@ -104,23 +115,36 @@ func _process(delta: float) -> void:
 			_t_fin -= delta
 			if _t_fin <= 0.0:
 				_t_fin = INF
-				Juego.registrar_intento(mejor_x / Config.px_por_metro, melon.carisma(), recolectados, melon.roto, poderes_recogidos, altura_max_m)
+				Juego.registrar_intento(maxf(0.0, mejor_x) / Config.px_por_metro, melon.carisma(), recolectados, melon.roto, poderes_recogidos, altura_max_m)
 				Animacion.cambiar_escena(ESCENA_RESULTADOS)
-	var apuntando := fase == Fase.ANGULO or fase == Fase.FUERZA
+	var apuntando := fase == Fase.FUERZA
 	efectos.mostrar_flecha = apuntando
 	efectos.origen_flecha = melon.global_position
-	efectos.angulo = angulo
-	efectos.angulo_fijado = fase == Fase.FUERZA
+	efectos.direccion_flecha = Vector2.from_angle(bajada.pendiente(Config.bajada_inicio.x))
 	efectos.objetivo_aereo = papalote_siguiente if fase == Fase.RECORRIDO else null
 	camara.actualizar(melon, not apuntando, delta)
 	hud.actualizar(self)
 
 
 func _physics_process(delta: float) -> void:
-	if fase != Fase.RECORRIDO:
+	if fase != Fase.BAJADA and fase != Fase.RECORRIDO:
 		return
+	if fase == Fase.BAJADA:
+		_avanzar_bajada(delta)
+	terreno.actualizar_melones(melon, delta)
 	var x := melon.global_position.x
 	_revisar_avance(x, delta)
+	if fase == Fase.BAJADA and x - melon.radio > Config.puente_fin_x:
+		fase = Fase.RECORRIDO
+		melon.freeze = false
+		melon.en_suelo = false
+		melon.t_aire = 0.0
+		melon.fijar_velocidad(Vector2(_velocidad_salida, 0))
+		melon.angular_velocity = _velocidad_salida / melon.radio
+		melon.controlable = true
+		melon.colision_accesorios(true)
+	if fase != Fase.RECORRIDO:
+		return
 	terreno.actualizar(x)
 	var tramo := terreno.tramo_en(x)
 	if tramo != null:
@@ -135,10 +159,27 @@ func _physics_process(delta: float) -> void:
 	_revisar_postales()
 
 
+## Durante la bajada el rodado sigue la calle y conserva la potencia elegida.
+func _avanzar_bajada(delta: float) -> void:
+	var progreso := clampf(inverse_lerp(Config.bajada_inicio.x, Config.puente_fin_x, _x_bajada), 0.0, 1.0)
+	var rapidez := _velocidad_salida * lerpf(0.65, 1.0, progreso)
+	var pendiente := bajada.pendiente(_x_bajada) if _x_bajada < Config.bajada_fin.x else 0.0
+	_x_bajada += rapidez * cos(pendiente) * delta
+	pendiente = bajada.pendiente(_x_bajada) if _x_bajada < Config.bajada_fin.x else 0.0
+	var suelo := bajada.altura(_x_bajada) if _x_bajada < Config.bajada_fin.x else Config.bajada_fin.y
+	melon.position = Vector2(_x_bajada, suelo) + Vector2(sin(pendiente), -cos(pendiente)) * melon.radio
+	melon.rotation += rapidez * delta / melon.radio
+
+
 ## Termina la carrera si el melón casi no avanza durante un rato.
 func _revisar_avance(x: float, delta: float) -> void:
 	var avance := x - mejor_x
-	mejor_x = maxf(mejor_x, x)
+	mejor_x = minf(maxf(mejor_x, x), Config.meta_m * Config.px_por_metro)
+	if not melon.roto and x >= Config.meta_m * Config.px_por_metro:
+		_revisar_postales()
+		melon.freeze = true
+		_fin("¡Llegaste al CUCosta!")
+		return
 	if avance > Config.velocidad_min_avance * delta or not melon.en_suelo:
 		_t_sin_avance = 0.0
 	else:
@@ -151,7 +192,8 @@ func _revisar_postales() -> void:
 	for postal in Config.postales:
 		if mejor_x >= float(postal["metros"]) * Config.px_por_metro and postal["id"] not in postales_intento:
 			postales_intento.append(postal["id"])
-			efectos.avisar("¡%s!" % postal["nombre"], melon.global_position + Vector2(0, -90))
+			var texto: String = "¡Xallitic! Ya puedes saltar" if postal["id"] == "xallitic" else "¡%s!" % postal["nombre"]
+			efectos.avisar(texto, melon.global_position + Vector2(0, -90))
 
 
 func _fin(texto: String) -> void:
@@ -220,7 +262,7 @@ func _actualizar_interacciones() -> void:
 			if p.en_rango and d <= distancia_aire:
 				papalote_cercano = p
 				distancia_aire = d
-	if not melon.controlable or not Input.is_action_just_pressed("empujon"):
+	if not melon.controlable or melon.slam_activo or not Input.is_action_just_pressed("empujon"):
 		return
 	if papalote_cercano != null and papalote_cercano.impulsar(melon):
 		papalotes_usados += 1

@@ -92,6 +92,7 @@ func _verificar() -> void:
 	comprobar(puntos_altos > 0, "Los puntos altos se recogen durante un vuelo real sin mejoras")
 	juego.niveles = {"fuerza": 6, "resistencia": 5, "rebotes": 5}
 	var alcance_mejorado := 0.0
+	var llegadas := 0
 	for semilla in [1509, 42, 7301]:
 		config.semilla_terreno = semilla
 		for mover in [false, true]:
@@ -99,7 +100,11 @@ func _verificar() -> void:
 			print("Vuelo con mejoras máximas, semilla %d, D %s: %.0f m, %d papalotes." % [semilla, mover, r["metros"], r["papalotes"]])
 			comprobar(r["termino"] and r["metros"] < 3500.0, "Con mejoras máximas los controles básicos tampoco mantienen un vuelo sin fin")
 			alcance_mejorado = maxf(alcance_mejorado, r["metros"])
-	comprobar(alcance_mejorado >= float(config.postales[-1]["metros"]), "Combinar mejoras, saltos y papalotes permite alcanzar la última postal")
+			if r["llegada"]:
+				llegadas += 1
+				comprobar(r["duracion"] >= 30.0, "El viaje completo requiere al menos medio minuto de juego")
+				print("Llegada al CUCosta en %.1f s, sin accesorios." % r["duracion"])
+	comprobar(alcance_mejorado >= config.meta_m and llegadas > 0, "Combinar mejoras, saltos y papalotes permite completar el viaje al CUCosta")
 	DirAccess.remove_absolute(juego.archivo_guardado)
 	DirAccess.remove_absolute(juego.archivo_guardado + ".tmp")
 	print("Vuelo: %d comprobaciones, %d fallos." % [comprobaciones, fallos])
@@ -121,12 +126,13 @@ func carrera(tamano: int, mover: bool) -> Dictionary:
 				var separacion: float = p.position.x - ultimo_x
 				comprobar(separacion >= config.separacion_papalotes.x and separacion <= config.separacion_papalotes.y, "La ruta aérea continúa entre tramos sin huecos extra")
 			ultimo_x = p.position.x
-	recorrido.angulo = 35.0
 	recorrido.fuerza = 0.85
 	recorrido._lanzar()
 	if mover:
 		Input.action_press("derecha")
-	var datos := {"metros": 0.0, "altura": 0.0, "en_alto": 0.0, "papalotes": 0, "puntos_altos": 0}
+	var datos := {"metros": 0.0, "altura": 0.0, "en_alto": 0.0, "papalotes": 0, "puntos_altos": 0, "duracion": 0.0, "llegada": false}
+	# El grande salta antes de entrar en la ventana de rebote al bajar del puente.
+	var primer_salto_x: float = config.primer_papalote_x - (360.0 if tamano == 2 else 300.0)
 	recorrido.terreno.obstaculo_tocado.connect(func(_cuerpo: Node2D, objeto: Node2D) -> void:
 		if objeto.tipo == "aplauso":
 			var tramo = recorrido.terreno.tramo_en(objeto.position.x)
@@ -134,10 +140,13 @@ func carrera(tamano: int, mover: bool) -> Dictionary:
 				datos["puntos_altos"] += 1)
 	for cuadro in 60 * 120:
 		await physics_frame
+		datos["duracion"] += 1.0 / 120.0
 		Input.action_release("rebote")
 		Input.action_release("empujon")
-		if not is_instance_valid(recorrido) or current_scene != recorrido or recorrido.fase != 2:
+		if not is_instance_valid(recorrido) or current_scene != recorrido or recorrido.fase == 3:
 			break
+		if recorrido.fase == 1:
+			continue
 		var m = recorrido.melon
 		datos["metros"] = recorrido.mejor_x / config.px_por_metro
 		datos["altura"] = maxf(datos["altura"], recorrido.altura_m)
@@ -146,9 +155,10 @@ func carrera(tamano: int, mover: bool) -> Dictionary:
 			datos["en_alto"] += 1.0 / 120.0
 		if cuadro % 2 != 0:
 			continue
+		var entrando_al_cielo: bool = recorrido.papalotes_usados == 0 and m.position.x > config.primer_papalote_x - 180.0
 		if is_instance_valid(recorrido.papalote_cercano):
 			Input.action_press("empujon")
-		elif m.rebotes > 0 and m.t_bloqueo <= 0.0 and m.linear_velocity.y > 100.0:
+		elif m.position.x > primer_salto_x and m.rebotes > 0 and m.t_bloqueo <= 0.0 and (m.linear_velocity.y > 100.0 or entrando_al_cielo):
 			var siguiente = null
 			for tramo in recorrido.terreno.tramos:
 				for p in tramo.papalotes:
@@ -159,5 +169,8 @@ func carrera(tamano: int, mover: bool) -> Dictionary:
 	Input.action_release("rebote")
 	Input.action_release("empujon")
 	Input.action_release("derecha")
+	if is_instance_valid(recorrido) and current_scene == recorrido:
+		datos["metros"] = recorrido.mejor_x / config.px_por_metro
+		datos["llegada"] = recorrido.fase == 3 and datos["metros"] >= config.meta_m and not recorrido.melon.roto
 	datos["termino"] = not is_instance_valid(recorrido) or current_scene != recorrido or recorrido.fase != 2
 	return datos

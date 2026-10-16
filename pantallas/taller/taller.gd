@@ -24,6 +24,7 @@ extends Control
 ## nodos distintos, aquí en _ready().
 
 const RECORRIDO := "res://pantallas/recorrido/recorrido.tscn"
+const ALMANAQUE := "res://pantallas/almanaque/almanaque.tscn"
 
 # --- Vista previa ------------------------------------------------------------
 @onready var vista: VistaMelon = %Vista
@@ -100,6 +101,22 @@ func _ir() -> void:
 	Juego.nombre_melon = ComunTaller.nombre_melon()
 	Juego.guardar()
 	Animacion.cambiar_escena(RECORRIDO)
+
+
+func _abrir_almanaque() -> void:
+	pestana_dibujo.salir_vista()
+	Juego.guardar()
+	Animacion.cambiar_escena(ALMANAQUE)
+
+
+func _guardar_melon() -> void:
+	pestana_dibujo.salir_vista()
+	var indice := Juego.guardar_melon()
+	_refrescar()
+	if not Juego.guardado_error.is_empty():
+		return
+	lbl_error.text = "Melón guardado. Ábrelo en el almanaque." if indice >= 0 else "Colección llena. Actualiza o elimina una ficha en el almanaque."
+	lbl_error.tooltip_text = lbl_error.text
 
 
 ## Muestra la confirmación antes de borrar. Conectado a BtnReiniciar.pressed.

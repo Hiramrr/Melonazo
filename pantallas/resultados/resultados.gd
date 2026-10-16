@@ -35,6 +35,8 @@ var _filas_animadas: Array[Control] = []
 func _ready() -> void:
 	var r: Dictionary = Juego.ultimo
 	lbl_titulo.text = "¡Se rompió el melón!" if bool(r.get("roto", false)) else "¡Qué buena rodada!"
+	if bool(r.get("llegada", false)):
+		lbl_titulo.text = "¡Llegaste al CUCosta!"
 	lbl_nombre.text = Juego.nombre_melon
 	var metros := int(r.get("distancia", 0.0))
 	lbl_distancia.text = "%d m" % metros
@@ -45,6 +47,10 @@ func _ready() -> void:
 	else:
 		lbl_record.text = "Récord\n%d m" % int(Juego.record_m)
 	lbl_carisma.text = "Altura máxima: %d m · Carisma: %d" % [int(r.get("altura", 0)), int(r.get("carisma", 0))]
+	if bool(r.get("llegada", false)):
+		%Destino.text = "%s\n%s" % [Config.nombre_meta, Config.institucion_meta]
+	else:
+		%Destino.text = "%s\nFaltan %d m para llegar al CUCosta" % [$Margen/Columnas/Postal.lugar_nombre, ceili(maxf(0.0, Config.meta_m - metros))]
 	_generar_desglose(r)
 	var total := int(r.get("total", 0))
 	lbl_total.text = "+%d" % total
@@ -98,7 +104,7 @@ func _generar_desglose(r: Dictionary) -> void:
 		_fila("Por lugares nuevos", int(r.get("por_visitas", 0)))
 	var nuevas: Array = r.get("visitas_nuevas", [])
 	if not nuevas.is_empty():
-		_linea("Postales nuevas: %s" % ", ".join(PackedStringArray(nuevas)))
+		_linea("%d lugares nuevos en el pasaporte" % nuevas.size())
 	if int(r.get("poderes", 0)) > 0:
 		_linea("Poderes encontrados: %d" % int(r.get("poderes", 0)))
 

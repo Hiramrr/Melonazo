@@ -67,12 +67,12 @@ func tocar(melon: Melon) -> String:
 			melon.empujar(Vector2.from_angle(rotation - deg_to_rad(Config.rampa_angulo)) * Config.rampa_impulso)
 			return "¡Rampa!"
 		"toldo":
-			# Solo rebota si el melón cae encima; devuelve parte de esa caída.
+			# La caída sobre el toldo da avance; tocarlo desde abajo no ayuda.
 			var v: Vector2 = melon.linear_velocity
 			if v.y > 0.0:
 				activo = false
-				melon.fijar_velocidad(Vector2(v.x, -v.y * Config.toldo_rebote))
-				return "¡Toldo!"
+				melon.fijar_velocidad(Vector2(v.x + Config.toldo_avance, -v.y * Config.toldo_rebote))
+				return "¡Toldo! Más velocidad"
 	return ""
 
 

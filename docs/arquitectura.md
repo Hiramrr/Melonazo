@@ -8,14 +8,14 @@ Este documento explica cómo está organizado el proyecto en Godot: qué hace ca
 - **Un script por nodo.** Cada nodo con comportamiento propio tiene su script y un `class_name` (por ejemplo `Melon`, `Tramo` o `HUD`). Los demás nodos solo organizan la escena.
 - **Datos en `Config`, estado en `Juego`.** Ningún script guarda números de balance sueltos. Si quieres ajustar algo, lo más probable es que esté en `globales/config.gd`.
 - **Señales hacia arriba, llamadas hacia abajo.** Un nodo hijo avisa con señales (`Melon.aviso`, `GeneradorTerreno.obstaculo_tocado`). El nodo padre llama métodos de sus hijos (`terreno.actualizar(x)`, `hud.actualizar(self)`). Las conexiones estables están en los `.tscn` (sección `[connection]`), así se ven en el editor.
-- **Dibujo vectorial.** El melón, el terreno, las postales y los obstáculos se dibujan con `_draw()`. No hacen falta sprites. Los scripts con `@tool` también se ven en el editor.
+- **Dibujo vectorial.** El melón, el terreno y los obstáculos se dibujan con `_draw()`. Los lugares usan fotografías como postales al terminar el intento. Los scripts con `@tool` también se ven en el editor.
 
 ## Autoloads (`globales/`)
 
 | Nombre | Archivo | Qué contiene |
 | --- | --- | --- |
 | `Config` | `globales/config.gd` | Reglas y valores ajustables: física, lanzamiento, terreno, economía, apariencia, poderes y postales. Al iniciar carga los accesorios de `melon/accesorios/`. |
-| `Juego` | `globales/juego.gd` | Progreso del jugador: aplausos, mejoras, accesorios, aspecto, récord y pasaporte. Calcula las recompensas (`registrar_intento`) y guarda en `user://progreso.json`. |
+| `Juego` | `globales/juego.gd` | Progreso del jugador: aplausos, mejoras, accesorios, aspecto, colección de melones, récord y pasaporte. Calcula las recompensas (`registrar_intento`) y guarda en `user://progreso.json`. |
 
 ## Flujo entre pantallas
 
@@ -28,6 +28,8 @@ Taller ──"¡A rodar!"──▶ Recorrido ──fin de carrera──▶ Resul
 Las pantallas no se pasan datos directamente: el Taller escribe la elección del jugador en `Juego`, el Recorrido la lee, y al terminar llama a `Juego.registrar_intento()`. Resultados lee `Juego.ultimo`.
 
 Los cambios de pantalla pasan por `Animacion.cambiar_escena(ruta)`: carga la escena al instante y abre encima una cortina circular.
+
+El botón "Almanaque" del taller abre `pantallas/almanaque/almanaque.tscn`. "Volver al taller" y Esc regresan. "Usar melón" restaura la ficha elegida en `Juego` y regresa al taller.
 
 ## Interfaz (`interfaz/` y `globales/animacion.gd`)
 
@@ -80,14 +82,25 @@ Las filas de las listas (tamaños, aspecto, accesorios, mejoras, pasaporte) se g
 
 La pestaña se llama `TuMelon` en el árbol, sin acento ni espacio, y el Taller le pone el título "Tu melón" con `set_tab_title()`. La `Vista` necesita `mouse_filter` en *Stop* para recibir el ratón y poder pintar.
 
+## Almanaque (`pantallas/almanaque/`)
+
+`almanaque.gd` organiza las categorías Mis melones, Accesorios y Poderes. A la izquierda genera una cuadrícula con las entradas y a la derecha muestra la ficha elegida. La consulta no cambia el melón del taller. Los accesorios y poderes salen de `Config`, igual que en las otras pantallas.
+
+`ilustracion_ficha.gd` dibuja las miniaturas y la ilustración grande. `Aspecto.dibujar_melon()` acepta un diccionario opcional para dibujar un melón guardado sin modificar las propiedades de `Juego`. El taller y la carrera siguen usando los valores actuales por defecto.
+
+`Juego.melones_guardados` conserva hasta 24 diccionarios con las propiedades de `PROPIEDADES_MELON`. `datos_melon()` copia el estado actual, incluido el dibujo. `guardar_melon()` crea una ficha sin duplicados idénticos o reemplaza el índice indicado. `usar_melon()` restaura una copia independiente y `eliminar_melon()` retira una ficha. El progreso global no forma parte de las fichas.
+
+El JSON de versión 2 añade `melones_guardados` y conserva los campos anteriores. Cada ficha pasa por la misma validación de nombre, índices, colores, dibujo y equipo que el melón actual. Los accesorios deben existir y estar comprados. Si el campo no existe, la colección empieza vacía. Actualizar y eliminar piden confirmación en la interfaz.
+
 ## Recorrido (`pantallas/recorrido/`)
 
 ```text
 Recorrido (recorrido.gd)           Reglas de la carrera y fases
 ├─ Paisaje (mundo/paisaje/)        Fondo con paralaje, sigue a la cámara
 ├─ Mundo
-│  ├─ Puente                       Salida; colisión independiente
-│  ├─ LimiteDeSalida               Pared invisible detrás del puente
+│  ├─ BajadaXallitic               Calle empedrada, público y barrera; reutiliza Tramo
+│  ├─ Puente                       Cruce; colisión independiente
+│  ├─ LimiteDeSalida               Pared invisible detrás de la bajada
 │  ├─ Terreno (GeneradorTerreno)   Crea los tramos como hijos
 │  │  ├─ Tramo000 (Tramo)
 │  │  ├─ Tramo001 …
@@ -97,7 +110,7 @@ Recorrido (recorrido.gd)           Reglas de la carrera y fases
 └─ Interfaz (HUD)                  Datos, equipo, indicaciones y pausa
 ```
 
-**Fases** (`Recorrido.Fase`): `ANGULO` → `FUERZA` → `RECORRIDO` → `FIN`. Espacio fija el ángulo y luego la fuerza. La carrera termina si el melón se rompe o avanza menos de `Config.velocidad_min_avance` durante `Config.tiempo_sin_avance` segundos.
+**Fases** de `Recorrido.Fase`. `FUERZA` → `BAJADA` → `RECORRIDO` → `FIN`. La salida muestra el medidor de potencia con el melón inmóvil y la barrera puesta. Espacio fija la potencia, retira la barrera y lanza cuesta abajo. Durante `BAJADA`, `_avanzar_bajada()` hace rodar al melón sobre la calle y acelera según la potencia elegida. `Melon.freeze` es verdadero y `Melon.controlable` es falso. Así el largo de la bajada y las colisiones no borran la potencia de salida. Cuando todo el melón supera `Config.puente_fin_x`, comienza `RECORRIDO`, se activa la física del cuerpo con la velocidad elegida y vuelven los controles habituales. Los accesorios conservan su dibujo y su equipo, pero sus formas de colisión se desactivan hasta cruzar para evitar atascos sin control del jugador. La distancia y los bonos de altura se cuentan en la ruta por Xalapa, después del puente. La carrera termina al llegar a `Config.meta_m`, si el melón se rompe o si avanza menos de `Config.velocidad_min_avance` durante `Config.tiempo_sin_avance` segundos.
 
 **Cada paso de física**, `Recorrido._physics_process()`:
 
@@ -160,7 +173,7 @@ La ruta aérea asciende desde `Config.altura_papalotes.x` hasta `Config.altura_p
 
 ## Resultados (`pantallas/resultados/`)
 
-`resultados.gd` rellena los textos con `Juego.ultimo` y los anima: la distancia cuenta hacia arriba, las filas del desglose entran una por una, el récord nuevo cae como sello y al final cuenta el total. El panel `Postal` (`postal_resultados.gd`) muestra, como foto pegada con cinta, la foto del último lugar alcanzado que tenga fotografía, o la ilustración del puente si no hay.
+`resultados.gd` rellena los textos con `Juego.ultimo` y los anima. `ultimo.llegada` indica si el melón cruzó la meta sin romperse. El panel `Postal` de `postal_resultados.gd` busca el lugar más lejano alcanzado en ese intento y muestra exclusivamente su fotografía. Si ese lugar no tiene imagen, oculta la postal. No usa imágenes de otros lugares ni dibujos como sustitutos. Las fotos no aparecen en el recorrido ni en el pasaporte.
 
 ## Cómo añadir cosas
 
@@ -190,7 +203,9 @@ Agrega su entrada en `Config.poderes` y su id en `Config.orden_poderes`, su efec
 
 ### Una postal
 
-Agrega el lugar en `Config.postales` y su dibujo en `mundo/terreno/postal.gd` (función con el nombre del `tipo`). Para mostrar una foto, añade una entrada con el mismo id en `fotografias` de `recursos/arte_xalapa.tres`.
+Agrega el lugar en `Config.postales`, en orden de metros y con un `id` que no se repita. No requiere un dibujo ni una escena. Añade su fotografía con el mismo `id` en `fotografias` de `recursos/arte_xalapa.tres`. La imagen se muestra como postal únicamente al terminar un intento en ese lugar.
+
+Los primeros 1800 metros se reservan para Xalapa. Quedan huecos entre 350 y 420, 650 y 800, 950 y 1250, y 1450 y 1750 metros. La meta está en `Config.meta_m`, a 2600 metros. `salida_xalapa_m` y `costa_m` delimitan los fondos del camino. `Recorrido._revisar_avance()` detecta la llegada, limita la distancia y congela el melón. El generador conserva terreno de margen tras la meta, pero deja de extenderlo. Se mantienen los identificadores y las distancias anteriores de los ocho lugares de Xalapa para conservar el pasaporte guardado.
 
 ### Cambiar el terreno
 
@@ -203,8 +218,18 @@ Se ejecutan desde la terminal y nunca tocan tu guardado: cada una usa su propio 
 | Script | Qué comprueba |
 | --- | --- |
 | `verificar.gd` | Compras, guardado, datos inválidos, poderes, accesorios, taller, dibujo con ratón, pausa y una carrera completa |
+| `ruta.gd` | Llegada al CUCosta, límite de terreno, recompensas únicas y selección exacta de fotos por lugar |
+| `almanaque.gd` | Colección, copias independientes, carga de partidas anteriores, datos inválidos y navegación por el almanaque |
 | `balance.gd` | 54 carreras sin controles y la progresión con mejoras |
 | `vuelo.gd` | Saltos, papalotes y la ruta aérea |
 | `distribucion.gd` | Cobertura del cielo, variedad de poderes y generación reproducible sin alterar el suelo |
 | `rendimiento.gd` | Dibujo personalizado conservado al mover y girar, con actualización de equipo, rotura y cielo. Abre una ventana |
 | `graficos.gd` | Capturas de todas las pantallas a dos resoluciones (abre una ventana) |
+
+## Slam y melones rodantes
+
+`Melon.iniciar_slam()` activa el picado con S o flecha abajo. `_integrate_forces()` impone la velocidad de caída y resuelve el fallo contra el suelo con `Config.slam_conserva`. `acertar_slam()` aplica el impulso y termina el picado. No consume cargas de salto.
+
+`mundo/ayudas/melon_rodante.gd` dibuja cada objetivo con `Aspecto` y lo mueve sobre la altura del terreno. `GeneradorTerreno` los conserva como hijos propios, porque cruzan entre tramos. Usa un generador aleatorio separado para conservar la distribución previa del camino. `Recorrido` llama a `preparar_corredores(bajada)` al preparar la salida y a `actualizar_melones()` durante la bajada y la carrera. Los seis rivales arrancan con `_lanzar()` y no aparecen otros al generar terreno. Cada objetivo comprueba el recorrido relativo de ambos centros entre pasos para detectar golpes desde arriba, incluso a alta velocidad. Los objetivos usados y los que quedan atrás se liberan. `margen_slam()` calcula una tolerancia horizontal de 12 a 36 píxeles según la velocidad relativa. El barrido conserva el radio vertical para rechazar golpes desde abajo. El HUD usa ese mismo margen y proyecta el avance de ambos melones durante la caída para anticipar el aviso de S.
+
+`melones_guardados` aporta hasta seis fichas al azar, sin repetirlas. Los espacios vacíos se completan con diseños propios. Cada `MelonRodante` conserva una copia de la apariencia y una textura en su `Lienzo`, igual que el melón del jugador. Así los dibujos grandes no se rehacen al rodar. La bajada usa dos filas, que se unen al cruzar el puente. Después el rival cae hasta la calle y reduce su velocidad hasta su ritmo de rodado.

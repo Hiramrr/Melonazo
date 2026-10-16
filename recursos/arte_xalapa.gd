@@ -6,8 +6,7 @@ extends Resource
 ## Quién lo usa (todos con preload del .tres):
 ##   Paisaje            dibujar() pinta la foto panorámica como fondo del recorrido
 ##   HUD                crear_creditos_paisaje() agrega la atribución de esa foto
-##   PostalResultados   fotografias, mostradas con FotoLugar
-##   Taller             fotografias en el pasaporte, también con FotoLugar
+##   PostalResultados   fotografias, mostradas con FotoLugar solo al terminar
 ##
 ## Vacía `paisaje` en el .tres para usar solamente los dibujos del juego.
 
@@ -16,7 +15,7 @@ extends Resource
 ## Atribución de `paisaje`: {nombre, autor, licencia, fuente, url_licencia}.
 @export var credito_paisaje: Dictionary = {}
 ## id de lugar -> {textura, nombre, autor, fuente, licencia, url_licencia}.
-## Las claves coinciden con los id de Config.postales (el pasaporte).
+## Las claves coinciden con los id de Config.postales.
 ## Vacía el diccionario para quitar las fotos.
 @export var fotografias: Dictionary = {}
 

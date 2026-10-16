@@ -55,7 +55,7 @@ func _verificar() -> void:
 	juego.rayas_propio = ""
 	juego.nombre_melon = "Prueba xalapeña"
 	comprobar(ProjectSettings.get_setting("application/config/name") == "¡Rueda, Melón!", "Nombre del proyecto")
-	for accion in ["izquierda", "derecha", "rebote", "acc_1", "acc_2", "acc_3", "empujon", "confirmar", "pausar"]:
+	for accion in ["izquierda", "derecha", "rebote", "slam", "acc_1", "acc_2", "acc_3", "empujon", "confirmar", "pausar"]:
 		comprobar(InputMap.has_action(accion), "Entrada configurada: " + accion)
 	comprobar(juego.comprar_mejora("fuerza"), "Compra con saldo")
 	comprobar(juego.aplausos == 1000 - int(config.mejoras["fuerza"]["costo_base"]) and juego.niveles["fuerza"] == 1, "Compra descuenta una vez")
@@ -225,6 +225,7 @@ func _verificar() -> void:
 	await process_frame
 	await process_frame
 	var taller = current_scene
+	comprobar(taller.name == "Taller" and taller.has_method("_ir"), "La escena inicial debe cargar el taller con su botón de jugar")
 	var pestanas: TabContainer = taller.get_node("%Pestanas")
 	comprobar(taller.get_node("%Vista") != null, "Taller con nodos editables")
 	var titulos: Array = []
@@ -277,8 +278,8 @@ func _verificar() -> void:
 	await process_frame
 	var recorrido = current_scene
 	comprobar(recorrido.terreno.tramos.size() >= 2 and recorrido.melon.freeze, "Terreno listo antes del lanzamiento")
-	comprobar(recorrido.get_node("Mundo/Terreno").get_child_count() == recorrido.terreno.tramos.size(), "Tramos en contenedor propio")
-	comprobar(recorrido.terreno.tramos[0].get_node("Postales").get_child_count() == 3, "Primer tramo contiene Xallitic, Diamante y Catedral")
+	comprobar(recorrido.terreno.tramos.all(func(t: Node) -> bool: return t.get_parent() == recorrido.terreno), "Tramos en contenedor propio")
+	comprobar(recorrido.terreno.tramos[0].get_node("Postales").get_child_count() == 1, "El camino conserva el puente; las postales de lugares solo se muestran al terminar")
 	var consumibles: Array = []
 	for t in recorrido.terreno.tramos:
 		for nodo in t.get_node("Coleccionables").get_children():
@@ -307,22 +308,31 @@ func _verificar() -> void:
 	comprobar(not rampa.activo and recorrido.melon._dv == impulso, "Rampa da un solo impulso por carrera")
 	var toldo = load("res://mundo/obstaculos/toldo.tscn").instantiate()
 	root.add_child(toldo)
+	recorrido.melon.linear_velocity = Vector2(80, -300)
+	recorrido._al_tocar_obstaculo(recorrido.melon, toldo)
+	comprobar(toldo.activo and not recorrido.melon._fijar, "Tocar un toldo al subir no da velocidad")
 	recorrido.melon.linear_velocity = Vector2(80, 300)
 	recorrido._al_tocar_obstaculo(recorrido.melon, toldo)
 	var salida: Vector2 = recorrido.melon._v_fijar
 	recorrido.melon.linear_velocity = Vector2(0, 1200)
 	recorrido._al_tocar_obstaculo(recorrido.melon, toldo)
 	comprobar(not toldo.activo and recorrido.melon._v_fijar == salida, "Toldo no relanza al melón al reentrar")
-	comprobar(is_equal_approx(salida.x, 80) and is_equal_approx(salida.y, -270), "Toldo conserva parte de la caída sin añadir velocidad mínima")
+	comprobar(is_equal_approx(salida.x, 80 + config.toldo_avance) and is_equal_approx(salida.y, -270), "Toldo añade avance y conserva parte de la caída")
 	rampa.queue_free()
 	toldo.queue_free()
 	recorrido.melon._dv = Vector2.ZERO
 	recorrido.melon._fijar = false
 
-	recorrido.angulo = 25.0
+	recorrido.fase = 0
+	recorrido.melon.controlable = false
 	recorrido.fuerza = 0.91
 	recorrido._lanzar()
-	comprobar(not recorrido.melon.freeze and recorrido.melon.controlable, "Lanzamiento habilita física y controles")
+	comprobar(recorrido.melon.freeze and not recorrido.melon.controlable and recorrido.fase == 1, "Lanzamiento inicia el rodado automático sin controles en la bajada")
+	for i in 1200:
+		await physics_frame
+		if recorrido.fase != 1:
+			break
+	comprobar(recorrido.fase == 2 and recorrido.melon.controlable, "Cruzar Xallitic habilita el recorrido y los controles")
 	consumibles[0]._recoger(recorrido.melon)
 	consumibles[0]._recoger(recorrido.melon)
 	comprobar(recorrido.poderes_recogidos == 1, "Un consumible solo se cobra una vez")

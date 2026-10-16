@@ -7,7 +7,7 @@ extends Control
 ## (con Aspecto.dibujar_melon) y, en modo dibujo, el cursor del pincel o la goma.
 ##
 ## Modo dibujo (modo_dibujo = true mientras la pestaña Dibujo está abierta):
-##   - El melón se dibuja más grande y sin accesorios ni estela.
+##   - El melón se dibuja más grande, sin estela y con los accesorios puestos.
 ##   - Los eventos del ratón sobre la vista se pasan a pestana_dibujo.entrada_vista()
 ##     con la posición en unidades del radio (centro = 0, borde = 1).
 ## Por eso mouse_filter debe ser STOP: con IGNORE no llega ningún evento.
@@ -38,14 +38,20 @@ func _ready() -> void:
 
 ## Dónde va el centro del melón, en coordenadas de esta vista.
 func centro_melon() -> Vector2:
+	if modo_dibujo:
+		# Más abajo que en reposo: el tallo y la hoja (hasta -1.27) y los
+		# accesorios puestos (hasta ~1.9 radios) necesitan aire arriba.
+		return size * Vector2(0.5, 0.56)
 	return size * Vector2(0.5, 0.48)
 
 
 ## Radio del melón en píxeles de esta vista.
 func radio_melon() -> float:
 	if modo_dibujo:
-		# Más grande para dibujar con calma, sin importar el tamaño elegido.
-		return minf(size.x, size.y) * 0.4
+		# Con margen para tallo, hoja, accesorios, grosor del trazo y sombra:
+		# antes (0.4 del mínimo) el melón tocaba los bordes y se cortaba arriba
+		# y abajo; con accesorios altos (jarana, paraguas) se cortaban también.
+		return minf(size.x * 0.40, size.y * 0.27)
 	var r: float = Config.tamanos[Juego.tamano]["radio"]
 	return r * minf(ESCALA, minf(size.y / 105.0, size.x / 125.0))
 
@@ -82,7 +88,7 @@ func _draw() -> void:
 	if not modo_dibujo:
 		_dibujar_estela(centro)
 	draw_set_transform(centro)
-	Aspecto.dibujar_melon(self, radio, Juego.accesorios, false, not modo_dibujo)
+	Aspecto.dibujar_melon(self, radio, Juego.accesorios, false, true)
 	if modo_dibujo:
 		_dibujar_cursor(radio)
 	draw_set_transform(Vector2.ZERO)

@@ -9,6 +9,9 @@ extends Node
 ## Las reglas y precios no viven aquí, sino en Config.
 
 const ARCHIVO := "user://progreso.json"
+const MAX_MELONES := 24
+const PROPIEDADES_MELON := ["nombre_melon", "tamano", "accesorios", "piel", "patron",
+	"cara", "detalle", "estela", "cuerpo_propio", "rayas_propio", "dibujo"]
 
 # --- Guardado ----------------------------------------------------------------
 var archivo_guardado := ARCHIVO         # las pruebas lo cambian para no tocar el real
@@ -40,6 +43,7 @@ var rayas_propio := ""
 # Dibujo libre: [{"color": Color, "grosor": float, "puntos": PackedVector2Array}]
 # en unidades del radio, así sirve para cualquier tamaño y gira con el melón.
 var dibujo: Array = []
+var melones_guardados: Array[Dictionary] = []
 
 
 func _ready() -> void:
@@ -67,6 +71,54 @@ func color_cuerpo() -> Color:
 
 func color_rayas() -> Color:
 	return Color.from_string(rayas_propio, Config.pieles[piel]["rayas"])
+
+
+# --- Colección de melones -----------------------------------------------------
+
+func datos_melon() -> Dictionary:
+	var datos := {}
+	for propiedad in PROPIEDADES_MELON:
+		datos[propiedad] = get(propiedad)
+	return datos.duplicate(true)
+
+
+## Sin índice crea una ficha; con índice reemplaza solo esa ficha.
+func guardar_melon(indice := -1) -> int:
+	if indice < -1 or indice >= melones_guardados.size():
+		return -1
+	var datos := datos_melon()
+	datos["nombre_melon"] = nombre_melon.strip_edges().left(24)
+	if datos["nombre_melon"].is_empty():
+		datos["nombre_melon"] = "Melón"
+	if indice == -1:
+		indice = melones_guardados.find(datos)
+		if indice == -1:
+			if melones_guardados.size() >= MAX_MELONES:
+				return -1
+			indice = melones_guardados.size()
+			melones_guardados.append(datos)
+	else:
+		melones_guardados[indice] = datos
+	guardar()
+	return indice
+
+
+func usar_melon(indice: int) -> bool:
+	if indice < 0 or indice >= melones_guardados.size():
+		return false
+	var datos := melones_guardados[indice].duplicate(true)
+	for propiedad in PROPIEDADES_MELON:
+		set(propiedad, datos[propiedad])
+	guardar()
+	return true
+
+
+func eliminar_melon(indice: int) -> bool:
+	if indice < 0 or indice >= melones_guardados.size():
+		return false
+	melones_guardados.remove_at(indice)
+	guardar()
+	return true
 
 
 # --- Compras -----------------------------------------------------------------
@@ -126,7 +178,7 @@ func rebotes_max() -> int:
 ## Calcula y cobra los aplausos de una carrera, marca las postales nuevas,
 ## actualiza el récord y guarda. El desglose queda en "ultimo".
 func registrar_intento(distancia_m: float, carisma: int, recolectados: int, roto: bool, poderes := 0, altura_m := 0.0) -> void:
-	distancia_m = maxf(0.0, distancia_m)
+	distancia_m = clampf(distancia_m, 0.0, Config.meta_m)
 	altura_m = maxf(0.0, altura_m)
 	var por_distancia := int(distancia_m * Config.aplausos_por_metro)
 	var por_altura := int(altura_m * Config.aplausos_por_metro_altura)
@@ -150,6 +202,7 @@ func registrar_intento(distancia_m: float, carisma: int, recolectados: int, roto
 		"por_carisma": por_carisma, "por_recolectados": por_recolectados, "total": total,
 		"por_visitas": por_visitas, "visitas_nuevas": nuevas, "poderes": poderes,
 		"altura": altura_m, "por_altura": por_altura,
+		"llegada": distancia_m >= Config.meta_m and not roto,
 	}
 	guardar()
 
@@ -176,6 +229,7 @@ func reiniciar_progreso() -> void:
 	cuerpo_propio = ""
 	rayas_propio = ""
 	dibujo = []
+	melones_guardados.clear()
 	_guardado_bloqueado = false
 	guardar()
 
@@ -187,12 +241,10 @@ func reiniciar_progreso() -> void:
 func guardar() -> void:
 	if _guardado_bloqueado:
 		return
-	var datos := {"version": 1, "aplausos": aplausos, "record_m": record_m,
-		"niveles": niveles, "desbloqueados": desbloqueados, "tamano": tamano,
-		"accesorios": accesorios, "piel": piel, "cara": cara, "estela": estela,
-		"patron": patron, "detalle": detalle, "cuerpo_propio": cuerpo_propio,
-		"rayas_propio": rayas_propio, "dibujo": _dibujo_a_json(),
-		"nombre_melon": nombre_melon, "visitados": visitados, "intentos": intentos}
+	var datos := _melon_a_json(datos_melon())
+	datos.merge({"version": 2, "aplausos": aplausos, "record_m": record_m,
+		"niveles": niveles, "desbloqueados": desbloqueados, "visitados": visitados,
+		"intentos": intentos, "melones_guardados": melones_guardados.map(_melon_a_json)})
 	var temporal := archivo_guardado + ".tmp"
 	var archivo := FileAccess.open(temporal, FileAccess.WRITE)
 	if archivo == null:
@@ -228,22 +280,6 @@ func cargar() -> void:
 	if datos.get("record_m") is float or datos.get("record_m") is int:
 		record_m = clampf(float(datos["record_m"]), 0.0, 10000000.0)
 	intentos = _entero(datos, "intentos", 0, 0, 10000000)
-	tamano = _entero(datos, "tamano", 1, 0, Config.tamanos.size() - 1)
-	piel = _entero(datos, "piel", 0, 0, Config.pieles.size() - 1)
-	cara = _entero(datos, "cara", 0, 0, Config.caras.size() - 1)
-	estela = _entero(datos, "estela", 0, 0, Config.estelas.size() - 1)
-	patron = _entero(datos, "patron", 0, 0, Config.patrones.size() - 1)
-	detalle = _entero(datos, "detalle", 0, 0, Config.detalles.size() - 1)
-	cuerpo_propio = ""
-	rayas_propio = ""
-	for clave in ["cuerpo_propio", "rayas_propio"]:
-		if datos.get(clave) is String and Color.html_is_valid(datos[clave]):
-			set(clave, datos[clave])
-	dibujo = _dibujo_de_json(datos.get("dibujo"))
-	if datos.get("nombre_melon") is String:
-		nombre_melon = String(datos["nombre_melon"]).strip_edges().left(24)
-		if nombre_melon.is_empty():
-			nombre_melon = "Melón"
 	var guardados = datos.get("niveles", {})
 	if guardados is Dictionary:
 		for id in Config.orden_mejoras:
@@ -253,11 +289,16 @@ func cargar() -> void:
 		for id in datos["desbloqueados"]:
 			if id is String and Config.accesorios.has(id) and id not in desbloqueados:
 				desbloqueados.append(id)
-	accesorios.clear()
-	if datos.get("accesorios") is Array:
-		for id in datos["accesorios"]:
-			if id in desbloqueados and id not in accesorios and accesorios.size() < Config.max_accesorios:
-				accesorios.append(id)
+	var melon := _melon_de_json(datos)
+	for propiedad in PROPIEDADES_MELON:
+		set(propiedad, melon[propiedad])
+	melones_guardados.clear()
+	if datos.get("melones_guardados") is Array:
+		for entrada in datos["melones_guardados"]:
+			if melones_guardados.size() >= MAX_MELONES:
+				break
+			if entrada is Dictionary and entrada.get("nombre_melon") is String:
+				melones_guardados.append(_melon_de_json(entrada))
 	visitados.clear()
 	if datos.get("visitados") is Array:
 		for postal in Config.postales:
@@ -275,13 +316,39 @@ func _entero(datos: Dictionary, clave: String, defecto: int, minimo: int, maximo
 
 
 ## Convierte Juego.dibujo a datos simples para JSON: {c: color, g: grosor, p: [x, y, ...]}.
-func _dibujo_a_json() -> Array:
+func _dibujo_a_json(trazos: Array) -> Array:
 	var salida: Array = []
-	for trazo in dibujo:
+	for trazo in trazos:
 		var plano: Array = []
 		for p in trazo["puntos"]:
 			plano.append_array([snappedf(p.x, 0.001), snappedf(p.y, 0.001)])
 		salida.append({"c": (trazo["color"] as Color).to_html(false), "g": snappedf(trazo["grosor"], 0.001), "p": plano})
+	return salida
+
+
+func _melon_a_json(datos: Dictionary) -> Dictionary:
+	var salida := datos.duplicate()
+	salida["dibujo"] = _dibujo_a_json(datos["dibujo"])
+	return salida
+
+
+func _melon_de_json(datos: Dictionary) -> Dictionary:
+	var salida := {}
+	for propiedad in ["tamano", "piel", "patron", "cara", "detalle", "estela"]:
+		var opciones: Array = Config.get({"tamano": "tamanos", "piel": "pieles", "patron": "patrones",
+			"cara": "caras", "detalle": "detalles", "estela": "estelas"}[propiedad])
+		salida[propiedad] = _entero(datos, propiedad, 1 if propiedad == "tamano" else 0, 0, opciones.size() - 1)
+	for clave in ["cuerpo_propio", "rayas_propio"]:
+		salida[clave] = datos[clave] if datos.get(clave) is String and Color.html_is_valid(datos[clave]) else ""
+	var nombre: String = datos["nombre_melon"] if datos.get("nombre_melon") is String else "Melón"
+	nombre = nombre.strip_edges().left(24)
+	salida["nombre_melon"] = "Melón" if nombre.is_empty() else nombre
+	salida["dibujo"] = _dibujo_de_json(datos.get("dibujo"))
+	salida["accesorios"] = []
+	if datos.get("accesorios") is Array:
+		for id in datos["accesorios"]:
+			if id is String and id in desbloqueados and id not in salida["accesorios"] and salida["accesorios"].size() < Config.max_accesorios:
+				salida["accesorios"].append(id)
 	return salida
 
 

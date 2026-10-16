@@ -1,6 +1,6 @@
 class_name Paisaje
 extends Node2D
-## Fondo lejano de Xalapa: cielo, montañas, ciudad y niebla, con efecto de paralaje.
+## Fondo de la ruta: Xalapa, montañas y costa, con efecto de paralaje.
 ##
 ## Escena: mundo/paisaje/paisaje.tscn (instanciada como Paisaje en recorrido.tscn).
 ## Los hijos son capas del cielo (mundo/paisaje/capa_cielo.gd), editables en el inspector.
@@ -69,7 +69,7 @@ func _process(delta: float) -> void:
 	global_position = c.get_screen_center_position()
 	scale = Vector2.ONE / c.zoom
 	for nombre in CAPAS_ALTAS:
-		get_node(nombre).visible = arte.paisaje == null or global_position.y < ALTURA_CIELO
+		get_node(nombre).visible = arte.paisaje == null or global_position.y < ALTURA_CIELO or global_position.x >= Config.salida_xalapa_m * Config.px_por_metro
 	# Todos los hijos son CapaCielo.
 	for capa in get_children():
 		if capa.visible:
@@ -86,6 +86,15 @@ func _draw() -> void:
 	var m := get_viewport_rect().size / 2.0 + MARGEN
 	var cam := c.get_screen_center_position()
 	var dy := cam.y - REF_Y
+	var metros := cam.x / Config.px_por_metro
+	if metros >= Config.costa_m:
+		_costa(m, cam, dy)
+		return
+	if metros >= Config.salida_xalapa_m:
+		_cordillera(m, cam.x * 0.05, 20.0 - clampf(dy * 0.05, -160, 160), 120.0, LEJANO, 1.0, false)
+		_cordillera(m, cam.x * 0.1, 120.0 - clampf(dy * 0.08, -200, 200), 150.0, MEDIO, 4.0, true)
+		_niebla(m, cam.x * 0.08, 80.0, 0.25)
+		return
 	if arte.paisaje != null:
 		# Foto: se mece un poco en x; al subir la cámara, baja y se desvanece.
 		var desplazamiento := Vector2(sin(cam.x * 0.0002) * 55.0, -clampf(dy * 0.2, -60, 60))
@@ -101,6 +110,20 @@ func _draw() -> void:
 	_ciudad(m, cam.x * 0.18, 100.0 - clampf(dy * 0.12, -220, 220))
 	_niebla(m, cam.x * 0.22, 105.0 - clampf(dy * 0.12, -220, 220), 0.25)
 	_cordillera(m, cam.x * 0.3, 190.0 - clampf(dy * 0.16, -260, 260), 60.0, CERCANO, 9.0, true)
+
+
+func _costa(m: Vector2, cam: Vector2, dy: float) -> void:
+	var horizonte := 60.0 - clampf(dy * 0.04, -120, 120)
+	_cordillera(m, cam.x * 0.04, horizonte + 20.0, 90.0, LEJANO, 1.0, false)
+	draw_rect(Rect2(-m.x, horizonte + 24, m.x * 2, maxf(0.0, m.y - horizonte - 24)), Color("68a9b5"))
+	for i in 5:
+		var y := horizonte + 45.0 + i * 30.0
+		var x := -m.x + fposmod(i * 113.0 - cam.x * 0.06, 180.0)
+		while x < m.x:
+			draw_line(Vector2(x, y), Vector2(x + 75, y), Color("c4e1dc"), 2.0)
+			x += 180.0
+	var orilla := m.y - 90.0 - clampf(dy * 0.02, -50, 60)
+	draw_colored_polygon(PackedVector2Array([Vector2(-m.x, orilla), Vector2(0, orilla + 28), Vector2(m.x, orilla - 12), Vector2(m.x, m.y), Vector2(-m.x, m.y)]), Color("e4c88e"))
 
 
 ## Número pseudoaleatorio estable en [0, 1).

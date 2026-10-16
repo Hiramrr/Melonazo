@@ -166,6 +166,15 @@ horizontal_alignment = 1
 [node name="Separador" type="HSeparator" parent="Margen/Columnas/Derecha/Tarjeta/Caja"]
 layout_mode = 2
 
+[node name="Destino" type="Label" parent="Margen/Columnas/Derecha/Tarjeta/Caja"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"Suave"
+theme_override_font_sizes/font_size = 16
+text = "Faltan 2600 m para llegar al CUCosta"
+horizontal_alignment = 1
+autowrap_mode = 3
+
 [node name="ListaAplausos" type="VBoxContainer" parent="Margen/Columnas/Derecha/Tarjeta/Caja"]
 unique_name_in_owner = true
 layout_mode = 2

@@ -30,8 +30,11 @@ var radio := 22.0
 var resistencia := 3.0                  # golpes que aguanta antes de romperse; las caídas
 var resistencia_max := 3.0              # medianas quitan fracciones
 var rebotes := 1                        # cargas para saltar o rebotar con impulso
-var controlable := false                # true entre el lanzamiento y el final
+var controlable := false                # true después del puente y antes del final
 var roto := false
+var slam_activo := false
+var t_slam := 0.0                      # recarga independiente de los saltos
+var origen_slam := Vector2.ZERO        # posición anterior para detectar impactos entre pasos
 
 # --- Contacto con el suelo ---------------------------------------------------
 var en_suelo := false
@@ -60,7 +63,7 @@ var t_chile := 0.0
 var t_niebla := 0.0
 var t_iman := 0.0                       # atrae aplausos (lo aplica Recorrido)
 const TEMPORIZADORES := ["t_rebote", "t_bloqueo", "t_planeo", "t_embestida", "t_llantas",
-	"t_paraguas", "t_invulnerable", "t_cafe", "t_chile", "t_niebla", "t_iman"]
+	"t_paraguas", "t_invulnerable", "t_cafe", "t_chile", "t_niebla", "t_iman", "t_slam"]
 
 # --- Cambios de velocidad pedidos desde fuera (se aplican en _integrate_forces) ---
 var _v_prev := Vector2.ZERO             # velocidad del paso anterior (para medir impactos)
@@ -137,6 +140,12 @@ func _crear_formas() -> void:
 		forma.set_point_cloud(Config.accesorios[slots[i]].puntos(radio, deg_to_rad(Config.angulos_slots[i])))
 		nodo.shape = forma
 		_formas[nodo] = i
+
+
+## El equipo no debe atascar al melón durante la bajada sin controles.
+func colision_accesorios(habilitada: bool) -> void:
+	for nodo in _formas:
+		nodo.set_deferred("disabled", not habilitada)
 
 
 func _quitar_slot(i: int) -> void:
@@ -256,7 +265,7 @@ func sumar_rebote(n := 1) -> void:
 
 ## Salto desde el suelo o en el aire. Consume una carga. Devuelve false si no pudo.
 func saltar() -> bool:
-	if not controlable or roto or rebotes <= 0 or t_bloqueo > 0.0:
+	if not controlable or roto or slam_activo or rebotes <= 0 or t_bloqueo > 0.0:
 		return false
 	rebotes -= 1
 	t_rebote = 0.0
@@ -265,6 +274,31 @@ func saltar() -> bool:
 	empujar(Vector2(Config.salto_aereo_avance, minf(0.0, -Config.salto_aereo_vel - caida)))
 	aviso.emit("¡Salto aéreo!" if not en_suelo else "¡Arriba!")
 	return true
+
+
+## Picado sin gastar saltos. Se resuelve al golpear otro melón o el suelo.
+func iniciar_slam() -> bool:
+	if not controlable or roto or en_suelo or slam_activo or t_slam > 0.0:
+		return false
+	slam_activo = true
+	origen_slam = global_position
+	t_rebote = 0.0
+	t_planeo = 0.0
+	t_paraguas = 0.0
+	aviso.emit("¡Slam!")
+	return true
+
+
+func acertar_slam() -> void:
+	if not slam_activo or not controlable or roto:
+		return
+	slam_activo = false
+	t_slam = Config.slam_recarga
+	var v := linear_velocity + _dv
+	fijar_velocidad(Vector2(maxf(0.0, v.x) + Config.slam_impulso.x, Config.slam_impulso.y))
+	_dv = Vector2.ZERO
+	_mult = 1.0
+	aviso.emit("¡Slam acertado! Más velocidad")
 
 
 ## Llama a acc.fisica() en cada paso durante dur segundos.
@@ -319,7 +353,9 @@ func _physics_process(delta: float) -> void:
 		gravity_scale = 1.0
 	if controlable:
 		_estimar_impacto()
-		if Input.is_action_just_pressed("rebote") and rebotes > 0 and t_bloqueo <= 0.0:
+		if Input.is_action_just_pressed("slam"):
+			iniciar_slam()
+		if not slam_activo and Input.is_action_just_pressed("rebote") and rebotes > 0 and t_bloqueo <= 0.0:
 			if not en_suelo and t_impacto >= 0.0 and t_impacto <= Config.ventana_rebote:
 				t_rebote = Config.ventana_rebote
 				t_bloqueo = Config.bloqueo_rebote
@@ -330,6 +366,7 @@ func _physics_process(delta: float) -> void:
 				usar(i)
 	else:
 		t_impacto = -1.0
+		slam_activo = false
 	modulate.a = 0.4 if t_invulnerable > 0.0 and int(t_invulnerable * 16.0) % 2 == 0 else 1.0
 	queue_redraw()
 
@@ -366,7 +403,14 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		var aterriza := not en_suelo and t_aire > Config.aire_min_aterrizaje
 		en_suelo = true
 		normal_suelo = nrm
-		if aterriza and not roto:
+		if slam_activo and not roto:
+			slam_activo = false
+			t_slam = Config.slam_recarga
+			t_rebote = 0.0
+			v = Vector2(_v_prev.x * Config.slam_conserva, 0.0)
+			state.angular_velocity = v.x / radio
+			aviso.emit("Slam fallado: pierdes velocidad")
+		elif aterriza and not roto:
 			v = _aterrizar(state, nrm, v)
 		t_aire = 0.0
 	else:
@@ -412,6 +456,8 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 		v = _v_fijar
 		_fijar = false
 	v = v * _mult + _dv
+	if slam_activo:
+		v.y = maxf(v.y, Config.slam_caida)
 	_mult = 1.0
 	_dv = Vector2.ZERO
 	state.linear_velocity = v
@@ -495,6 +541,13 @@ func _dibujar_aspecto() -> void:
 func _draw() -> void:
 	if not controlable:
 		return
+	if slam_activo:
+		var abajo := Vector2.DOWN.rotated(-global_rotation)
+		var lado := abajo.orthogonal()
+		for i in [-1, 0, 1]:
+			var inicio: Vector2 = -abajo * (radio + 8.0) + lado * i * 12.0
+			draw_line(inicio, inicio - abajo * 36.0, Color("ffc83d"), 3, true)
+		draw_polyline(PackedVector2Array([abajo * radio - lado * 12.0, abajo * (radio + 14.0), abajo * radio + lado * 12.0]), Color("ffc83d"), 4, true)
 	if t_embestida > 0.0:
 		draw_arc(Vector2.ZERO, radio + 4, 0.0, TAU, 32, Color(1, 0.55, 0.1, 0.8), 4.0)
 	if escudo:
@@ -505,7 +558,7 @@ func _draw() -> void:
 		draw_line(Vector2(-radio - 8, -6), Vector2(-radio - 24, -6), Color("d6a471"), 3, true)
 		draw_line(Vector2(-radio - 8, 6), Vector2(-radio - 20, 6), Color("d6a471"), 3, true)
 	# Aro del rebote impulsado: se cierra conforme se acerca el suelo; verde = ¡ahora!
-	if rebotes > 0 and not en_suelo:
+	if rebotes > 0 and not en_suelo and not slam_activo:
 		if t_rebote > 0.0:
 			draw_arc(Vector2.ZERO, radio + 8, 0.0, TAU, 40, Color(1, 1, 1, 0.95), 4.0)
 		elif t_impacto >= 0.0:

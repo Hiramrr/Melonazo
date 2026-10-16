@@ -1,59 +1,52 @@
-[gd_resource type="Resource" script_class="ArteXalapa" load_steps=8 format=3]
+[gd_resource type="Resource" script_class="ArteXalapa" format=3 uid="uid://dehndksavubet"]
 
-[ext_resource type="Script" path="res://recursos/arte_xalapa.gd" id="1"]
-
-[ext_resource type="Texture2D" path="res://recursos/fotos/panorama_xalapa.jpg" id="2"]
-
-[ext_resource type="Texture2D" path="res://recursos/fotos/xallitic.jpg" id="foto_xallitic"]
-[ext_resource type="Texture2D" path="res://recursos/fotos/catedral.jpg" id="foto_catedral"]
-[ext_resource type="Texture2D" path="res://recursos/fotos/juarez.jpg" id="foto_juarez"]
-[ext_resource type="Texture2D" path="res://recursos/fotos/lagos.jpg" id="foto_lagos"]
-
-[sub_resource type="AtlasTexture" id="Panorama"]
-atlas = ExtResource("2")
-region = Rect2(900, 410, 5800, 1760)
+[ext_resource type="Script" uid="uid://boqq0ba3sbon" path="res://recursos/arte_xalapa.gd" id="1"]
+[ext_resource type="Texture2D" uid="uid://h0pwjxkao7r" path="res://recursos/fotos/catedral.jpg" id="foto_catedral"]
+[ext_resource type="Texture2D" uid="uid://bu54om8wfffo7" path="res://recursos/fotos/juarez.jpg" id="foto_juarez"]
+[ext_resource type="Texture2D" uid="uid://dqddc25sk3r7n" path="res://recursos/fotos/lagos.jpg" id="foto_lagos"]
+[ext_resource type="Texture2D" uid="uid://bw7ycq2uk6yiq" path="res://recursos/fotos/xallitic.jpg" id="foto_xallitic"]
 
 [resource]
 script = ExtResource("1")
-paisaje = SubResource("Panorama")
+paisaje = null
 credito_paisaje = {
-  "nombre": "Xalapa desde el Ágora",
-  "autor": "Koffermejia",
-  "licencia": "CC BY-SA 4.0",
-  "fuente": "https://commons.wikimedia.org/wiki/File:Panorama_xalapa_desde_el_agora.jpg",
-  "url_licencia": "https://creativecommons.org/licenses/by-sa/4.0"
+"autor": "Koffermejia",
+"fuente": "https://commons.wikimedia.org/wiki/File:Panorama_xalapa_desde_el_agora.jpg",
+"licencia": "CC BY-SA 4.0",
+"nombre": "Xalapa desde el Ágora",
+"url_licencia": "https://creativecommons.org/licenses/by-sa/4.0"
 }
 fotografias = {
-"xallitic": {
-"textura": ExtResource("foto_xallitic"),
-"nombre": "Puente de Xallitic",
-"autor": "Juan Javier Mora-Rivera",
-"licencia": "CC BY-SA 4.0",
-"url_licencia": "https://creativecommons.org/licenses/by-sa/4.0",
-"fuente": "https://commons.wikimedia.org/wiki/File:Bajos_del_Puente_de_Xallitic,_Xalapa,_Veracruz.jpg"
-},
 "catedral": {
-"textura": ExtResource("foto_catedral"),
-"nombre": "Catedral de Xalapa",
 "autor": "Soundtrckk",
+"fuente": "https://commons.wikimedia.org/wiki/File:Catedral_Metropolitana_de_Xalapa.jpg",
 "licencia": "CC BY-SA 3.0",
-"url_licencia": "https://creativecommons.org/licenses/by-sa/3.0",
-"fuente": "https://commons.wikimedia.org/wiki/File:Catedral_Metropolitana_de_Xalapa.jpg"
+"nombre": "Catedral de Xalapa",
+"textura": ExtResource("foto_catedral"),
+"url_licencia": "https://creativecommons.org/licenses/by-sa/3.0"
 },
 "juarez": {
-"textura": ExtResource("foto_juarez"),
-"nombre": "Vista desde Parque Juárez",
 "autor": "Burkhard Mücke",
+"fuente": "https://commons.wikimedia.org/wiki/File:Vista_del_Pico_de_Orizaba_desde_Parque_Ju%C3%A1rez_01.jpg",
 "licencia": "CC BY-SA 4.0",
-"url_licencia": "https://creativecommons.org/licenses/by-sa/4.0",
-"fuente": "https://commons.wikimedia.org/wiki/File:Vista_del_Pico_de_Orizaba_desde_Parque_Ju%C3%A1rez_01.jpg"
+"nombre": "Vista desde Parque Juárez",
+"textura": ExtResource("foto_juarez"),
+"url_licencia": "https://creativecommons.org/licenses/by-sa/4.0"
 },
 "lagos": {
-"textura": ExtResource("foto_lagos"),
-"nombre": "Paseo de Los Lagos",
 "autor": "Adam Jones from Kelowna, BC, Canada",
+"fuente": "https://commons.wikimedia.org/wiki/File:Park_Scene_-_Paseo_de_los_Lagos_-_Xalapa_-_Veracruz_-_Mexico_-_04_(15470840693).jpg",
 "licencia": "CC BY-SA 2.0",
-"url_licencia": "https://creativecommons.org/licenses/by-sa/2.0",
-"fuente": "https://commons.wikimedia.org/wiki/File:Park_Scene_-_Paseo_de_los_Lagos_-_Xalapa_-_Veracruz_-_Mexico_-_04_(15470840693).jpg"
+"nombre": "Paseo de Los Lagos",
+"textura": ExtResource("foto_lagos"),
+"url_licencia": "https://creativecommons.org/licenses/by-sa/2.0"
+},
+"xallitic": {
+"autor": "Juan Javier Mora-Rivera",
+"fuente": "https://commons.wikimedia.org/wiki/File:Bajos_del_Puente_de_Xallitic,_Xalapa,_Veracruz.jpg",
+"licencia": "CC BY-SA 4.0",
+"nombre": "Puente de Xallitic",
+"textura": ExtResource("foto_xallitic"),
+"url_licencia": "https://creativecommons.org/licenses/by-sa/4.0"
 }
 }

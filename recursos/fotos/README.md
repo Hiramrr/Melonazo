@@ -6,9 +6,11 @@ El juego muestra los créditos y los enlaces a la fuente y licencia debajo de ca
 
 ## Cambiar o quitar las fotos
 
-Abre `recursos/arte_xalapa.tres` en Godot y edita `fotografias`. Cada clave corresponde a un lugar de `Config.postales`. Cambia `textura` y los créditos cuando sustituyas una foto. Para quitar una foto, elimina su entrada y guarda el recurso antes de borrar el JPG. Para quitar todas, vacía `fotografias`. Los resultados recuperan la panorámica real y el pasaporte conserva los textos.
+Abre `recursos/arte_xalapa.tres` en Godot y edita `fotografias`. Cada clave corresponde al `id` de un lugar de `Config.postales`. Cambia `textura` y los créditos cuando sustituyas una foto. Para quitar una foto, elimina su entrada y guarda el recurso antes de borrar el JPG. Para quitar todas, vacía `fotografias`. Los resultados ocultan la postal cuando falta su imagen y conservan el resumen del intento.
 
-Las fotografías aparecen en el pasaporte, con independencia de los lugares desbloqueados. La postal de resultados usa el último lugar con fotografía alcanzado en esa carrera. Una vista desde Parque Juárez muestra el Pico de Orizaba, no el parque en primer plano.
+Las fotografías aparecen solo al terminar el intento. La postal usa el lugar más lejano alcanzado en esa carrera, aunque el jugador tenga un récord mayor. Si falta su foto, no muestra la de un lugar anterior ni una ilustración. El pasaporte tiene nombres y sellos, sin fotos. Una vista desde Parque Juárez muestra el Pico de Orizaba, no el parque en primer plano.
+
+Para añadir sus lugares de Xalapa, registren un `id` nuevo en `Config.postales` dentro de los primeros 1800 metros y asignen la imagen con ese mismo `id`. La foto de la meta usa `cucosta`. Quedan pendientes las fotos propias del CUCosta y de los lugares que todavía no tienen entrada en `fotografias`.
 
 ## Puente de Xallitic
 
@@ -47,7 +49,7 @@ Las fotografías aparecen en el pasaporte, con independencia de los lugares desb
 - Descarga: [versión incluida](https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Park_Scene_-_Paseo_de_los_Lagos_-_Xalapa_-_Veracruz_-_Mexico_-_04_%2815470840693%29.jpg/1280px-Park_Scene_-_Paseo_de_los_Lagos_-_Xalapa_-_Veracruz_-_Mexico_-_04_%2815470840693%29.jpg).
 
 
-## Fondo fotográfico del taller y del recorrido
+## Panorámica conservada entre los recursos
 
 - Archivo: `panorama_xalapa.jpg`.
 - Autor: Koffermejia.
@@ -56,4 +58,4 @@ Las fotografías aparecen en el pasaporte, con independencia de los lugares desb
 - Cambios: Archivo original. Recorte proporcional en pantalla mediante AtlasTexture para excluir los bordes vacíos de la panorámica. Sin retoques generativos.
 - Descarga: [archivo original](https://upload.wikimedia.org/wikipedia/commons/2/25/Panorama_xalapa_desde_el_agora.jpg).
 
-El fondo se configura en `paisaje`, por separado de las fotos del pasaporte. Al cambiarlo también hay que actualizar `credito_paisaje`. El encuadre excluye bordes vacíos del panorama mediante AtlasTexture.
+El recorrido usa el fondo dibujado y `paisaje` queda vacío. Esta panorámica no aparece durante la carrera. Las fotografías se reservan a las postales de resultados.

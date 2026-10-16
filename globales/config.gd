@@ -42,9 +42,9 @@ var max_accesorios := 3
 var angulos_slots: Array = [-90.0, -20.0, -160.0]
 
 # --- Lanzamiento -------------------------------------------------------------
-var angulo_min := 5.0                # grados sobre la horizontal
-var angulo_max := 75.0
-var angulo_freq := 0.6               # ciclos por segundo de la flecha
+var bajada_inicio := Vector2(-2050, -680)
+var bajada_fin := Vector2(-520, 0)    # entrada al puente de puente.tscn
+var puente_fin_x := 40.0             # salida del puente; aquí vuelven los controles
 var fuerza_freq := 0.75              # ciclos por segundo de la barra
 var lanz_vel_min := 430.0
 var lanz_vel_max := 760.0
@@ -70,6 +70,22 @@ var rebote_mult_tang := 1.25         # multiplica la velocidad a lo largo del su
 var rebote_pared_conserva := 0.6     # velocidad horizontal que queda al rebotar contra una pared
 var vista_indicador := 0.6           # s de anticipación del aro indicador
 var rebotes_base := 2
+
+# --- Slam --------------------------------------------------------------------
+var slam_caida := 1250.0             # velocidad mínima del picado
+var slam_impulso := Vector2(420, -850)
+var slam_conserva := 0.6             # velocidad que queda al fallar contra el suelo
+var slam_recarga := 0.45
+var slam_margen := Vector2(12, 36)   # tolerancia lateral mínima y máxima, en píxeles
+var slam_tolerancia := 0.035         # margen según la velocidad relativa, en segundos
+var rivales_salida := 6
+var separacion_salida := 75.0
+var carriles_salida := Vector2(28, 76)
+var ritmo_rivales := Vector2(0.94, 1.16)
+var frenado_melones := 180.0
+var velocidad_melones := Vector2(180, 300)
+var primer_melon_camino_x := 1000.0
+var separacion_melones := Vector2(1000, 1500)
 
 # --- Aterrizaje --------------------------------------------------------------
 var aire_min_aterrizaje := 0.15      # s en el aire para contar como caída
@@ -125,9 +141,10 @@ var puesto_freno := 0.6
 var poste_freno := 0.65
 var banqueta_freno := 0.85
 var banqueta_salto := 220.0
-var rampa_impulso := 240.0
+var rampa_impulso := 280.0
 var rampa_angulo := 35.0             # grados sobre la rampa
 var toldo_rebote := 0.9
+var toldo_avance := 160.0            # impulso horizontal solo al caer sobre el toldo
 
 # --- Terreno -----------------------------------------------------------------
 var semilla_terreno := -1            # fija un número para repetir una ruta en pruebas
@@ -167,6 +184,14 @@ var prob_casas := 0.6
 # letrero, porque la postal ya muestra el nombre del lugar.
 var marcador_cada_m := 50
 var lugares: Dictionary = {}          # metros -> nombre; se llena con las postales al iniciar
+
+# Ruta de fantasía, medida desde la salida del puente. Los huecos entre postales
+# de Xalapa se reservan para añadir lugares sin mover la meta ni los guardados.
+var salida_xalapa_m := 1800.0
+var costa_m := 2300.0
+var meta_m := 2600.0
+var nombre_meta := "Centro Universitario de la Costa"
+var institucion_meta := "Universidad de Guadalajara"
 
 # --- Fin del intento ---------------------------------------------------------
 var velocidad_min_avance := 25.0   # por debajo de 2.5 m/s ya casi no rueda
@@ -255,17 +280,22 @@ var bonus_postal := 60
 
 # --- Postales (pasaporte) -----------------------------------------------------
 # Ruta de fantasía. Las distancias son del juego, no distancias de la ciudad.
-# "tipo" elige el dibujo en mundo/terreno/postal.gd. Las fotos reales se asignan
-# por id en recursos/arte_xalapa.tres.
+# Las fotografías se asignan por id en recursos/arte_xalapa.tres y solo aparecen
+# al terminar el intento. Los lugares no generan edificios ni fotos en el camino.
 var postales: Array = [
-	{"id": "xallitic", "nombre": "Barrio de Xallitic", "metros": 0, "tipo": "xallitic", "nota": "El puente es la salida de esta carrera."},
-	{"id": "diamante", "nombre": "Callejón del Diamante", "metros": 100, "tipo": "diamante", "nota": "Cafés, artesanías y una calle para pasear."},
-	{"id": "catedral", "nombre": "Catedral de Xalapa", "metros": 200, "tipo": "catedral", "nota": "Una silueta del centro entre fachadas y balcones."},
-	{"id": "juarez", "nombre": "Parque Juárez", "metros": 300, "tipo": "juarez", "nota": "Una pausa verde sobre las lomas del centro."},
-	{"id": "berros", "nombre": "Los Berros", "metros": 450, "tipo": "berros", "nota": "Árboles y un paseo alrededor del quiosco."},
-	{"id": "lagos", "nombre": "Los Lagos", "metros": 600, "tipo": "lagos", "nota": "Agua, caminos y reflejos entre el verde."},
-	{"id": "usbi", "nombre": "Zona universitaria · USBI", "metros": 850, "tipo": "usbi", "nota": "Un guiño a la Universidad Veracruzana."},
-	{"id": "macuiltepetl", "nombre": "Macuiltépetl", "metros": 1350, "tipo": "macuiltepetl", "nota": "El cerro cierra la colección de postales."},
+	{"id": "xallitic", "nombre": "Barrio de Xallitic", "metros": 0, "nota": "El puente es la salida de esta carrera."},
+	{"id": "diamante", "nombre": "Callejón del Diamante", "metros": 100, "nota": "Cafés, artesanías y una calle para pasear."},
+	{"id": "catedral", "nombre": "Catedral de Xalapa", "metros": 200, "nota": "Una silueta del centro entre fachadas y balcones."},
+	{"id": "juarez", "nombre": "Parque Juárez", "metros": 300, "nota": "Una pausa verde sobre las lomas del centro."},
+	{"id": "berros", "nombre": "Los Berros", "metros": 450, "nota": "Árboles y un paseo alrededor del quiosco."},
+	{"id": "lagos", "nombre": "Los Lagos", "metros": 600, "nota": "Agua, caminos y reflejos entre el verde."},
+	{"id": "usbi", "nombre": "Zona universitaria · USBI", "metros": 850, "nota": "Un guiño a la Universidad Veracruzana."},
+	{"id": "macuiltepetl", "nombre": "Macuiltépetl", "metros": 1350, "nota": "El último cerro antes de dejar Xalapa y seguir hacia la costa."},
+	# Espacios libres de postales: 350..420, 650..800, 950..1250 y 1450..1750 m.
+	# Añadir aquí los lugares propios, en orden de metros y con un id nuevo.
+	{"id": "salida_xalapa", "nombre": "Camino a la costa", "metros": salida_xalapa_m, "nota": "Dejamos Xalapa. El viaje continúa entre montañas hacia Jalisco."},
+	{"id": "costa", "nombre": "Puerto Vallarta", "metros": costa_m, "nota": "Ya estamos en la costa de Jalisco. Falta llegar a la universidad."},
+	{"id": "cucosta", "nombre": nombre_meta, "nombre_corto": "CUCosta · UdeG", "metros": meta_m, "nota": "La meta del viaje. Centro Universitario de la Costa de la Universidad de Guadalajara, en Puerto Vallarta."},
 ]
 
 

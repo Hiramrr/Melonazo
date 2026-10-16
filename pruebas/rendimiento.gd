@@ -1,7 +1,7 @@
 extends SceneTree
 ## Ejecutar con render real. Comprueba que el dibujo libre no se rehace cada cuadro.
 
-var dibujos := {"aspecto": 0, "efectos": 0, "cielo": 0}
+var dibujos := {"aspecto": 0, "efectos": 0, "cielo": 0, "rival": 0}
 
 
 func _initialize() -> void:
@@ -78,5 +78,18 @@ func _verificar() -> void:
 	cielo.actualizar(Vector2(960, 540), Vector2(0, -900), 1.0)
 	await _esperar()
 	assert(dibujos["cielo"] == cielo_inicial + 2, "Redimensionar vuelve a cubrir la pantalla")
+	var rival = load("res://mundo/ayudas/melon_rodante.tscn").instantiate()
+	rival.configurar(juego.datos_melon())
+	root.add_child(rival)
+	rival.get_node("Lienzo/Dibujo").draw.connect(func() -> void: dibujos["rival"] += 1)
+	await _esperar()
+	var dibujos_rival: int = dibujos["rival"]
+	assert(not rival.get_node("Lienzo").get_texture().get_image().is_invisible(), "El rival conserva su dibujo guardado en una textura")
+	for i in 12:
+		rival.position.x += 2.0
+		rival.get_node("Aspecto").rotation += 0.1
+		await process_frame
+		await RenderingServer.frame_post_draw
+	assert(dibujos["rival"] == dibujos_rival, "Los rivales no rehacen el dibujo del almanaque mientras ruedan")
 	print("OK: textura de %d puntos conservada al mover y girar; equipo, rotura, efectos y cielo actualizados." % cantidad)
 	quit()

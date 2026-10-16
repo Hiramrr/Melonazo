@@ -20,8 +20,7 @@ const COLORES_AVISO: Array[Color] = [Color("fff9ec"), Color("ffc83d"), Color("ff
 # Flecha de puntería
 var mostrar_flecha := false
 var origen_flecha := Vector2.ZERO
-var angulo := 0.0                      # grados sobre la horizontal
-var angulo_fijado := false             # true en la fase de fuerza: la flecha se pone blanca
+var direccion_flecha := Vector2.RIGHT  # dirección de la cuesta, sin elegir ángulo
 var objetivo_aereo: Papalote
 
 var _avisos: Array = []                # [{texto, pos, t, color}]
@@ -89,13 +88,11 @@ func _dibujar_objetivo_aereo() -> void:
 	draw_set_transform_matrix(Transform2D.IDENTITY)
 
 
-## Arco con el rango de ángulos posibles y la flecha en el ángulo actual.
+## Flecha fija que señala la dirección de salida por la cuesta.
 func _dibujar_flecha() -> void:
 	var o := origen_flecha
-	var dir := Vector2.from_angle(-deg_to_rad(angulo))
-	draw_arc(o, RADIO_FLECHA, -deg_to_rad(Config.angulo_max), -deg_to_rad(Config.angulo_min), 24,
-		Color(1, 1, 1, 0.3), 2.0)
-	var col := Color(1, 1, 1, 0.9) if angulo_fijado else Color("ffc83d")
+	var dir := direccion_flecha
+	var col := Color("ffc83d")
 	var punta := o + dir * RADIO_FLECHA
 	var cabeza := PackedVector2Array([punta + dir * 26.0, punta + dir.orthogonal() * 16.0, punta - dir.orthogonal() * 16.0])
 	draw_line(o, punta, TINTA, 14.0, true)

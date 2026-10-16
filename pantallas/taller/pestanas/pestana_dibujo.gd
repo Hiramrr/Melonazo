@@ -47,6 +47,7 @@ func _ready() -> void:
 		var b := Button.new()
 		b.custom_minimum_size = Vector2(42, 42)
 		b.tooltip_text = "#" + (c as Color).to_html(false)
+		b.focus_mode = Control.FOCUS_NONE
 		b.pressed.connect(_elegir_color.bind(c))
 		fila_colores.add_child(b)
 		_muestras.append([b, c])
@@ -77,19 +78,16 @@ func refrescar() -> void:
 
 # --- Controles de la pestaña -------------------------------------------------
 
-## Muestra redonda de color con labio; la elegida es más grande y de borde grueso.
+## Muestra redonda de color con labio; la elegida lleva borde amarillo sin crecer.
+## Sin expand_margin: antes la muestra elegida dibujaba 3 px fuera de su rectángulo
+## y los vecinos o el ScrollContainer la recortaban (se veía "cortada").
 func _estilo_muestra(c: Color, elegido: bool) -> StyleBoxFlat:
 	var s := StyleBoxFlat.new()
 	s.bg_color = c
 	s.set_corner_radius_all(21)
-	s.set_border_width_all(5 if elegido else 3)
-	s.border_width_bottom = 5 if elegido else 6
-	s.border_color = Color("203d38")
-	if elegido:
-		s.expand_margin_left = 3
-		s.expand_margin_right = 3
-		s.expand_margin_top = 3
-		s.expand_margin_bottom = 3
+	s.set_border_width_all(4 if elegido else 3)
+	s.border_width_bottom = 4 if elegido else 6
+	s.border_color = Color("ffc83d") if elegido else Color("203d38")
 	return s
 
 

@@ -1,4 +1,4 @@
-[gd_scene format=3]
+[gd_scene format=3 uid="uid://cglka1g045k5q"]
 
 [ext_resource type="Script" path="res://pantallas/taller/taller.gd" id="1"]
 [ext_resource type="Theme" path="res://interfaz/tema_xalapa.tres" id="2"]
@@ -97,7 +97,15 @@ text = "¡Rueda, Melón!"
 layout_mode = 2
 theme_type_variation = &"TextoHUD"
 theme_override_font_sizes/font_size = 15
-text = "TALLER DE MELONES · XALAPA, VERACRUZ"
+text = "De Xalapa al CUCosta · Universidad de Guadalajara"
+
+[node name="BtnAlmanaque" type="Button" parent="Margen/Raiz/Cabecera"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(120, 44)
+layout_mode = 2
+size_flags_vertical = 4
+tooltip_text = "Consultar tus melones guardados, accesorios y poderes"
+text = "Almanaque"
 
 [node name="Balance" type="PanelContainer" parent="Margen/Raiz/Cabecera"]
 unique_name_in_owner = true
@@ -219,6 +227,13 @@ theme_override_font_sizes/font_size = 20
 max_length = 24
 text = "Melón"
 
+[node name="BtnGuardarMelon" type="Button" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+tooltip_text = "Conservar el nombre, dibujo, colores y equipo de este melón"
+text = "Guardar melón en el almanaque"
+
 [node name="EtiTamano" type="Label" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon"]
 layout_mode = 2
 theme_type_variation = &"Subtitulo"
@@ -334,7 +349,7 @@ text = "Reiniciar progreso"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(290, 70)
 layout_mode = 2
-tooltip_text = "Ir al puente. Enter para confirmar."
+tooltip_text = "Salir de Xalapa y llegar al Centro Universitario de la Costa. Enter para confirmar."
 theme_type_variation = &"Principal"
 theme_override_font_sizes/font_size = 30
 text = "¡A RODAR!"
@@ -347,10 +362,13 @@ unique_name_in_owner = true
 title = "¿Reiniciar el progreso?"
 ok_button_text = "Sí, reiniciar"
 cancel_button_text = "Cancelar"
-dialog_text = "Se borrarán los aplausos, el récord, las mejoras, los accesorios comprados, las postales, los intentos y el aspecto del melón. Esto no se puede deshacer."
+dialog_text = "Se borrarán los aplausos, el récord, las mejoras, los accesorios comprados, las postales, los intentos, el aspecto del melón y los melones del almanaque. Esto no se puede deshacer."
 
 [connection signal="text_changed" from="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon/FilaNombre/LineaNombre" to="Margen/Raiz/Medio/Pestanas/TuMelon" method="_cambiar_nombre"]
 [connection signal="text_submitted" from="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon/FilaNombre/LineaNombre" to="Margen/Raiz/Medio/Pestanas/TuMelon" method="_nombre_listo"]
 [connection signal="pressed" from="Margen/Raiz/Pie/BtnPuente" to="." method="_ir"]
 [connection signal="pressed" from="Margen/Raiz/Pie/BtnReiniciar" to="." method="_pedir_reinicio"]
 [connection signal="confirmed" from="ConfirmarReinicio" to="." method="_reiniciar_progreso"]
+
+[connection signal="pressed" from="Margen/Raiz/Cabecera/BtnAlmanaque" to="." method="_abrir_almanaque"]
+[connection signal="pressed" from="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon/BtnGuardarMelon" to="." method="_guardar_melon"]

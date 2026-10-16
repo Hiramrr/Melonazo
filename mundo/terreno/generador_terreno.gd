@@ -1,6 +1,6 @@
 class_name GeneradorTerreno
 extends Node2D
-## Crea el camino infinito del recorrido, tramo por tramo, y lo llena de cosas.
+## Crea el camino hasta la meta, tramo por tramo, y lo llena de cosas.
 ##
 ## Vive en el nodo Mundo/Terreno de pantallas/recorrido/recorrido.tscn. Cada
 ## tramo (mundo/terreno/tramo.tscn) se agrega como hijo de este nodo.
@@ -24,6 +24,7 @@ const TramoEscena := preload("res://mundo/terreno/tramo.tscn")
 const PersonaEscena := preload("res://mundo/ayudas/persona.tscn")
 const PoderEscena := preload("res://mundo/ayudas/poder.tscn")
 const PapaloteEscena := preload("res://mundo/ayudas/papalote.tscn")
+const MelonRodanteEscena := preload("res://mundo/ayudas/melon_rodante.tscn")
 const OBSTACULOS := {
 	"coladera": preload("res://mundo/obstaculos/coladera.tscn"),
 	"charco": preload("res://mundo/obstaculos/charco.tscn"),
@@ -47,6 +48,9 @@ var tramos: Array = []                 # Tramo vivos, de izquierda a derecha
 var rng := RandomNumberGenerator.new() # forma del suelo, obstáculos, público, aplausos y poderes
 var rng_aire := RandomNumberGenerator.new()  # papalotes; no cambian la ruta del suelo
 var rng_premios := RandomNumberGenerator.new()  # puntos y poderes en altura
+var rng_melones := RandomNumberGenerator.new()
+var melones: Array[MelonRodante] = []
+var _siguiente_melon_x := 0.0
 
 var _fin := Vector2.ZERO               # último punto del último tramo
 var _n_tramos := 0
@@ -62,6 +66,7 @@ var _patrones_premios: Array[int] = []
 
 ## Fija la semilla (Config.semilla_terreno; -1 = al azar) y crea los primeros tramos.
 func iniciar() -> void:
+	_siguiente_melon_x = Config.primer_melon_camino_x
 	_siguiente_poder_x = Config.primer_poder_x
 	_siguiente_papalote_x = Config.primer_papalote_x
 	_altura_papalote = Config.altura_papalotes.x
@@ -71,6 +76,7 @@ func iniciar() -> void:
 		rng.randomize()
 	rng_aire.seed = rng.seed + 871
 	rng_premios.seed = rng.seed + 1747
+	rng_melones.seed = rng.seed + 2633
 	for i in Config.franjas_premios_aire.size():
 		_siguientes_premios.append(900.0 + i * 320.0 + rng_premios.randf_range(0.0, 400.0))
 		_grupos_premios.append(0)
@@ -81,10 +87,12 @@ func iniciar() -> void:
 
 ## Mantiene terreno listo delante de x y libera el que quedó atrás.
 func actualizar(x: float) -> void:
-	while _fin.x < x + Config.generar_adelante:
+	var hasta := minf(x, Config.meta_m * Config.px_por_metro) + Config.generar_adelante
+	while _fin.x < hasta:
 		_crear_tramo()
 	while tramos.size() > 1 and tramos[0].x1 < x - Config.borrar_atras:
 		tramos.pop_front().queue_free()
+	_poner_melones(x)
 
 
 ## Tramo que contiene x, o null si x está fuera del terreno generado.
@@ -93,6 +101,19 @@ func tramo_en(x: float) -> Tramo:
 		if x >= t.x0 and x <= t.x1:
 			return t
 	return null
+
+
+## Viven fuera de los tramos porque avanzan de uno a otro.
+func actualizar_melones(melon: Melon, delta: float) -> void:
+	for i in range(melones.size() - 1, -1, -1):
+		var otro := melones[i]
+		if otro.global_position.x >= melon.global_position.x - Config.borrar_atras:
+			otro.avanzar(self, delta)
+			otro.recibir_slam(melon)
+		if otro.usado or otro.global_position.x < melon.global_position.x - Config.borrar_atras:
+			melones.remove_at(i)
+			otro.queue_free()
+	melon.origen_slam = melon.global_position
 
 
 ## 0..1 según qué tan lejos está x. Cerca del puente el camino es amable.
@@ -113,6 +134,8 @@ func _crear_tramo() -> void:
 		t.puntos = _puntos_tramo()
 		t.empedrado = rng.randf() < Config.prob_empedrado
 	t.color_suelo = Color("aaa18e") if t.empedrado else Color("6d8a58")
+	if t.x0 >= Config.costa_m * Config.px_por_metro:
+		t.color_suelo = Color("c5ae7c")
 	t.construir()
 	add_child(t)
 	_poblar(t)
@@ -176,10 +199,50 @@ func _poblar(t: Tramo) -> void:
 	_poner_poderes(t)
 	_poner_papalotes(t)
 	_poner_premios_aire(t)
-	_poner_postales(t)
+	_poner_puente(t)
 	_poner_marcadores(t)
 	t.queue_redraw()
 	t.get_node("Decoracion").queue_redraw()
+
+
+func preparar_corredores(bajada: BajadaXallitic) -> void:
+	var fichas := Juego.melones_guardados.duplicate(true)
+	for i in Config.rivales_salida:
+		var datos: Dictionary
+		if not fichas.is_empty():
+			datos = fichas.pop_at(rng_melones.randi_range(0, fichas.size() - 1))
+		else:
+			datos = {"nombre_melon": "Corredor %d" % (i + 1), "tamano": i % Config.tamanos.size(),
+				"piel": i % Config.pieles.size(), "patron": i % Config.patrones.size(),
+				"cara": i % Config.caras.size(), "detalle": 0, "dibujo": [],
+				"cuerpo_propio": "", "rayas_propio": "", "accesorios": []}
+		var otro := MelonRodanteEscena.instantiate() as MelonRodante
+		otro.configurar(datos)
+		otro.velocidad = rng_melones.randf_range(Config.velocidad_melones.x, Config.velocidad_melones.y)
+		add_child(otro)
+		var x := Config.bajada_inicio.x - 60.0 - (i / 2) * Config.separacion_salida + (i % 2) * 15.0
+		var carril := Config.carriles_salida.x if i % 2 == 0 else Config.carriles_salida.y
+		var ritmo := lerpf(Config.ritmo_rivales.x, Config.ritmo_rivales.y, float(i) / maxf(1.0, Config.rivales_salida - 1))
+		otro.preparar_salida(bajada, x, carril, ritmo)
+		melones.append(otro)
+
+
+## Se crean por delante del jugador, después de la parrilla y solo hasta la meta.
+func _poner_melones(x: float) -> void:
+	var hasta := minf(x + Config.generar_adelante, Config.meta_m * Config.px_por_metro)
+	while _siguiente_melon_x < hasta:
+		var tramo := tramo_en(_siguiente_melon_x)
+		if tramo != null:
+			var otro := MelonRodanteEscena.instantiate() as MelonRodante
+			otro.configurar({"tamano": rng_melones.randi_range(1, 2),
+				"piel": rng_melones.randi_range(0, Config.pieles.size() - 1),
+				"patron": rng_melones.randi_range(0, Config.patrones.size() - 1), "cara": 1,
+				"detalle": 0, "dibujo": [], "cuerpo_propio": "", "rayas_propio": ""})
+			otro.position = Vector2(_siguiente_melon_x, tramo.altura(_siguiente_melon_x) - otro.radio)
+			otro.velocidad = rng_melones.randf_range(Config.velocidad_melones.x, Config.velocidad_melones.y)
+			add_child(otro)
+			melones.append(otro)
+		_siguiente_melon_x += rng_melones.randf_range(Config.separacion_melones.x, Config.separacion_melones.y)
 
 
 ## Fachadas de fondo (solo datos; Tramo las dibuja en su nodo Decoracion).
@@ -339,14 +402,14 @@ func _poner_premios_aire(t: Tramo) -> void:
 			_siguientes_premios[franja] = x + rng_premios.randf_range(Config.separacion_premios_aire.x, Config.separacion_premios_aire.y)
 
 
-## Lugares de Xalapa (Config.postales) que caen dentro del tramo.
-func _poner_postales(t: Tramo) -> void:
-	for postal in Config.postales:
-		var px: float = float(postal["metros"]) * Config.px_por_metro
-		if px >= t.x0 and px < t.x1:
-			# Xallitic no lleva letrero: el puente ya tiene el suyo.
-			var nombre: String = "" if postal["id"] == "xallitic" else postal["nombre"]
-			t.agregar_postal({"pos": Vector2(px, t.altura(px)), "nombre": nombre, "tipo": postal["tipo"]})
+## El puente forma parte de la salida. Las postales de lugares solo van en Resultados.
+func _poner_puente(t: Tramo) -> void:
+	if t.x0 > 0.0 or t.x1 <= 0.0:
+		return
+	var dibujo := t.agregar_postal({"tipo": "xallitic", "nombre": ""})
+	# El pretil debe coincidir con los bordes de la calzada física.
+	dibujo.position = Vector2((Config.bajada_fin.x + Config.puente_fin_x) / 2.0, 290.0)
+	dibujo.scale.x = (Config.puente_fin_x - Config.bajada_fin.x) / 604.0
 
 
 ## Letreros "N m" cada Config.marcador_cada_m, salvo donde ya hay una postal.

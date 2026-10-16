@@ -10,7 +10,6 @@ extends ScrollContainer
 ## que no emite señales. Nada del taller cambia esos datos: el contenido se arma
 ## una vez en _ready() y Taller no necesita refrescarlo en cada cambio.
 
-const ARTE := preload("res://recursos/arte_xalapa.tres")
 const VERDE := Color("3f8f4a")
 const ROJO := Color("c8402f")
 const LADO_PODER := 48.0
@@ -28,7 +27,10 @@ func refrescar() -> void:
 		lista.remove_child(hijo)
 		hijo.queue_free()
 	var visitados: Array = Juego.visitados
-	_agregar(ComunTaller.titulo_seccion("Pasaporte de Xalapa", 24))
+	_agregar(ComunTaller.titulo_seccion("De Xalapa al CUCosta", 24))
+	var objetivo := ComunTaller.etiqueta("Llega al %s de la %s. Meta a %d m de juego." % [Config.nombre_meta, Config.institucion_meta, int(Config.meta_m)], 16)
+	objetivo.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	_agregar(objetivo)
 	var resumen := HBoxContainer.new()
 	resumen.add_theme_constant_override("separation", 10)
 	resumen.add_child(Ficha.crear(Iconos.LUGAR, "%d de %d lugares" % [visitados.size(), Config.postales.size()], false, 16))
@@ -44,7 +46,7 @@ func refrescar() -> void:
 # --- Secciones ---------------------------------------------------------------
 
 ## Una tarjeta por postal: nombre, sello de visitado (o cuántos metros faltan),
-## nota y foto si la hay. Devuelve false si Config no tiene postales.
+## y nota. Las fotos solo se muestran al terminar el intento.
 func _agregar_postales(visitados: Array) -> bool:
 	var postales: Variant = Config.postales
 	if not (postales is Array) or (postales as Array).is_empty():
@@ -79,10 +81,6 @@ func _agregar_postales(visitados: Array) -> bool:
 			var nota := ComunTaller.etiqueta(str(pd.get("nota", "")), 13, true)
 			nota.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 			caja.add_child(nota)
-		if ARTE.fotografias.has(pid):
-			var foto := FotoLugar.new()
-			foto.configurar(ARTE.fotografias[pid], 130.0, false)
-			caja.add_child(foto)
 	return true
 
 

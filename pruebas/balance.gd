@@ -29,26 +29,26 @@ func _verificar() -> void:
 		config.semilla_terreno = semilla
 		for tamano in 3:
 			for nivel in [0, 6]:
-				for angulo in [5.0, 25.0, 65.0]:
-					var r: Dictionary = await carrera(tamano, nivel, angulo, false)
+				for fuerza in [0.1, 0.7, 0.95]:
+					var r: Dictionary = await carrera(tamano, nivel, false, false, fuerza)
 					pasivas += 1
 					mayor_distancia = maxf(mayor_distancia, r["metros"])
 					mayor_duracion = maxf(mayor_duracion, r["segundos"])
-					var caso := "semilla %d, tamaño %d, fuerza %d, ángulo %.0f" % [semilla, tamano, nivel, angulo]
+					var caso := "semilla %d, tamaño %d, mejora %d, fuerza %.2f" % [semilla, tamano, nivel, fuerza]
 					comprobar(r["termino"], "La carrera pasiva no termina: " + caso)
 					comprobar(r["metros"] < (500.0 if nivel == 0 else tope_pasivo), "La carrera pasiva avanza demasiado: " + caso + " · %.1f m" % r["metros"])
 					comprobar(r["impulsos_poderes"] <= 3, "La carrera pasiva encadena demasiados cafés o chiles: " + caso)
 					comprobar(r["papalotes"] == 0, "Los papalotes requieren pulsar E: " + caso)
 	config.semilla_terreno = 1509
-	var pasiva: Dictionary = await carrera(1, 0, 25, false, true)
-	var activa: Dictionary = await carrera(1, 0, 25, true, true)
+	var pasiva: Dictionary = await carrera(1, 0, false, true)
+	var activa: Dictionary = await carrera(1, 0, true, true)
 	comprobar(pasiva["termino"] and activa["termino"], "Ambas carreras con equipo inicial deben terminar")
 	comprobar(activa["metros"] > pasiva["metros"] * 1.5, "Los rebotes, accesorios y empujones deben mejorar la distancia")
 	# Un lanzamiento al 70%, sin bonus ni mejoras, debe permitir avanzar 400 m.
 	var primeras: Array = []
 	for semilla in [1509, 42, 7301]:
 		config.semilla_terreno = semilla
-		var r: Dictionary = await carrera(1, 0, 30, true, true, 0.7)
+		var r: Dictionary = await carrera(1, 0, true, true, 0.7)
 		primeras.append(roundf(r["metros"]))
 		comprobar(r["termino"] and r["metros"] >= 400.0, "Un lanzamiento sin bonus debe rendir con equipo inicial: semilla %d, %.1f m" % [semilla, r["metros"]])
 	# Cambiar la fuerza cambia los aterrizajes; ambos niveles deben superar el inicio.
@@ -57,7 +57,7 @@ func _verificar() -> void:
 		var suma := 0.0
 		for semilla in [1509, 42, 7301]:
 			config.semilla_terreno = semilla
-			var r: Dictionary = await carrera(1, nivel, 30, true, true)
+			var r: Dictionary = await carrera(1, nivel, true, true)
 			suma += r["metros"]
 		medias.append(suma / 3.0)
 	config.semilla_terreno = 1509
@@ -70,7 +70,7 @@ func _verificar() -> void:
 	quit(1 if fallos else 0)
 
 
-func carrera(tamano: int, nivel: int, angulo: float, activa: bool, equipo := false, fuerza := 0.91) -> Dictionary:
+func carrera(tamano: int, nivel: int, activa: bool, equipo := false, fuerza := 0.91, con_slam := false) -> Dictionary:
 	seed(config.semilla_terreno)
 	juego.tamano = tamano
 	juego.accesorios = ["llantitas", "rebozo"] if equipo else []
@@ -79,11 +79,13 @@ func carrera(tamano: int, nivel: int, angulo: float, activa: bool, equipo := fal
 	await process_frame
 	await process_frame
 	var recorrido = current_scene
-	var conteo_poderes := {"impulsos": 0}
+	var conteo_poderes := {"impulsos": 0, "slams": 0}
+	recorrido.melon.aviso.connect(func(texto: String) -> void:
+		if texto.begins_with("¡Slam acertado!"):
+			conteo_poderes["slams"] += 1)
 	recorrido.terreno.poder_recogido.connect(func(tipo: String) -> void:
 		if tipo in ["cafe", "chile"]:
 			conteo_poderes["impulsos"] += 1)
-	recorrido.angulo = angulo
 	recorrido.fuerza = fuerza
 	recorrido._lanzar()
 	var cuadros := 0
@@ -92,7 +94,7 @@ func carrera(tamano: int, nivel: int, angulo: float, activa: bool, equipo := fal
 	var papalotes := 0
 	while is_instance_valid(recorrido) and current_scene == recorrido and cuadros < (60 if activa else 30) * 120:
 		await physics_frame
-		for accion in ["rebote", "empujon", "acc_1", "acc_2"]:
+		for accion in ["rebote", "empujon", "acc_1", "acc_2", "slam"]:
 			Input.action_release(accion)
 		cuadros += 1
 		if not is_instance_valid(recorrido):
@@ -102,7 +104,9 @@ func carrera(tamano: int, nivel: int, angulo: float, activa: bool, equipo := fal
 		papalotes = recorrido.papalotes_usados
 		if activa and recorrido.fase == 2 and cuadros % 2 == 0:
 			var melon = recorrido.melon
-			if melon.rebotes > 0 and melon.t_bloqueo <= 0 and melon.t_impacto >= 0 and melon.t_impacto < config.ventana_rebote * 0.75:
+			if con_slam and melon.t_slam <= 0.0 and recorrido.hud._hay_melon_debajo(recorrido):
+				Input.action_press("slam")
+			elif melon.rebotes > 0 and melon.t_bloqueo <= 0 and melon.t_impacto >= 0 and melon.t_impacto < config.ventana_rebote * 0.75:
 				Input.action_press("rebote")
 			if melon.en_suelo and melon.linear_velocity.x < 500 and cuadros > 240 and melon.slots[0] != null:
 				Input.action_press("acc_1")
@@ -112,6 +116,6 @@ func carrera(tamano: int, nivel: int, angulo: float, activa: bool, equipo := fal
 				for persona in tramo.personas:
 					if persona.en_rango and not persona.usado:
 						Input.action_press("empujon")
-	for accion in ["rebote", "empujon", "acc_1", "acc_2"]:
+	for accion in ["rebote", "empujon", "acc_1", "acc_2", "slam"]:
 		Input.action_release(accion)
-	return {"metros": metros, "segundos": cuadros / 120.0, "poderes": poderes, "impulsos_poderes": conteo_poderes["impulsos"], "papalotes": papalotes, "termino": current_scene != recorrido}
+	return {"metros": metros, "segundos": cuadros / 120.0, "poderes": poderes, "impulsos_poderes": conteo_poderes["impulsos"], "papalotes": papalotes, "slams": conteo_poderes["slams"], "termino": current_scene != recorrido}

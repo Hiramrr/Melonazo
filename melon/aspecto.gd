@@ -7,14 +7,15 @@ const CREMA := Color("fff3d5")
 const ROSA := Color("df7180")
 
 
-static func dibujar_melon(ci: CanvasItem, r: float, ids: Array, esta_roto := false, con_accesorios := true) -> void:
-	var cuerpo := Juego.color_cuerpo()
-	var rayas := Juego.color_rayas()
+static func dibujar_melon(ci: CanvasItem, r: float, ids: Array, esta_roto := false, con_accesorios := true, datos: Dictionary = {}) -> void:
+	var piel: Dictionary = Config.pieles[datos.get("piel", Juego.piel)]
+	var cuerpo := Color.from_string(datos.get("cuerpo_propio", Juego.cuerpo_propio), piel["cuerpo"])
+	var rayas := Color.from_string(datos.get("rayas_propio", Juego.rayas_propio), piel["rayas"])
 	if esta_roto:
 		cuerpo = cuerpo.darkened(0.25)
 	var borde := rayas.lerp(TINTA, 0.45).darkened(0.12)
 	ci.draw_circle(Vector2.ZERO, r, cuerpo, true, -1.0, true)
-	dibujar_patron(ci, r, Config.patrones[Juego.patron]["id"], cuerpo, rayas)
+	dibujar_patron(ci, r, Config.patrones[datos.get("patron", Juego.patron)]["id"], cuerpo, rayas)
 	# Una sombra curva sigue la cáscara sin crear círculos concéntricos.
 	var sombra := PackedVector2Array()
 	for j in 33:
@@ -28,9 +29,12 @@ static func dibujar_melon(ci: CanvasItem, r: float, ids: Array, esta_roto := fal
 	_trazo(ci, r, _curva(Vector2(-0.73, -0.38), Vector2(-0.68, -0.58), Vector2(-0.55, -0.7), Vector2(-0.38, -0.74)), cuerpo.lightened(0.5), 0.07)
 	_ovalo(ci, r, Vector2(-0.27, -0.8), Vector2(0.035, 0.022), cuerpo.lightened(0.5))
 	_dibujar_tallo(ci, r, borde)
-	dibujar_cara(ci, r, Config.caras[Juego.cara]["id"])
-	dibujar_detalle(ci, r, Config.detalles[Juego.detalle]["id"])
-	dibujar_trazos(ci, r, Juego.dibujo)
+	dibujar_cara(ci, r, Config.caras[datos.get("cara", Juego.cara)]["id"])
+	dibujar_detalle(ci, r, Config.detalles[datos.get("detalle", Juego.detalle)]["id"])
+	dibujar_trazos(ci, r, datos.get("dibujo", Juego.dibujo))
+	# El borde va encima del dibujo libre: antes el trazo tapaba el contorno y el
+	# color se veía cortado en el borde del melón.
+	ci.draw_arc(Vector2.ZERO, r * 0.975, 0, TAU, 80, borde, maxf(0.9, r * 0.045), true)
 	if esta_roto:
 		var grieta := PackedVector2Array([Vector2(-0.95, -0.12), Vector2(-0.47, 0.16), Vector2(-0.24, 0.05), Vector2(0.02, 0.27), Vector2(0.3, 0.1), Vector2(0.52, 0.3), Vector2(0.96, 0.04)])
 		_trazo(ci, r, grieta, Color("823f34"), 0.09)
