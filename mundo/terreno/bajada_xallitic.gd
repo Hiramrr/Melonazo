@@ -13,8 +13,7 @@ func _ready() -> void:
 	var n := int(ceil((fin.x - desde) / Config.paso_puntos))
 	for i in n + 1:
 		var x := lerpf(desde, fin.x, float(i) / n)
-		var u := minf(inverse_lerp(inicio.x, fin.x, x), 1.0)
-		puntos.append(Vector2(x, lerpf(inicio.y, fin.y, 1.0 - (1.0 - u) * (1.0 - u))))
+		puntos.append(Vector2(x, _perfil(x)))
 	empedrado = true
 	color_suelo = Color("aaa18e")
 	construir()
@@ -22,7 +21,8 @@ func _ready() -> void:
 	for i in cantidad:
 		var x := desde + i * 190.0
 		var alto := 150.0 + 70.0 * _azar(x)
-		casas.append({"rect": Rect2(x, altura(x) - alto, 125, alto + 40),
+		var base := maxf(altura(x), altura(x + 125.0))
+		casas.append({"rect": Rect2(x, base - alto, 125, alto + 40),
 			"color": GeneradorTerreno.COLORES_CASAS[i % GeneradorTerreno.COLORES_CASAS.size()]})
 	for i in int((fin.x - desde - 80.0) / 68.0):
 		var x := desde + 40.0 + i * 68.0
@@ -43,6 +43,40 @@ func _ready() -> void:
 	barrera.width = 7.0
 	barrera.z_index = 3
 	add_child(barrera)
+
+
+## Explanada de salida, caída casi vertical que se suaviza en un fondo largo
+## y un trampolín que se empina hasta el borde, donde sale el melón.
+func _perfil(x: float) -> float:
+	var inicio := Config.bajada_inicio
+	var fin := Config.bajada_fin
+	var fondo_x := fin.x - Config.bajada_subida
+	var fondo_y := fin.y + Config.bajada_hondo
+	if x >= fondo_x:
+		return fondo_y - Config.bajada_hondo * pow(inverse_lerp(fondo_x, fin.x, x), 2.0)
+	var v := maxf(inverse_lerp(inicio.x, fondo_x, x), 0.0)
+	var caida := (1.0 - pow(1.0 - v, 3.0)) * smoothstep(0.0, 0.08, v)  # borde redondeado arriba
+	return lerpf(inicio.y, fondo_y, caida)
+
+
+## Rapidez extra por lo que ya cayó: crece en la caída y se pierde en el
+## trampolín, así que al salir solo queda la potencia elegida.
+func embalaje(x: float) -> float:
+	var inicio := Config.bajada_inicio
+	var caida := clampf(inverse_lerp(inicio.y, Config.bajada_fin.y, altura(x)), 0.0, 1.0)
+	var fondo_x := Config.bajada_fin.x - Config.bajada_subida
+	return Config.bajada_embalaje * sqrt(caida) * (1.0 - smoothstep(fondo_x, Config.bajada_fin.x, x))
+
+
+## Como pendiente(), pero en el borde conserva la inclinación del trampolín.
+func inclinacion(x: float) -> float:
+	return pendiente(minf(x, x1 - 10.0))
+
+
+## Velocidad al dejar el trampolín: conserva la rapidez elegida hacia adelante
+## y el borde le suma parte del impulso hacia arriba (Config.bajada_salto).
+func velocidad_salida(rapidez: float) -> Vector2:
+	return Vector2(rapidez, rapidez * sin(inclinacion(x1)) * Config.bajada_salto)
 
 
 func abrir_salida() -> void:

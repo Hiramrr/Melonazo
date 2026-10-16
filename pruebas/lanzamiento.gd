@@ -29,7 +29,7 @@ func _verificar() -> void:
 		var suave: Dictionary = await carrera(tamano, 0.0)
 		var fuerte: Dictionary = await carrera(tamano, 0.95)
 		comprobar(suave["cruzo"] and fuerte["cruzo"], "Ambas fuerzas permiten cruzar Xallitic, tamaño %d" % tamano)
-		comprobar(fuerte["velocidad"] > suave["velocidad"] + 80.0, "La fuerza conserva su efecto al salir del puente, tamaño %d" % tamano)
+		comprobar(fuerte["velocidad"] > suave["velocidad"] + 80.0, "La fuerza conserva su efecto al salir del trampolín, tamaño %d" % tamano)
 		comprobar(fuerte["metros"] > suave["metros"], "Más fuerza aumenta el alcance sin controles, tamaño %d" % tamano)
 		print("Tamaño %d, fuerza 0/95%%: %.0f/%.0f px/s al cruzar, %.0f/%.0f m de alcance." % [tamano, suave["velocidad"], fuerte["velocidad"], suave["metros"], fuerte["metros"]])
 	juego.accesorios = ["llantitas", "rebozo", "sombrero"]
@@ -39,7 +39,7 @@ func _verificar() -> void:
 	for i in mini(pasiva["trayectoria"].size(), con_teclas["trayectoria"].size()):
 		misma_bajada = misma_bajada and pasiva["trayectoria"][i].distance_to(con_teclas["trayectoria"][i]) < 0.01
 	comprobar(misma_bajada, "Pulsar movimiento, salto, accesorios y E no cambia la bajada")
-	comprobar(is_equal_approx(pasiva["velocidad"], con_teclas["velocidad"]), "Las teclas no alteran la velocidad al salir del puente")
+	comprobar(is_equal_approx(pasiva["velocidad"], con_teclas["velocidad"]), "Las teclas no alteran la velocidad al salir del trampolín")
 	if FileAccess.file_exists(juego.archivo_guardado):
 		DirAccess.remove_absolute(juego.archivo_guardado)
 	print("Lanzamiento: %d fallos." % fallos)
@@ -86,7 +86,7 @@ func carrera(tamano: int, fuerza: float, pulsar := false) -> Dictionary:
 			break
 		datos["metros"] = maxf(0.0, r.mejor_x) / config.px_por_metro
 		if r.fase == 1:
-			comprobar(not r.melon.controlable, "Los controles siguen bloqueados antes de salir del puente")
+			comprobar(not r.melon.controlable, "Los controles siguen bloqueados antes de salir del trampolín")
 			comprobar(r.altura_max_m == 0.0, "La cuesta inicial no regala un bono de altura")
 			datos["trayectoria"].append(r.melon.position)
 			if pulsar and r.melon.position.x < 0.0 and cuadro % 2 == 0:
@@ -95,16 +95,16 @@ func carrera(tamano: int, fuerza: float, pulsar := false) -> Dictionary:
 		elif r.fase == 2 and not datos["cruzo"]:
 			datos["cruzo"] = true
 			datos["velocidad"] = r.melon.linear_velocity.x
-			comprobar(r.melon.position.x - r.melon.radio > config.puente_fin_x and r.melon.controlable and not r.melon.freeze, "Solo se habilitan física libre y controles al cruzar todo el puente")
+			comprobar(r._x_bajada >= config.bajada_fin.x and r.melon.controlable and not r.melon.freeze, "Solo se habilitan física libre y controles al dejar el trampolín")
 			comprobar(r.melon.rebotes == juego.rebotes_max(), "La bajada conserva las cargas de salto")
 			comprobar(r.melon.slots == slots, "La bajada conserva los accesorios equipados")
 			for nodo in r.melon._formas:
-				comprobar(not nodo.disabled, "Las colisiones del equipo vuelven después del puente")
+				comprobar(not nodo.disabled, "Las colisiones del equipo vuelven después del trampolín")
 			if pulsar:
 				r.melon.t_bloqueo = 0.0
-				comprobar(r.melon.saltar(), "El salto vuelve a funcionar después del puente")
+				comprobar(r.melon.saltar(), "El salto vuelve a funcionar después del trampolín")
 				r.melon.usar(0)
-				comprobar(r.melon.slots[0] == null, "Los accesorios vuelven a funcionar después del puente")
+				comprobar(r.melon.slots[0] == null, "Los accesorios vuelven a funcionar después del trampolín")
 	comprobar(current_scene != r, "La carrera termina también después de la nueva salida")
 	return datos
 
@@ -162,11 +162,14 @@ func probar_parrilla() -> void:
 		await physics_frame
 		var en_bajada := false
 		for rival in r.terreno.melones:
-			comprobar(rival.position.distance_to(rival.anterior) < 30.0, "Los rivales bajan y caen del puente sin teletransportarse")
+			comprobar(rival.position.distance_to(rival.anterior) < 30.0, "Los rivales bajan y caen del trampolín sin teletransportarse")
 			en_bajada = en_bajada or rival.en_bajada
 		if not en_bajada:
 			break
-	comprobar(rivales.all(func(m: Node2D) -> bool: return is_instance_valid(m) and m in r.terreno.melones and not m.en_bajada), "Los mismos rivales continúan después del puente")
+	comprobar(rivales.all(func(m: Node2D) -> bool: return is_instance_valid(m) and m in r.terreno.melones and not m.en_bajada), "Los mismos rivales continúan después del trampolín")
+	for i in 120:
+		await physics_frame
+	comprobar(rivales.all(func(m: Node2D) -> bool: return is_instance_valid(m) and m.position.x > config.bajada_fin.x + 150.0), "Los rivales salen del trampolín a la calle sin atorarse")
 	r.terreno.actualizar(10000.0)
 	comprobar(r.terreno.melones.size() > config.rivales_salida, "El camino añade nuevos melones después de la parrilla")
 	juego.melones_guardados.assign(coleccion)

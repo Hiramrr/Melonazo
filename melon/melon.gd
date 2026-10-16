@@ -30,7 +30,7 @@ var radio := 22.0
 var resistencia := 3.0                  # golpes que aguanta antes de romperse; las caídas
 var resistencia_max := 3.0              # medianas quitan fracciones
 var rebotes := 1                        # cargas para saltar o rebotar con impulso
-var controlable := false                # true después del puente y antes del final
+var controlable := false                # true después del trampolín y antes del final
 var roto := false
 var slam_activo := false
 var t_slam := 0.0                      # recarga independiente de los saltos
@@ -324,6 +324,10 @@ func recibir_poder(id: String) -> void:
 			reparar()
 			if rebotes < Juego.rebotes_max():
 				rebotes += 1
+		"jamaica":
+			rebotes = maxi(rebotes, Juego.rebotes_max())
+		"miel":
+			reparar(Config.miel_recupera)
 	aviso.emit("¡%s!" % Config.poderes[id]["nombre"])
 
 

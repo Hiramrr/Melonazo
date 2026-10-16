@@ -13,6 +13,10 @@ extends Node2D
 ##   i * separacion - (camara.x * paralaje - tiempo * velocidad)
 ## paralaje = qué fracción del avance de la cámara se nota (0 = fijo, como en el infinito;
 ## 1 = se mueve con el mundo); velocidad = deriva propia hacia la derecha (viento), en px/s.
+## En vertical rige el mismo factor, sin excepciones por tipo de capa: al subir la cámara
+## (vista.y menor que REF_Y) el elemento baja en pantalla (REF_Y - vista.y) * paralaje px,
+## y al bajarla sube en la misma proporción. Así una capa cercana se mueve más que una
+## lejana en los dos ejes y ninguna sale disparada de la pantalla al ganar altura.
 ## El índice i alimenta _azar(), así cada elemento se ve siempre igual al volver a pasar.
 
 const CIELO_ARRIBA := Color("6ba8df")
@@ -22,7 +26,6 @@ const REF_Y := 60.0                    # igual que Paisaje.REF_Y
 const ALTURA_NUBES_ALTAS := 0.85       # fracción de media pantalla por encima del centro
 const ALTURA_OTRAS := 0.52             # nubes cercanas, aves y papalotes
 const VARIACION_ALTURA := 95.0         # px de altura al azar entre elementos
-const SUBIDA_MAX := 35.0               # px máximos que la capa baja/sube al moverse la cámara en y
 
 ## Qué dibuja la capa. "fondo" y "sol" no se repiten; los demás sí, según `separacion`.
 @export_enum("fondo", "sol", "nubes_altas", "nubes_cercanas", "aves", "papalotes") var tipo := "nubes_altas":
@@ -75,19 +78,26 @@ func _draw() -> void:
 			var fin := ceili((mitad.x + desplazamiento) / separacion) + 1
 			for i in range(inicio, fin + 1):
 				var azar := _azar(i + paralaje * 100)
-				var x := i * separacion - desplazamiento + (azar - 0.5) * separacion * 0.25
-				var altura := -mitad.y * (ALTURA_NUBES_ALTAS if tipo == "nubes_altas" else ALTURA_OTRAS)
-				altura += (azar - 0.5) * VARIACION_ALTURA - clampf((vista.y - REF_Y) * paralaje * 0.2, -SUBIDA_MAX, SUBIDA_MAX)
-				if tipo == "nubes_altas" or tipo == "nubes_cercanas":
-					altura += maxf(0.0, REF_Y - vista.y) * (0.18 if tipo == "nubes_altas" else 0.4)
+				var pos := posicion_elemento(i)
 				match tipo:
 					"nubes_altas", "nubes_cercanas":
-						_nube(Vector2(x, altura), azar)
+						_nube(pos, azar)
 					"aves":
-						_bandada(Vector2(x, altura - 40), i, azar)
+						_bandada(pos + Vector2(0, -40), i, azar)
 					"papalotes":
 						if azar < 0.45:
-							_papalote(Vector2(x, altura + 60), i, azar)
+							_papalote(pos + Vector2(0, 60), i, azar)
+
+
+## Posición en pantalla del elemento i, en coordenadas con (0, 0) al centro.
+## El mismo `paralaje` rige en horizontal y en vertical.
+func posicion_elemento(i: int) -> Vector2:
+	var azar := _azar(i + paralaje * 100)
+	var desplazamiento := vista.x * paralaje - tiempo * velocidad
+	var x := i * separacion - desplazamiento + (azar - 0.5) * separacion * 0.25
+	var altura := -mitad.y * (ALTURA_NUBES_ALTAS if tipo == "nubes_altas" else ALTURA_OTRAS)
+	altura += (azar - 0.5) * VARIACION_ALTURA + (REF_Y - vista.y) * paralaje
+	return Vector2(x, altura)
 
 
 ## Número pseudoaleatorio estable en [0, 1).

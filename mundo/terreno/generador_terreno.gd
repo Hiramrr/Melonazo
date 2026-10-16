@@ -49,6 +49,8 @@ var rng := RandomNumberGenerator.new() # forma del suelo, obstáculos, público,
 var rng_aire := RandomNumberGenerator.new()  # papalotes; no cambian la ruta del suelo
 var rng_premios := RandomNumberGenerator.new()  # puntos y poderes en altura
 var rng_melones := RandomNumberGenerator.new()
+var rng_recargas := RandomNumberGenerator.new()  # jamaica y miel; no cambian la ruta del suelo
+var rng_aspecto := RandomNumberGenerator.new()   # diseños de los rivales sin ficha guardada
 var melones: Array[MelonRodante] = []
 var _siguiente_melon_x := 0.0
 
@@ -56,6 +58,8 @@ var _fin := Vector2.ZERO               # último punto del último tramo
 var _n_tramos := 0
 var _poderes_generados := 0
 var _siguiente_poder_x := 0.0          # los poderes siguen su propia separación entre tramos
+var _recargas_generadas := 0
+var _siguiente_recarga_x := 0.0
 var _papalotes_generados := 0
 var _siguiente_papalote_x := 0.0
 var _altura_papalote := 0.0
@@ -68,6 +72,7 @@ var _patrones_premios: Array[int] = []
 func iniciar() -> void:
 	_siguiente_melon_x = Config.primer_melon_camino_x
 	_siguiente_poder_x = Config.primer_poder_x
+	_siguiente_recarga_x = Config.primer_recarga_x
 	_siguiente_papalote_x = Config.primer_papalote_x
 	_altura_papalote = Config.altura_papalotes.x
 	if Config.semilla_terreno >= 0:
@@ -77,6 +82,8 @@ func iniciar() -> void:
 	rng_aire.seed = rng.seed + 871
 	rng_premios.seed = rng.seed + 1747
 	rng_melones.seed = rng.seed + 2633
+	rng_recargas.seed = rng.seed + 3511
+	rng_aspecto.seed = rng.seed + 4153
 	for i in Config.franjas_premios_aire.size():
 		_siguientes_premios.append(900.0 + i * 320.0 + rng_premios.randf_range(0.0, 400.0))
 		_grupos_premios.append(0)
@@ -105,18 +112,59 @@ func tramo_en(x: float) -> Tramo:
 
 ## Viven fuera de los tramos porque avanzan de uno a otro.
 func actualizar_melones(melon: Melon, delta: float) -> void:
+	var x := melon.global_position.x
 	for i in range(melones.size() - 1, -1, -1):
 		var otro := melones[i]
-		if otro.global_position.x >= melon.global_position.x - Config.borrar_atras:
-			otro.avanzar(self, delta)
+		if otro.global_position.x >= x - Config.borrar_atras:
+			otro.avanzar(self, delta, melon.global_position, melon.linear_velocity)
+			otro.en_mira = false
 			otro.recibir_slam(melon)
-		if otro.usado or otro.global_position.x < melon.global_position.x - Config.borrar_atras:
+		if otro.global_position.x < x - Config.borrar_atras:
 			melones.remove_at(i)
 			otro.queue_free()
 	melon.origen_slam = melon.global_position
+	var marcado: MelonRodante = null
+	var marca := MelonRodante.Marca.NINGUNA
+	if melon.slam_activo:
+		marcado = _guiar_slam(melon, delta)
+		marca = MelonRodante.Marca.FIJADO
+	elif melon.controlable and not melon.roto and not melon.en_suelo and melon.t_slam <= 0.0:
+		marcado = objetivo_slam(melon, Config.slam_confianza_aviso)
+		marca = MelonRodante.Marca.ACERTABLE
+	for otro in melones:
+		otro.marcar(marca if otro == marcado else MelonRodante.Marca.NINGUNA)
 
 
-## 0..1 según qué tan lejos está x. Cerca del puente el camino es amable.
+## Melón que el picado alcanza: el de menor desvío entre los que caben en
+## MelonRodante.alcance_slam(). null si ninguno.
+func objetivo_slam(melon: Melon, confianza := 1.0) -> MelonRodante:
+	var mejor: MelonRodante = null
+	var mejor_desvio := INF
+	for otro in melones:
+		var prevision := otro.prevision_slam(melon)
+		if prevision.x < 0.0 or absf(prevision.y) > otro.alcance_slam(melon, prevision.x, confianza):
+			continue
+		if absf(prevision.y) < mejor_desvio:
+			mejor = otro
+			mejor_desvio = absf(prevision.y)
+	return mejor
+
+
+## Durante el picado corrige un poco la velocidad horizontal hacia el melón de abajo.
+## La corrección tiene un límite: acercarse ayuda, pero un mal cálculo sigue fallando.
+func _guiar_slam(melon: Melon, delta: float) -> MelonRodante:
+	var otro := objetivo_slam(melon)
+	if otro == null:
+		return null
+	otro.en_mira = true
+	var prevision := otro.prevision_slam(melon)
+	var correccion := prevision.y / maxf(prevision.x, delta)
+	var limite := Config.slam_guiado * delta
+	melon.empujar(Vector2(clampf(correccion, -limite, limite), 0.0))
+	return otro
+
+
+## 0..1 según qué tan lejos está x. Cerca de la salida el camino es amable.
 func dificultad(x: float) -> float:
 	var m := x / Config.px_por_metro
 	return clampf(inverse_lerp(Config.dificultad_metros.x, Config.dificultad_metros.y, m), 0.0, 1.0)
@@ -144,7 +192,7 @@ func _crear_tramo() -> void:
 	_n_tramos += 1
 
 
-## Primer tramo: suelo bajo el puente y calle empedrada en bajada.
+## Primer tramo: calle empedrada en bajada, al pie del trampolín.
 func _puntos_calle_inicial() -> PackedVector2Array:
 	var pts := PackedVector2Array()
 	var n := int(round((Config.calle_fin_x - Config.calle_inicio_x) / Config.paso_puntos))
@@ -197,9 +245,9 @@ func _poblar(t: Tramo) -> void:
 	_poner_publico(t)
 	_poner_aplausos(t, maxf(t.x0 + 60.0, 280.0))
 	_poner_poderes(t)
+	_poner_recargas(t)
 	_poner_papalotes(t)
 	_poner_premios_aire(t)
-	_poner_puente(t)
 	_poner_marcadores(t)
 	t.queue_redraw()
 	t.get_node("Decoracion").queue_redraw()
@@ -212,13 +260,16 @@ func preparar_corredores(bajada: BajadaXallitic) -> void:
 		if not fichas.is_empty():
 			datos = fichas.pop_at(rng_melones.randi_range(0, fichas.size() - 1))
 		else:
+			# El tamaño sigue la parrilla; el aspecto cambia en cada carrera.
 			datos = {"nombre_melon": "Corredor %d" % (i + 1), "tamano": i % Config.tamanos.size(),
-				"piel": i % Config.pieles.size(), "patron": i % Config.patrones.size(),
-				"cara": i % Config.caras.size(), "detalle": 0, "dibujo": [],
+				"piel": rng_aspecto.randi_range(0, Config.pieles.size() - 1),
+				"patron": rng_aspecto.randi_range(0, Config.patrones.size() - 1),
+				"cara": rng_aspecto.randi_range(0, Config.caras.size() - 1),
+				"detalle": rng_aspecto.randi_range(0, Config.detalles.size() - 1), "dibujo": [],
 				"cuerpo_propio": "", "rayas_propio": "", "accesorios": []}
 		var otro := MelonRodanteEscena.instantiate() as MelonRodante
 		otro.configurar(datos)
-		otro.velocidad = rng_melones.randf_range(Config.velocidad_melones.x, Config.velocidad_melones.y)
+		otro.preparar_carrera(rng_melones.randf_range(Config.velocidad_melones.x, Config.velocidad_melones.y), rng_melones.randi())
 		add_child(otro)
 		var x := Config.bajada_inicio.x - 60.0 - (i / 2) * Config.separacion_salida + (i % 2) * 15.0
 		var carril := Config.carriles_salida.x if i % 2 == 0 else Config.carriles_salida.y
@@ -239,7 +290,9 @@ func _poner_melones(x: float) -> void:
 				"patron": rng_melones.randi_range(0, Config.patrones.size() - 1), "cara": 1,
 				"detalle": 0, "dibujo": [], "cuerpo_propio": "", "rayas_propio": ""})
 			otro.position = Vector2(_siguiente_melon_x, tramo.altura(_siguiente_melon_x) - otro.radio)
-			otro.velocidad = rng_melones.randf_range(Config.velocidad_melones.x, Config.velocidad_melones.y)
+			otro.preparar_carrera(rng_melones.randf_range(Config.velocidad_melones.x, Config.velocidad_melones.y), rng_melones.randi())
+			otro.velocidad = Vector2(otro.rapidez, 0.0)
+			otro.en_suelo = true
 			add_child(otro)
 			melones.append(otro)
 		_siguiente_melon_x += rng_melones.randf_range(Config.separacion_melones.x, Config.separacion_melones.y)
@@ -249,13 +302,18 @@ func _poner_melones(x: float) -> void:
 func _poner_casas(t: Tramo) -> void:
 	if _n_tramos != 0 and rng.randf() >= Config.prob_casas:
 		return
-	var cx := t.x0 + rng.randf_range(0.0, 120.0)
+	# En el primer tramo el sorteo empieza en Config.casas_inicio_x, antes de la
+	# calle, para que cada semilla conserve su ruta. Solo se ponen las que caen en ella.
+	var desde := Config.casas_inicio_x if _n_tramos == 0 else t.x0
+	var cx := desde + rng.randf_range(0.0, 120.0)
 	while cx < t.x1 - 100.0:
 		var w := rng.randf_range(110.0, 190.0)
 		var h := rng.randf_range(110.0, 230.0)
 		var base := maxf(t.altura(cx), t.altura(minf(cx + w, t.x1))) + 20.0
-		t.casas.append({"rect": Rect2(cx, base - h, w, h + 40.0),
-			"color": COLORES_CASAS[rng.randi_range(0, COLORES_CASAS.size() - 1)]})
+		var casa := {"rect": Rect2(cx, base - h, w, h + 40.0),
+			"color": COLORES_CASAS[rng.randi_range(0, COLORES_CASAS.size() - 1)]}
+		if cx >= t.x0:
+			t.casas.append(casa)
 		cx += w + rng.randf_range(10.0, 160.0)
 
 
@@ -340,6 +398,30 @@ func _poner_poderes(t: Tramo) -> void:
 		_siguiente_poder_x += rng.randf_range(Config.separacion_poderes.x, Config.separacion_poderes.y)
 
 
+## Jamaica y miel se alternan sobre la calle. Se apartan de los demás poderes,
+## también del siguiente, que ya tiene su x aunque su tramo no exista aún.
+func _poner_recargas(t: Tramo) -> void:
+	var otros: Array[float] = [_siguiente_poder_x]
+	for tramo in tramos + [t]:             # t aún no está en tramos mientras se puebla
+		for nodo in tramo.get_node("Coleccionables").get_children():
+			if nodo is Poder and nodo.tipo not in Config.orden_recargas:
+				otros.append(nodo.position.x)
+	otros.sort()
+	while _siguiente_recarga_x < t.x1:
+		var x := _siguiente_recarga_x
+		for otro in otros:
+			if absf(otro - x) < 200.0:
+				x = otro + 250.0
+		if x >= t.x1 - 40.0:
+			_siguiente_recarga_x = maxf(x, t.x1 + 40.0)
+			return
+		var tipo: String = Config.orden_recargas[_recargas_generadas % Config.orden_recargas.size()]
+		var altura := rng_recargas.randf_range(Config.altura_poderes.x, Config.altura_poderes.y)
+		t.get_node("Coleccionables").add_child(_crear_poder(tipo, Vector2(x, t.altura(x) - altura)))
+		_recargas_generadas += 1
+		_siguiente_recarga_x = x + rng_recargas.randf_range(Config.separacion_recargas.x, Config.separacion_recargas.y)
+
+
 func _crear_poder(tipo: String, posicion: Vector2) -> Poder:
 	var poder := PoderEscena.instantiate() as Poder
 	poder.tipo = tipo
@@ -400,16 +482,6 @@ func _poner_premios_aire(t: Tramo) -> void:
 			_patrones_premios[franja] = patron
 			_grupos_premios[franja] += 1
 			_siguientes_premios[franja] = x + rng_premios.randf_range(Config.separacion_premios_aire.x, Config.separacion_premios_aire.y)
-
-
-## El puente forma parte de la salida. Las postales de lugares solo van en Resultados.
-func _poner_puente(t: Tramo) -> void:
-	if t.x0 > 0.0 or t.x1 <= 0.0:
-		return
-	var dibujo := t.agregar_postal({"tipo": "xallitic", "nombre": ""})
-	# El pretil debe coincidir con los bordes de la calzada física.
-	dibujo.position = Vector2((Config.bajada_fin.x + Config.puente_fin_x) / 2.0, 290.0)
-	dibujo.scale.x = (Config.puente_fin_x - Config.bajada_fin.x) / 604.0
 
 
 ## Letreros "N m" cada Config.marcador_cada_m, salvo donde ya hay una postal.

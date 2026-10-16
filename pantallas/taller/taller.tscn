@@ -10,10 +10,10 @@
 [ext_resource type="Script" path="res://pantallas/taller/pestanas/pestana_pasaporte.gd" id="pestana_pasaporte"]
 [ext_resource type="Script" path="res://interfaz/fondo_juego.gd" id="fondo"]
 [ext_resource type="Script" path="res://interfaz/ficha.gd" id="ficha"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/aplauso.svg" id="ico_aplauso"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/trofeo.svg" id="ico_trofeo"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/carisma.svg" id="ico_carisma"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/jugar.svg" id="ico_jugar"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/aplauso.png" id="ico_aplauso"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/trofeo.png" id="ico_trofeo"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/carisma.png" id="ico_carisma"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/jugar.png" id="ico_jugar"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_previa"]
 content_margin_left = 10.0

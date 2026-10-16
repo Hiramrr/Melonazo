@@ -52,6 +52,7 @@ func generar(revisar: bool) -> Dictionary:
 	var monedas_bajas: Array[float] = []
 	var monedas: Array[Vector2] = []
 	var poderes_bajos: Array[float] = []
+	var recargas: Array = []               # [x, tipo]
 	for tramo in terreno.tramos:
 		suelo.append([tramo.puntos, tramo.empedrado, tramo.casas])
 		for contenedor in ["Obstaculos", "Coleccionables", "Publico"]:
@@ -66,7 +67,10 @@ func generar(revisar: bool) -> Dictionary:
 					if revisar:
 						comprobar(altura >= config.altura_aplausos.x and altura <= config.altura_aplausos.y + 25.0, "Las monedas bajas quedan al alcance de un salto corto")
 				elif nodo.scene_file_path.ends_with("/poder.tscn"):
-					poderes_bajos.append(nodo.position.x)
+					if nodo.tipo in config.orden_recargas:
+						recargas.append([nodo.position.x, nodo.tipo])
+					else:
+						poderes_bajos.append(nodo.position.x)
 					if revisar:
 						comprobar(altura >= config.altura_poderes.x and altura <= config.altura_poderes.y, "Los poderes quedan visibles y requieren saltar")
 		for p in tramo.papalotes:
@@ -110,6 +114,13 @@ func generar(revisar: bool) -> Dictionary:
 			comprobar(monedas_bajas[i] - monedas_bajas[i - 1] < 2000.0, "Las monedas mantienen grupos separados a lo largo de la calle")
 		for i in range(1, poderes_bajos.size()):
 			comprobar(poderes_bajos[i] - poderes_bajos[i - 1] <= config.separacion_poderes.y, "Los poderes mantienen su frecuencia entre tramos")
+		comprobar(recargas.size() > 0 and recargas[0][0] < 2000.0, "La primera recarga aparece antes de doscientos metros")
+		for i in recargas.size():
+			comprobar(recargas[i][1] == config.orden_recargas[i % config.orden_recargas.size()], "Jamaica y miel se alternan")
+			for x in poderes_bajos:
+				comprobar(absf(x - recargas[i][0]) >= 200.0, "Las recargas no quedan encimadas con otros poderes")
+			if i > 0:
+				comprobar(recargas[i][0] - recargas[i - 1][0] <= config.separacion_recargas.y + 250.0, "Las recargas mantienen su frecuencia entre tramos")
 		comprobar(papalotes.size() < terreno._fin.x / 900.0, "La densidad de papalotes baja respecto a la ruta anterior")
 		comprobar(tipos.size() == config.orden_poderes.size(), "Los cuatro poderes aparecen en el cielo")
 		for ruta in rutas:

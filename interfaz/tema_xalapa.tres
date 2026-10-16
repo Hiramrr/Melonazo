@@ -1,7 +1,7 @@
 [gd_resource type="Theme" format=3 uid="uid://dpa0dx8id6p5i"]
 
 [ext_resource type="FontFile" uid="uid://qun1v8qx0ome" path="res://recursos/fuentes/Fredoka.ttf" id="fuente"]
-[ext_resource type="Texture2D" uid="uid://dx6ndx786ogdi" path="res://recursos/iconos/perilla.svg" id="perilla"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/perilla.png" id="perilla"]
 
 [sub_resource type="FontVariation" id="Grueso"]
 base_font = ExtResource("fuente")

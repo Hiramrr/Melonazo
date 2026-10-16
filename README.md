@@ -1,10 +1,10 @@
 # ¡Rueda, Melón!
 
-Un juego de lanzamiento y rebotes desde Xalapa hasta el Centro Universitario de la Costa de la Universidad de Guadalajara. Preparas tu melón en el taller y eliges la potencia para soltarlo por la bajada de Xallitic. Rueda solo hasta pasar el puente. Desde ahí puedes rodar por las calles o encadenar saltos y papalotes hasta la meta.
+Un juego de lanzamiento y rebotes desde Xalapa hasta el Centro Universitario de la Costa de la Universidad de Guadalajara. Preparas tu melón en el taller y eliges la potencia para soltarlo por la bajada de Xallitic. Rueda solo hasta saltar del trampolín del final. Desde ahí puedes rodar por las calles o encadenar saltos y papalotes hasta la meta.
 
 ## Abrir en Godot
 
-Probado con Godot 4.6.1. Importa `project.godot` y presiona F5. El taller ya es la escena inicial. No necesita plugins, paquetes ni imágenes descargadas.
+Probado con Godot 4.6.1. Importa `project.godot` y presiona F5. El juego abre en el menú principal. No necesita plugins, paquetes ni imágenes descargadas.
 
 ```sh
 /Applications/Godot.app/Contents/MacOS/Godot --editor --path .
@@ -51,13 +51,17 @@ Las fotos aparecen únicamente como postales al terminar el intento. La postal c
 
 En la salida esperan seis rivales junto a tu melón. Cada intento toma al azar hasta seis diseños del almanaque sin repetir fichas. Si faltan, completa el grupo con otros melones. Conservan su tamaño, colores, patrón, cara, dibujo y accesorios. La carrera usa copias y no cambia tus fichas guardadas.
 
-El medidor de potencia aparece en la salida de la bajada. Espacio fija el valor, retira la barrera y suelta a todos los melones. Los rivales bajan por dos filas, cruzan el puente y continúan por el camino con ritmos distintos. Todos los rivales salen de esa parrilla. La zona perfecta está entre 80 % y 100 %. Más potencia da más velocidad al llegar a Xalapa. Durante la bajada y el cruce del puente no puedes saltar, girar, usar accesorios ni pedir empujones. La pausa sigue disponible. Al salir del puente recuperas todos los controles de carrera.
+El medidor de potencia aparece en la salida de la bajada. Espacio fija el valor, retira la barrera y suelta a todos los melones. Los rivales bajan por dos filas, saltan del trampolín y continúan por el camino con ritmos distintos. Todos los rivales salen de esa parrilla. La zona perfecta está entre 80 % y 100 %. Más potencia da más velocidad al llegar a Xalapa. Durante la bajada no puedes saltar, girar, usar accesorios ni pedir empujones. La pausa sigue disponible. Al salir del trampolín recuperas todos los controles de carrera.
 
 Empiezas con dos rebotes impulsados y puedes pulsar Espacio hasta 0.26 segundos antes de tocar suelo. Caer sobre el lado redondo conserva velocidad. Los accesorios tienen colisión propia y pueden frenar o caerse al aterrizar sobre ellos. Usarlos consume su carisma durante esa carrera. Vuelven a estar equipados en el siguiente intento.
 
 ## Slam y melones rodantes
 
-Los rivales de la salida avanzan por el suelo durante la carrera. Pulsa S o flecha abajo en el aire para caer en picado. Golpear uno desde arriba te impulsa hacia arriba y añade velocidad hacia delante. Cada melón sirve una sola vez. Si caes al suelo sin acertar, conservas el 60 % de tu velocidad horizontal. El slam no consume saltos, tiene una recarga de 0.45 segundos tras resolverse y bloquea el salto y los papalotes mientras caes. El golpe admite entre 12 y 36 píxeles de margen lateral según la velocidad relativa. A más velocidad, más tolerancia, con ese límite. Los golpes laterales y desde abajo no cuentan. El HUD anticipa dónde estaréis ambos al caer para avisar cuándo conviene pulsar S.
+Los rivales corren como tu melón: aceleran en las bajadas, frenan en las subidas, despegan en las crestas, rebotan al caer y saltan cada uno o tres segundos. Cada uno tiene su ritmo de crucero, entre 420 y 620 px/s. Si se quedan muy atrás apuran el paso, y si te sacan mucha ventaja lo aflojan, así siguen cerca durante el viaje. Cuando vuelas a más de 65 metros sobre la calle, los rivales cercanos te siguen al aire con impulsos, entre 32 y 54 metros por debajo de ti, y ajustan su avance al tuyo. Cada impulso deja un soplo blanco bajo el melón. No suben mientras caes en picado, y el que ya recibió un slam se queda abajo. Como vuelan más hondo de lo que devuelve un slam, golpearlos en lo alto cuesta algo de altura.
+
+Pulsa S o flecha abajo en el aire para caer en picado. Golpear uno desde arriba te impulsa hacia arriba y añade velocidad hacia delante. El rival queda achatado un momento, frena y sigue corriendo, pero ya no sirve para otro slam. Si caes al suelo sin acertar, conservas el 60 % de tu velocidad horizontal. El slam no consume saltos, tiene una recarga de 0.45 segundos tras resolverse y bloquea el salto y los papalotes mientras caes.
+
+Durante el picado tu melón corrige un poco su avance hacia el rival que tiene debajo, hasta 1700 px/s². Picar desde más alto da más tiempo para corregir. Picar encima del rival apenas cambia nada. Un mal cálculo sigue fallando. El rival que apuntas deja de saltar mientras caes, aunque sigue rebotando si venía en el aire. El golpe admite entre 16 y 40 píxeles de margen lateral según la velocidad relativa. Los golpes laterales y desde abajo no cuentan. El HUD solo muestra el aviso de S cuando la caída sale con la mitad de esa corrección, y tiene en cuenta el arco del rival si está en el aire. En ese momento el rival lleva una mira amarilla con una flecha hacia abajo: si pulsas S, aciertas. Durante el picado, la mira se vuelve coral sobre el rival hacia el que se corrige la caída.
 
 ## Ruta aérea
 
@@ -79,6 +83,10 @@ Se activan al recogerlos y tienen siluetas diferentes. El primero aparece a los 
 | Chile xalapeño | Embestida, rompe puestos y protege de golpes durante 1.5 segundos |
 | Niebla de Xalapa | Protege de golpes y del frenado de obstáculos durante 3 segundos |
 | Tamal de hoja | Recupera un punto de resistencia y un rebote hasta su máximo. Conserva los rebotes extra de la jarana |
+| Agua de jamaica | Recarga todas las cargas de salto. Conserva los rebotes extra de la jarana |
+| Miel de Coatepec | Recupera golpe y medio de resistencia hasta su máximo |
+
+La jamaica y la miel son recargas: se alternan con su propia separación, cada 90 a 130 metros desde los 130 metros, y nunca quedan encimadas con otro poder.
 
 ## Estructura del proyecto
 
@@ -94,7 +102,7 @@ pantallas/       Las pantallas del juego
 melon/           El melón: física, dibujo, estela y accesorios
   accesorios/      Un archivo por accesorio; se cargan solos
 mundo/           Todo lo que aparece en la carrera
-  terreno/         Generador del camino, tramos, puente y postales de lugares
+  terreno/         Generador del camino, tramos, bajada de salida y postales de lugares
   obstaculos/      Escena base y una escena heredada por tipo
   ayudas/          Poderes, papalotes y público que empuja
   paisaje/         Fondo con paralaje y capas del cielo
@@ -104,7 +112,7 @@ pruebas/         Scripts de verificación automática
 docs/            Documentación técnica
 ```
 
-La escena inicial es `pantallas/taller/taller.tscn`. El flujo es Taller → Recorrido → Resultados → Taller.
+La escena inicial es `pantallas/menu/menu.tscn`. El flujo es Menú → Taller → Recorrido → Resultados → Taller.
 
 La explicación de cada escena, su árbol de nodos, cómo se comunican y cómo añadir accesorios, opciones de aspecto, obstáculos o postales está en [docs/arquitectura.md](docs/arquitectura.md).
 
@@ -114,7 +122,7 @@ Las postales de resultados usan fotografías reales de Xallitic, la Catedral de 
 
 Las entradas de `fotografias` en `recursos/arte_xalapa.tres` permiten sustituir o quitar las fotos sin tocar los scripts. Al vaciar ese diccionario, los resultados ocultan la postal y conservan el resumen del intento.
 
-El taller muestra una ilustración vectorial de Xallitic en `recursos/taller_xallitic.svg`. El tema compartido usa verde tinta, papel crema y botones coral con relieve, y la fuente Fredoka incluida en `recursos/fuentes/` (licencia OFL) para verse igual en cualquier sistema. El HUD muestra cada accesorio con su dibujo y tecla, y marca la zona perfecta en el medidor.
+El taller muestra una ilustración vectorial de Xallitic en `recursos/taller_xallitic.svg`. El tema compartido usa verde tinta, papel crema y botones coral con relieve, y la fuente Fredoka incluida en `recursos/fuentes/` (licencia OFL) para verse igual en cualquier sistema. El HUD muestra cada accesorio con su dibujo y tecla, y marca la zona perfecta en el medidor. La barra de resistencia baja un tramo completo con cada golpe y una fracción con las caídas medianas.
 
 El recorrido usa fondos dibujados de ciudad, montañas y costa. `paisaje` queda vacío para reservar las fotografías a las postales del final. La panorámica de Xalapa desde el Ágora se conserva entre los recursos, con sus créditos en `recursos/fotos/README.md`.
 
@@ -148,6 +156,7 @@ Si un archivo no se puede leer, el juego lo respalda con sufijo `.danado` antes 
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/balance.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/vuelo.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/distribucion.gd
+/Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/paralaje.gd
 /Applications/Godot.app/Contents/MacOS/Godot --path . --script res://pruebas/rendimiento.gd
 ```
 
@@ -159,7 +168,7 @@ La segunda orden comprueba entradas, compras, desbloqueos, premios sin duplicado
 
 `slam.gd` comprueba aciertos sobre melones en movimiento, impactos entre pasos a gran velocidad, fallos contra el suelo, recarga, pausa y conservación de saltos. También verifica que los melones continúen entre tramos y que la carrera los retire al quedar atrás. Prueba roces, fallos claros y 81 caídas con los tres tamaños, tres velocidades y nueve desfases de puntería. Usa un guardado de prueba separado.
 
-`lanzamiento.gd` comprueba la parrilla con el almanaque vacío y con fichas guardadas, la salida conjunta, las copias independientes, la pausa y la continuidad de los rivales al cruzar el puente. También compara fuerza mínima y máxima con los tres tamaños. Comprueba que más fuerza conserve más velocidad al cruzar el puente y aumente el alcance. Repite la bajada con todas las teclas de carrera pulsadas y verifica que no cambien la trayectoria ni consuman saltos o equipo. También comprueba la pausa y que los controles y las colisiones de accesorios vuelvan después del puente. Usa un guardado de prueba separado.
+`lanzamiento.gd` comprueba la parrilla con el almanaque vacío y con fichas guardadas, la salida conjunta, las copias independientes, la pausa y la continuidad de los rivales al saltar del trampolín. También compara fuerza mínima y máxima con los tres tamaños. Comprueba que más fuerza conserve más velocidad al salir del trampolín y aumente el alcance. Repite la bajada con todas las teclas de carrera pulsadas y verifica que no cambien la trayectoria ni consuman saltos o equipo. También comprueba la pausa y que los controles y las colisiones de accesorios vuelvan después del trampolín. Usa un guardado de prueba separado.
 
 `balance.gd` comprueba 54 carreras sin input después del lanzamiento, con tres tamaños, tres fuerzas, tres semillas y mejoras iniciales o al máximo. Todas deben terminar en menos de 30 segundos, recoger como máximo tres cafés o chiles y quedarse antes del 80 % de la última postal. También compara una carrera sin controles con otra que usa rebotes, accesorios y empujones. Comprueba que un lanzamiento al 70 %, con equipo inicial y controles, avance al menos 400 metros sin mejoras. Por último, mide la progresión media con tres semillas. Sin mejoras, las carreras con controles básicos deben promediar menos de novecientos metros. Las mejoras deben superar el alcance inicial y, al máximo, permitir un promedio de al menos mil metros. Utiliza su propio archivo de prueba.
 

@@ -5,15 +5,15 @@
 [ext_resource type="PackedScene" path="res://pantallas/recorrido/hud/slot_accesorio.tscn" id="3"]
 [ext_resource type="Script" path="res://interfaz/ficha.gd" id="ficha"]
 [ext_resource type="Script" path="res://interfaz/pips.gd" id="pips"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/aplauso.svg" id="ico_aplauso"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/carisma.svg" id="ico_carisma"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/poder.svg" id="ico_poder"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/impulso.svg" id="ico_impulso"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/altura.svg" id="ico_altura"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/papalote.svg" id="ico_papalote"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/pausa.svg" id="ico_pausa"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/jugar.svg" id="ico_jugar"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/lugar.svg" id="ico_lugar"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/aplauso.png" id="ico_aplauso"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/carisma.png" id="ico_carisma"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/poder.png" id="ico_poder"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/impulso.png" id="ico_impulso"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/altura.png" id="ico_altura"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/papalote.png" id="ico_papalote"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/pausa.png" id="ico_pausa"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/jugar.png" id="ico_jugar"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/lugar.png" id="ico_lugar"]
 
 [sub_resource type="StyleBoxFlat" id="Oscuro"]
 content_margin_left = 14.0
@@ -467,7 +467,7 @@ show_percentage = false
 layout_mode = 2
 theme_type_variation = &"TextoHUD"
 theme_override_font_sizes/font_size = 16
-text = "Más potencia, más distancia. Controles después del puente."
+text = "Más potencia, más distancia. Controles después del trampolín."
 horizontal_alignment = 1
 
 [node name="Aviso" type="PanelContainer" parent="Pantalla"]

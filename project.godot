@@ -12,11 +12,11 @@ config_version=5
 
 config/name="¡Rueda, Melón!"
 config/description="Viaja desde Xalapa hasta el Centro Universitario de la Costa de la Universidad de Guadalajara. Prepara tu melón, descubre lugares y encadena rebotes hasta la meta."
-run/main_scene="res://pantallas/taller/taller.tscn"
+run/main_scene="res://pantallas/menu/menu.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="RuedaMelon"
 config/features=PackedStringArray("4.6")
-config/icon="res://recursos/icono.svg"
+config/icon="res://recursos/icono.png"
 
 [autoload]
 

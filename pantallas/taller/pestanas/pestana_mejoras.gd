@@ -12,7 +12,7 @@ extends ScrollContainer
 signal cambio
 
 const ICONOS := {"fuerza": Iconos.IMPULSO, "resistencia": Iconos.CORAZON, "rebotes": Iconos.ALTURA}
-const CUADRO_NIVEL := preload("res://recursos/iconos/perilla.svg")
+const CUADRO_NIVEL := preload("res://recursos/iconos/perilla.png")
 
 @onready var lista: VBoxContainer = %ListaMejoras
 

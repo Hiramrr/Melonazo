@@ -7,21 +7,21 @@ extends RefCounted
 ## Los íconos sustituyen a los símbolos que la fuente Fredoka no trae
 ## (flechas, estrellas, pausa), así se ven igual en cualquier sistema.
 
-const APLAUSO := preload("res://recursos/iconos/aplauso.svg")
-const TROFEO := preload("res://recursos/iconos/trofeo.svg")
-const CORAZON := preload("res://recursos/iconos/corazon.svg")
-const IMPULSO := preload("res://recursos/iconos/impulso.svg")
-const CARISMA := preload("res://recursos/iconos/carisma.svg")
-const PODER := preload("res://recursos/iconos/poder.svg")
-const ALTURA := preload("res://recursos/iconos/altura.svg")
-const PAPALOTE := preload("res://recursos/iconos/papalote.svg")
-const CANDADO := preload("res://recursos/iconos/candado.svg")
-const PAUSA := preload("res://recursos/iconos/pausa.svg")
-const JUGAR := preload("res://recursos/iconos/jugar.svg")
-const FLECHA_IZQ := preload("res://recursos/iconos/flecha_izq.svg")
-const FLECHA_DER := preload("res://recursos/iconos/flecha_der.svg")
-const LUGAR := preload("res://recursos/iconos/lugar.svg")
-const REGLA := preload("res://recursos/iconos/regla.svg")
+const APLAUSO := preload("res://recursos/iconos/aplauso.png")
+const TROFEO := preload("res://recursos/iconos/trofeo.png")
+const CORAZON := preload("res://recursos/iconos/corazon.png")
+const IMPULSO := preload("res://recursos/iconos/impulso.png")
+const CARISMA := preload("res://recursos/iconos/carisma.png")
+const PODER := preload("res://recursos/iconos/poder.png")
+const ALTURA := preload("res://recursos/iconos/altura.png")
+const PAPALOTE := preload("res://recursos/iconos/papalote.png")
+const CANDADO := preload("res://recursos/iconos/candado.png")
+const PAUSA := preload("res://recursos/iconos/pausa.png")
+const JUGAR := preload("res://recursos/iconos/jugar.png")
+const FLECHA_IZQ := preload("res://recursos/iconos/flecha_izq.png")
+const FLECHA_DER := preload("res://recursos/iconos/flecha_der.png")
+const LUGAR := preload("res://recursos/iconos/lugar.png")
+const REGLA := preload("res://recursos/iconos/regla.png")
 
 
 ## TextureRect cuadrado de lado px con la textura, que no recibe el ratón.

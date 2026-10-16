@@ -10,5 +10,7 @@ Los PNG originales tienen fondo transparente y se incluyen sin modificaciones. S
 | `chile.png` | [Hot pepper](https://github.com/microsoft/fluentui-emoji/blob/1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/Hot%20pepper/3D/hot_pepper_3d.png) |
 | `niebla.png` | [Cloud](https://github.com/microsoft/fluentui-emoji/blob/1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/Cloud/3D/cloud_3d.png) |
 | `tamal.png` | [Tamale](https://github.com/microsoft/fluentui-emoji/blob/1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/Tamale/3D/tamale_3d.png) |
+| `jamaica.png` | [Cup with straw](https://github.com/microsoft/fluentui-emoji/blob/1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/Cup%20with%20straw/3D/cup_with_straw_3d.png) |
+| `miel.png` | [Honey pot](https://github.com/microsoft/fluentui-emoji/blob/1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/Honey%20pot/3D/honey_pot_3d.png) |
 
-Para poner los assets definitivos, sustituye estos cuatro archivos. Si cambian los nombres o el formato, actualiza `TEXTURAS` en `mundo/ayudas/poder.gd`. La ruta y el pasaporte usan esas mismas texturas. Conserva el fondo transparente y un lienzo cuadrado para mantener las proporciones.
+Para poner los assets definitivos, sustituye estos seis archivos. Si cambian los nombres o el formato, actualiza `TEXTURAS` en `mundo/ayudas/poder.gd`. La ruta y el pasaporte usan esas mismas texturas. Conserva el fondo transparente y un lienzo cuadrado para mantener las proporciones.

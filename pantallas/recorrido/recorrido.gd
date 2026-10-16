@@ -6,16 +6,15 @@ extends Node2D
 ##
 ##   Paisaje                  fondo con paralaje (mundo/paisaje/)
 ##   Mundo
-##     BajadaXallitic         cuesta de salida, antes del puente
-##     Puente                 salida, con colisión propia
-##     LimiteDeSalida         pared invisible detrás del puente
+##     BajadaXallitic         cuesta de salida que termina en un trampolín
+##     LimiteDeSalida         pared invisible bajo el borde del trampolín
 ##     Terreno                GeneradorTerreno: crea los tramos como hijos
 ##     Melon                  el cuerpo físico (melon/melon.tscn)
 ##   Camara                   CamaraRecorrido: sigue al melón
 ##   Efectos                  EfectosRecorrido: flecha de puntería y avisos
 ##   Interfaz                 HUD (hud/hud.tscn): datos, lanzamiento y pausa
 ##
-## Fases: FUERZA → BAJADA sin controles → RECORRIDO al cruzar el puente → FIN.
+## Fases: FUERZA → BAJADA sin controles → RECORRIDO al salir del trampolín → FIN.
 ## Este script aplica las reglas de la carrera: lanzamiento, cuándo termina,
 ## efectos de obstáculos, empujones del público, papalotes, poderes y postales.
 ## Al terminar registra el resultado en Juego y pasa a Resultados.
@@ -134,12 +133,12 @@ func _physics_process(delta: float) -> void:
 	terreno.actualizar_melones(melon, delta)
 	var x := melon.global_position.x
 	_revisar_avance(x, delta)
-	if fase == Fase.BAJADA and x - melon.radio > Config.puente_fin_x:
+	if fase == Fase.BAJADA and _x_bajada >= Config.bajada_fin.x:
 		fase = Fase.RECORRIDO
 		melon.freeze = false
 		melon.en_suelo = false
 		melon.t_aire = 0.0
-		melon.fijar_velocidad(Vector2(_velocidad_salida, 0))
+		melon.fijar_velocidad(bajada.velocidad_salida(_velocidad_salida))
 		melon.angular_velocity = _velocidad_salida / melon.radio
 		melon.controlable = true
 		melon.colision_accesorios(true)
@@ -161,13 +160,12 @@ func _physics_process(delta: float) -> void:
 
 ## Durante la bajada el rodado sigue la calle y conserva la potencia elegida.
 func _avanzar_bajada(delta: float) -> void:
-	var progreso := clampf(inverse_lerp(Config.bajada_inicio.x, Config.puente_fin_x, _x_bajada), 0.0, 1.0)
-	var rapidez := _velocidad_salida * lerpf(0.65, 1.0, progreso)
-	var pendiente := bajada.pendiente(_x_bajada) if _x_bajada < Config.bajada_fin.x else 0.0
-	_x_bajada += rapidez * cos(pendiente) * delta
-	pendiente = bajada.pendiente(_x_bajada) if _x_bajada < Config.bajada_fin.x else 0.0
-	var suelo := bajada.altura(_x_bajada) if _x_bajada < Config.bajada_fin.x else Config.bajada_fin.y
-	melon.position = Vector2(_x_bajada, suelo) + Vector2(sin(pendiente), -cos(pendiente)) * melon.radio
+	var progreso := clampf(inverse_lerp(Config.bajada_inicio.x, Config.bajada_fin.x, _x_bajada), 0.0, 1.0)
+	var rapidez := _velocidad_salida * lerpf(0.65, 1.0, progreso) + bajada.embalaje(_x_bajada)
+	var pendiente := bajada.inclinacion(_x_bajada)
+	_x_bajada = minf(_x_bajada + rapidez * cos(pendiente) * delta, Config.bajada_fin.x)
+	pendiente = bajada.inclinacion(_x_bajada)
+	melon.position = Vector2(_x_bajada, bajada.altura(_x_bajada)) + Vector2(sin(pendiente), -cos(pendiente)) * melon.radio
 	melon.rotation += rapidez * delta / melon.radio
 
 
@@ -192,8 +190,8 @@ func _revisar_postales() -> void:
 	for postal in Config.postales:
 		if mejor_x >= float(postal["metros"]) * Config.px_por_metro and postal["id"] not in postales_intento:
 			postales_intento.append(postal["id"])
-			var texto: String = "¡Xallitic! Ya puedes saltar" if postal["id"] == "xallitic" else "¡%s!" % postal["nombre"]
-			efectos.avisar(texto, melon.global_position + Vector2(0, -90))
+			if postal["id"] != "xallitic":   # la salida no necesita aviso
+				efectos.avisar("¡%s!" % postal["nombre"], melon.global_position + Vector2(0, -90))
 
 
 func _fin(texto: String) -> void:

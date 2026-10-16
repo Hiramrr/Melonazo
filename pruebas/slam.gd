@@ -1,6 +1,8 @@
 extends SceneTree
 ## Slam con física real y guardado separado del progreso del jugador.
 
+const RAPIDEZ_RIVAL := 500.0
+
 var config: Node
 var juego: Node
 var comprobaciones := 0
@@ -32,6 +34,10 @@ func preparar(tamano: int):
 			"cara": 1, "detalle": 0, "cuerpo_propio": "", "rayas_propio": "", "dibujo": [], "accesorios": []})
 		rival.position = Vector2(700 + i * 800, r.terreno.tramos[0].altura(700 + i * 800) - rival.radio)
 		rival.anterior = rival.position
+		rival.rapidez = RAPIDEZ_RIVAL
+		rival.velocidad = Vector2(RAPIDEZ_RIVAL, 0)
+		rival.en_suelo = true
+		rival.saltos = false
 	r.fase = 2
 	r.melon.controlable = true
 	return r
@@ -57,7 +63,7 @@ func _verificar() -> void:
 	m.set_physics_process(false)
 	m.rebotes = 0
 	m.controlable = false
-	comprobar(not m.iniciar_slam(), "Slam bloqueado antes del puente y al terminar")
+	comprobar(not m.iniciar_slam(), "Slam bloqueado antes del trampolín y al terminar")
 	m.controlable = true
 	m.en_suelo = true
 	comprobar(not m.iniciar_slam(), "No se puede hacer slam desde el suelo")
@@ -91,7 +97,7 @@ func _verificar() -> void:
 	m.origen_slam = otro.global_position + Vector2(200, -180)
 	m.position = otro.global_position + Vector2(200, 100)
 	comprobar(not otro.recibir_slam(m), "Pasar lejos no da impulso")
-	m.linear_velocity.x = otro.velocidad
+	m.linear_velocity.x = otro.velocidad.x
 	comprobar(is_equal_approx(otro.margen_slam(m), config.slam_margen.x), "A poca velocidad el margen permanece pequeño")
 	m.linear_velocity.x = 20000.0
 	comprobar(is_equal_approx(otro.margen_slam(m), config.slam_margen.y), "El margen tiene un límite incluso a velocidad extrema")
@@ -104,6 +110,7 @@ func _verificar() -> void:
 		var tolerancia: float = otro.margen_slam(m)
 		for margen in [0.0, tolerancia - 8.0, tolerancia + 8.0]:
 			otro.usado = false
+			otro.velocidad = Vector2(RAPIDEZ_RIVAL, 0)   # cada acierto lo aplasta y lo frena
 			m.slam_activo = true
 			var dx: float = 0.0 if margen == 0.0 else otro.radio + m.radio + margen
 			m.origen_slam = otro.global_position + Vector2(dx, -180)
@@ -112,31 +119,45 @@ func _verificar() -> void:
 		m.slam_activo = false
 		m.t_slam = 0.0
 		m.linear_velocity = Vector2(1000, 0)
+		otro.velocidad = Vector2(RAPIDEZ_RIVAL, 0)
 		var tiempo: float = (300.0 - (otro.radio + m.radio) * 0.5) / config.slam_caida
-		m.position = otro.global_position + Vector2(-(1000.0 - otro.velocidad) * tiempo, -300)
+		m.position = otro.global_position + Vector2(-(1000.0 - otro.velocidad.x) * tiempo, -300)
 		comprobar(r.hud._hay_melon_debajo(r), "El aviso anticipa el avance durante el picado, tamaño %d" % tamano)
+		r.terreno.actualizar_melones(m, 0.0)
+		comprobar(otro.marca == otro.Marca.ACERTABLE and r.terreno.melones.filter(func(o) -> bool: return o.marca != o.Marca.NINGUNA).size() == 1, "Solo el melón acertable lleva la mira, tamaño %d" % tamano)
 		m.position = otro.global_position + Vector2(100, -300)
 		comprobar(not r.hud._hay_melon_debajo(r), "El aviso no recomienda un enemigo que vas a sobrepasar, tamaño %d" % tamano)
+		r.terreno.actualizar_melones(m, 0.0)
+		comprobar(otro.marca == otro.Marca.NINGUNA, "Sin slam acertable no hay mira, tamaño %d" % tamano)
 	var x: float = otro.position.x
 	otro.avanzar(r.terreno, 0.2)
 	comprobar(otro.position.x > x, "Los objetivos avanzan por el camino")
 	var borde: float = r.terreno.tramos[0].x1
-	otro.position.x = borde - 1.0
+	otro.position = Vector2(borde - 1.0, r.terreno.tramos[0].altura(borde - 1.0) - otro.radio)
 	otro.avanzar(r.terreno, 0.1)
 	comprobar(otro.position.x > borde, "Los objetivos cruzan entre tramos")
+	var usado = r.terreno.melones[0]
+	comprobar(usado.usado, "El primer objetivo quedó usado")
+	m.position.x = usado.position.x
+	r.terreno.actualizar_melones(m, 1.0 / 120.0)
+	comprobar(usado in r.terreno.melones and usado.velocidad.x > 0.0, "Un melón aplastado sigue corriendo sin desaparecer")
 	var cantidad: int = r.terreno.melones.size()
 	m.position.x = 10000.0
 	r.terreno.actualizar_melones(m, 0.0)
-	comprobar(r.terreno.melones.size() < cantidad, "Se retiran los objetivos usados y los que quedan atrás")
+	comprobar(r.terreno.melones.size() < cantidad and usado not in r.terreno.melones, "Se retiran los objetivos que quedan atrás")
+	await probar_movimiento()
+	for tamano in 3:
+		comprobar(await probar_guiado(tamano, true), "El picado corrige un pequeño desvío, tamaño %d" % tamano)
+		comprobar(not await probar_guiado(tamano, false), "Sin corrección ese mismo desvío falla, tamaño %d" % tamano)
 	for tamano in 3:
 		await probar_caida(tamano, true)
 		await probar_caida(tamano, false)
-		for rapidez in [600.0, 1000.0, 1400.0]:
+		for rapidez in [900.0, 1300.0, 1700.0]:
 			var aciertos := 0
 			for desfase in [-0.35, -0.16, -0.08, -0.04, 0.0, 0.04, 0.08, 0.16, 0.35]:
 				var acierto: bool = await probar_punteria(tamano, rapidez, desfase)
 				aciertos += int(acierto)
-				if absf(desfase) <= 0.04:
+				if absf(desfase) <= 0.08:
 					comprobar(acierto, "Slam admite un pequeño error de tiempo, tamaño %d, velocidad %.0f, desfase %.2f" % [tamano, rapidez, desfase])
 				elif absf(desfase) >= 0.35:
 					comprobar(not acierto, "Slam rechaza un mal cálculo de tiempo, tamaño %d, velocidad %.0f, desfase %.2f" % [tamano, rapidez, desfase])
@@ -218,7 +239,7 @@ func probar_punteria(tamano: int, rapidez: float, desfase: float) -> bool:
 	var m = r.melon
 	var objetivo = r.terreno.melones[0]
 	var tiempo: float = (260.0 - (m.radio + objetivo.radio) * 0.5) / config.slam_caida
-	m.position = objetivo.position + Vector2(-(rapidez - objetivo.velocidad) * (tiempo + desfase), -260)
+	m.position = objetivo.position + Vector2(-(rapidez - objetivo.velocidad.x) * (tiempo + desfase), -260)
 	m.linear_velocity = Vector2(rapidez, 0)
 	m.en_suelo = false
 	var recomendaba: bool = r.hud._hay_melon_debajo(r)
@@ -232,3 +253,106 @@ func probar_punteria(tamano: int, rapidez: float, desfase: float) -> bool:
 			comprobar(not recomendaba or acierto, "El aviso de S recomienda una caída acertable, tamaño %d, velocidad %.0f, desfase %.2f" % [tamano, rapidez, desfase])
 			return acierto
 	return false
+
+
+## Los rivales sueltos en el camino aceleran, despegan, rebotan y no se detienen.
+func probar_movimiento() -> void:
+	var r = await preparar(1)
+	r.set_physics_process(false)
+	var otro = r.terreno.melones[0]
+	otro.saltos = true
+	otro.preparar_carrera(RAPIDEZ_RIVAL, 7)
+	otro.velocidad = Vector2.ZERO
+	var x: float = otro.position.x
+	var en_aire := 0
+	var altura_max := 0.0
+	var minima := INF
+	for i in 6 * 120:
+		otro.avanzar(r.terreno, 1.0 / 120.0, otro.position)
+		var tramo = r.terreno.tramo_en(otro.position.x)
+		if tramo == null:
+			break
+		var sobre_suelo: float = tramo.altura(otro.position.x) - otro.radio - otro.position.y
+		comprobar(sobre_suelo > -1.0, "El rival no atraviesa el suelo")
+		altura_max = maxf(altura_max, sobre_suelo)
+		en_aire += int(not otro.en_suelo)
+		if i > 240:
+			minima = minf(minima, otro.velocidad.x)
+	comprobar(otro.position.x - x > RAPIDEZ_RIVAL * 3.0, "El rival arranca y recorre el camino a su ritmo")
+	comprobar(en_aire > 60 and altura_max > 40.0, "El rival salta y pasa tiempo en el aire")
+	comprobar(minima > RAPIDEZ_RIVAL * 0.4, "El rival no se queda quieto en el suelo")
+	print("Rival: %.0f px en 6 s, %d pasos en el aire, %.0f px de altura máxima." % [otro.position.x - x, en_aire, altura_max])
+	var lejano = r.terreno.melones[1]
+	lejano.velocidad = Vector2(RAPIDEZ_RIVAL, 0)
+	for i in 120:
+		lejano.avanzar(r.terreno, 1.0 / 120.0, lejano.position - Vector2(3000, 0))
+	var adelantado: float = lejano.velocidad.x
+	lejano.velocidad = Vector2(RAPIDEZ_RIVAL, 0)
+	for i in 120:
+		lejano.avanzar(r.terreno, 1.0 / 120.0, lejano.position + Vector2(3000, 0))
+	comprobar(adelantado < RAPIDEZ_RIVAL and lejano.velocidad.x > RAPIDEZ_RIVAL, "Los rivales esperan si van muy adelante y alcanzan si se quedan atrás")
+	# El jugador vuela a 1500 px sobre la calle: el rival lo sigue al aire, siempre por debajo.
+	var volador = r.terreno.melones[2]
+	volador.saltos = true
+	volador.preparar_carrera(RAPIDEZ_RIVAL, 11)
+	var jugador := Vector2(volador.position.x + 200.0, volador.position.y - 1500.0)
+	var por_debajo := INF
+	var mas_alto := INF
+	for i in 8 * 120:
+		jugador.x += 900.0 / 120.0
+		r.terreno.actualizar(jugador.x)
+		volador.avanzar(r.terreno, 1.0 / 120.0, jugador, Vector2(900, 0))
+		if i > 4 * 120:
+			por_debajo = minf(por_debajo, volador.position.y - jugador.y)
+			mas_alto = minf(mas_alto, volador.position.y)
+	comprobar(por_debajo > volador.radio * 2.0 and por_debajo < 800.0, "El rival vuela cerca y por debajo del jugador: %.0f px" % por_debajo)
+	comprobar(absf(volador.position.x - jugador.x) < config.alcance_vuelo_melones, "El rival sigue el avance del jugador en el aire")
+	print("Rival en vuelo: hasta %.0f px bajo el jugador, %.0f px sobre la calle." % [por_debajo, r.terreno.tramo_en(volador.position.x).altura(volador.position.x) - mas_alto])
+	for i in 6 * 120:
+		r.terreno.actualizar(jugador.x)
+		jugador = Vector2(jugador.x + 900.0 / 120.0, r.terreno.tramo_en(jugador.x).altura(jugador.x) - 20.0)
+		volador.avanzar(r.terreno, 1.0 / 120.0, jugador, Vector2(900, 0))
+	var sobre_calle: float = r.terreno.tramo_en(volador.position.x).altura(volador.position.x) - volador.radio - volador.position.y
+	var picado = r.terreno.melones[3]
+	picado.position = Vector2(jugador.x + 100.0, r.terreno.tramo_en(jugador.x + 100.0).altura(jugador.x + 100.0) - picado.radio)
+	picado.en_suelo = true
+	for i in 60:
+		picado.avanzar(r.terreno, 1.0 / 120.0, picado.position + Vector2(0, -1000), Vector2(600, config.slam_caida))
+	comprobar(picado.en_suelo or picado.velocidad.y > -100.0, "El rival no sube al encuentro de un picado")
+	comprobar(sobre_calle < 320.0, "El rival baja cuando el jugador vuelve a la calle: %.0f px" % sobre_calle)
+
+
+## Caída con un desvío que solo la corrección del picado puede cerrar.
+func probar_guiado(tamano: int, con_guiado: bool) -> bool:
+	var guiado: float = config.slam_guiado
+	if not con_guiado:
+		config.slam_guiado = 0.0
+	var r = await preparar(tamano)
+	r.set_physics_process(false)
+	for tramo in r.terreno.tramos:
+		for contenedor in ["Coleccionables", "Obstaculos", "Aire"]:
+			for nodo in tramo.get_node(contenedor).get_children():
+				nodo.queue_free()
+		tramo.papalotes.clear()
+	await process_frame
+	var m = r.melon
+	var objetivo = r.terreno.melones[0]
+	var rapidez := 1000.0
+	var tiempo: float = (420.0 - (m.radio + objetivo.radio) * 0.5) / config.slam_caida
+	var desvio: float = m.radio + objetivo.radio + config.slam_margen.y + 30.0
+	m.position = objetivo.position + Vector2(-(rapidez - objetivo.velocidad.x) * tiempo + desvio, -420)
+	m.linear_velocity = Vector2(rapidez, 0)
+	m.en_suelo = false
+	m.freeze = false
+	r.set_physics_process(true)
+	m.iniciar_slam()
+	var acierto := false
+	for i in 90:
+		await physics_frame
+		if m.slam_activo and con_guiado and i == 2:
+			comprobar(objetivo.marca == objetivo.Marca.FIJADO, "El picado marca el melón al que va, tamaño %d" % tamano)
+		if not m.slam_activo:
+			acierto = m._v_fijar.y < 0.0
+			break
+	config.slam_guiado = guiado
+	return acierto

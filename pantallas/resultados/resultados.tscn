@@ -4,8 +4,8 @@
 [ext_resource type="Theme" path="res://interfaz/tema_xalapa.tres" id="2"]
 [ext_resource type="Script" path="res://pantallas/resultados/postal_resultados.gd" id="3"]
 [ext_resource type="Script" path="res://interfaz/fondo_juego.gd" id="fondo"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/aplauso.svg" id="ico_aplauso"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/jugar.svg" id="ico_jugar"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/aplauso.png" id="ico_aplauso"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/jugar.png" id="ico_jugar"]
 
 [sub_resource type="StyleBoxFlat" id="Cinta"]
 content_margin_left = 36.0

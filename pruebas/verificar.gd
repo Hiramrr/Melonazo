@@ -176,6 +176,22 @@ func _verificar() -> void:
 	melon.t_chile = 0
 	melon.golpe()
 	comprobar(melon.resistencia == 2, "Sin poderes los golpes dañan")
+	melon.t_invulnerable = 0
+	melon.danar(0.25)
+	comprobar(is_equal_approx(melon.resistencia, 1.75) and melon.t_invulnerable == 0, "Un raspón quita una fracción sin invulnerabilidad")
+	melon.reparar()
+	comprobar(is_equal_approx(melon.resistencia, 2.75), "Reparar suma un golpe completo")
+	melon.resistencia = 2
+	melon.rebotes = 0
+	melon.recibir_poder("jamaica")
+	comprobar(melon.rebotes == juego.rebotes_max(), "Jamaica recarga los saltos")
+	melon.resistencia = 1
+	melon.recibir_poder("miel")
+	comprobar(is_equal_approx(melon.resistencia, 1.0 + config.miel_recupera), "Miel recupera resistencia")
+	melon.recibir_poder("miel")
+	comprobar(melon.resistencia == melon.resistencia_max, "Miel respeta el máximo")
+	melon.resistencia = 2
+	melon.rebotes = juego.rebotes_max()
 	melon.recibir_poder("cafe")
 	comprobar(melon.t_cafe == config.poderes["cafe"]["duracion"], "Café inicia duración")
 	melon.usar(0)
@@ -279,18 +295,20 @@ func _verificar() -> void:
 	var recorrido = current_scene
 	comprobar(recorrido.terreno.tramos.size() >= 2 and recorrido.melon.freeze, "Terreno listo antes del lanzamiento")
 	comprobar(recorrido.terreno.tramos.all(func(t: Node) -> bool: return t.get_parent() == recorrido.terreno), "Tramos en contenedor propio")
-	comprobar(recorrido.terreno.tramos[0].get_node("Postales").get_child_count() == 1, "El camino conserva el puente; las postales de lugares solo se muestran al terminar")
+	comprobar(recorrido.terreno.tramos[0].get_node("Postales").get_child_count() == 0, "Las postales de lugares solo se muestran al terminar")
 	var consumibles: Array = []
+	var recargas: Array = []
 	for t in recorrido.terreno.tramos:
 		for nodo in t.get_node("Coleccionables").get_children():
 			if nodo is Area2D and nodo.has_signal("recogido"):
-				consumibles.append(nodo)
+				(recargas if nodo.tipo in config.orden_recargas else consumibles).append(nodo)
 	comprobar(consumibles.size() >= 3 and consumibles.size() <= 5, "Los primeros tramos muestran poderes desde el inicio")
+	comprobar(not recargas.is_empty() and recargas[0].tipo == "jamaica", "Los primeros tramos muestran recargas, empezando por la jamaica")
 	comprobar(consumibles[0].tipo == "cafe" and consumibles[1].tipo == "chile", "Poderes alternan de forma reproducible")
 	var ultimo_x := -1.0
 	for t in recorrido.terreno.tramos:
 		for nodo in t.get_node("Coleccionables").get_children():
-			if nodo is Area2D and nodo.has_signal("recogido"):
+			if nodo is Area2D and nodo.has_signal("recogido") and nodo.tipo not in config.orden_recargas:
 				var altura: float = t.altura(nodo.position.x) - nodo.position.y
 				comprobar(altura >= config.altura_poderes.x - 0.01, "Un poder exige elevarse sobre el suelo")
 				if ultimo_x >= 0:

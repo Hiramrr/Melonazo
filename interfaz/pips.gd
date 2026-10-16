@@ -1,7 +1,8 @@
 @tool
 class_name Pips
 extends Control
-## Fila de íconos que se llenan: rayos de impulso o niveles de una mejora. Los vacíos se dibujan apagados.
+## Fila de íconos que se llenan: rayos de impulso o niveles de una mejora.
+## Los vacíos se dibujan apagados.
 ##
 ## Si total pasa de max_visibles, se dibujan max_visibles y el resto se resume
 ## con "+N" al final.

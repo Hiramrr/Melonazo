@@ -1,14 +1,14 @@
 @tool
 class_name Poder
 extends Area2D
-## Consumible de la ruta (café, chile, niebla o tamal), con imagen propia.
+## Consumible de la ruta (café, chile, niebla, tamal, jamaica o miel), con imagen propia.
 ##
 ## Escena: mundo/ayudas/poder.tscn (Area2D en la capa 4; detecta la capa 2, la del melón)
 ##   AreaDeRecogida   CollisionShape2D circular, un poco más grande que el dibujo
 ##   Nombre           Label con el nombre del poder, encima del dibujo
 ## En la escena, body_entered está conectada a _recoger().
 ##
-## Quién lo usa: GeneradorTerreno._poner_poderes() (mundo/terreno/generador_terreno.gd)
+## Quién lo usa: GeneradorTerreno._poner_poderes() y _poner_recargas() (mundo/terreno/generador_terreno.gd)
 ## instancia uno cada tantos metros en el contenedor Coleccionables del tramo, le asigna
 ## `tipo` y reenvía `recogido` como su señal poder_recogido, que atiende
 ## Recorrido._al_recoger_poder(). Este nodo solo avisa y desaparece; el efecto lo aplica
@@ -26,10 +26,12 @@ const TEXTURAS := {
 	"chile": preload("res://recursos/poderes/chile.png"),
 	"niebla": preload("res://recursos/poderes/niebla.png"),
 	"tamal": preload("res://recursos/poderes/tamal.png"),
+	"jamaica": preload("res://recursos/poderes/jamaica.png"),
+	"miel": preload("res://recursos/poderes/miel.png"),
 }
 
 ## Qué poder es; elige el dibujo y el nombre. Clave de Config.poderes.
-@export_enum("cafe", "chile", "niebla", "tamal") var tipo := "cafe":
+@export_enum("cafe", "chile", "niebla", "tamal", "jamaica", "miel") var tipo := "cafe":
 	set(valor):
 		tipo = valor
 		queue_redraw()

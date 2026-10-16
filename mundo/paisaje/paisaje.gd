@@ -143,8 +143,11 @@ func _cordillera(m: Vector2, desp: float, base: float, alto: float, col: Color, 
 	while x <= m.x + 20.0:
 		pts.append(Vector2(x, base - alto * _ruido(x + desp, s)))
 		x += 20.0
-	pts.append(Vector2(m.x + 20.0, m.y))
-	pts.append(Vector2(-m.x, m.y))
+	# Con la cámara muy alta la cresta baja de la pantalla; el fondo va siempre debajo
+	# para que el polígono no se cruce.
+	var fondo := maxf(m.y, base + 10.0)
+	pts.append(Vector2(m.x + 20.0, fondo))
+	pts.append(Vector2(-m.x, fondo))
 	draw_colored_polygon(pts, col)
 	if not arboles:
 		return

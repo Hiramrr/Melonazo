@@ -131,7 +131,7 @@ func carrera(tamano: int, mover: bool) -> Dictionary:
 	if mover:
 		Input.action_press("derecha")
 	var datos := {"metros": 0.0, "altura": 0.0, "en_alto": 0.0, "papalotes": 0, "puntos_altos": 0, "duracion": 0.0, "llegada": false}
-	# El grande salta antes de entrar en la ventana de rebote al bajar del puente.
+	# El grande salta antes de entrar en la ventana de rebote al bajar del trampolín.
 	var primer_salto_x: float = config.primer_papalote_x - (360.0 if tamano == 2 else 300.0)
 	recorrido.terreno.obstaculo_tocado.connect(func(_cuerpo: Node2D, objeto: Node2D) -> void:
 		if objeto.tipo == "aplauso":

@@ -1,8 +1,7 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://pantallas/recorrido/recorrido.gd" id="1"]
 [ext_resource type="PackedScene" path="res://melon/melon.tscn" id="2"]
-[ext_resource type="PackedScene" path="res://mundo/terreno/puente.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://mundo/paisaje/paisaje.tscn" id="4"]
 [ext_resource type="PackedScene" path="res://pantallas/recorrido/hud/hud.tscn" id="5"]
 [ext_resource type="Script" path="res://mundo/terreno/generador_terreno.gd" id="6"]
@@ -24,10 +23,8 @@ script = ExtResource("1")
 [node name="BajadaXallitic" parent="Mundo" instance=ExtResource("9")]
 script = ExtResource("10")
 
-[node name="Puente" parent="Mundo" instance=ExtResource("3")]
-
 [node name="LimiteDeSalida" type="StaticBody2D" parent="Mundo"]
-position = Vector2(-2350, -1240)
+position = Vector2(-10, 1520)
 collision_layer = 1
 collision_mask = 2
 

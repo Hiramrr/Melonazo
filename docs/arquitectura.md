@@ -20,9 +20,9 @@ Este documento explica cómo está organizado el proyecto en Godot: qué hace ca
 ## Flujo entre pantallas
 
 ```text
-Taller ──"¡A rodar!"──▶ Recorrido ──fin de carrera──▶ Resultados ──▶ Taller
-                           │
-                           └──Pausa ▸ "Volver al taller" (sin cobrar)──▶ Taller
+Menú ──"Jugar"──▶ Taller ──"¡A rodar!"──▶ Recorrido ──fin de carrera──▶ Resultados ──▶ Taller
+                                             │
+                                             └──Pausa ▸ "Volver al taller" (sin cobrar)──▶ Taller
 ```
 
 Las pantallas no se pasan datos directamente: el Taller escribe la elección del jugador en `Juego`, el Recorrido la lee, y al terminar llama a `Juego.registrar_intento()`. Resultados lee `Juego.ultimo`.
@@ -49,11 +49,31 @@ Los botones tienen "labio": el borde inferior es más grueso y, al presionarlos,
 | Componente | Archivo | Qué hace |
 | --- | --- | --- |
 | `Ficha` | `interfaz/ficha.gd` | Contador con ícono: aplausos, récord, carisma, altura |
-| `Pips` | `interfaz/pips.gd` | Fila de íconos que se llenan: corazones, impulsos, niveles |
+| `Pips` | `interfaz/pips.gd` | Fila de íconos que se llenan: impulsos, niveles |
 | `Selector` | `interfaz/selector.gd` | Elegir de una lista con flechas, como en un vestidor |
 | `FondoJuego` | `interfaz/fondo_juego.gd` | Fondo animado con rayos y papel picado (Taller y Resultados) |
 
 El autoload `Animacion` hace que cada botón crezca un poco con el ratón y se aplaste al pulsarlo. Se conecta solo a todos los botones. Dentro de listas con scroll no crece, porque el borde se cortaría. También ofrece `aparecer()`, `rebotar()`, `latir()`, `sellar()` y `contar()` para animar las entradas de pantalla, los contadores del HUD y el desglose de resultados.
+
+## Menú principal (`pantallas/menu/`)
+
+```text
+Menu (menu.gd)                     Bajada de la cámara, entrada del título y botón
+├─ Paisaje (mundo/paisaje/)        El mismo fondo de Xalapa que el recorrido
+├─ CieloAlto (cielo_menu.gd)       Tapa el fondo con cielo arriba y pone nubes que se cruzan
+├─ Mundo
+│  ├─ BajadaXallitic               La misma calle empedrada, casas y público
+│  └─ Melones (melones_menu.gd)    Crea, mueve y hace explotar los MelonMenu
+├─ Camara
+└─ Interfaz (CanvasLayer)
+   └─ Centro
+      ├─ Titulo (titulo_melonazo.gd)  Logo "MELONAZO"; la última O es un melón que gira
+      └─ BtnJugar                     Va al taller
+```
+
+Al entrar, `Menu` baja la cámara desde 3200 px sobre la calle. `CieloAlto` tapa las montañas mientras la cámara está alta y se desvanece al llegar; sus nubes están ancladas al mundo, así la cámara las atraviesa. Cualquier clic o tecla salta la bajada. Después cae el título y aparece el botón.
+
+Los melones bajan por la calle de Xallitic con una física propia y sencilla sobre `Tramo.altura()` (gravedad, despegue en los bordes y rebote). Cada `MelonMenu` (`melon_menu.tscn`) dibuja su aspecto una sola vez en un `SubViewport`, como los rivales del recorrido; por eso muchos melones no cuestan casi nada. Un clic sobre uno lo hace explotar en trozos, semillas y jugo que deja manchas en el empedrado, y el público cercano levanta los brazos. A veces aparecen el melón del jugador o los de su almanaque. `Titulo.indice_melon` elige qué letra es el melón.
 
 ## Taller (`pantallas/taller/`)
 
@@ -98,9 +118,8 @@ El JSON de versión 2 añade `melones_guardados` y conserva los campos anteriore
 Recorrido (recorrido.gd)           Reglas de la carrera y fases
 ├─ Paisaje (mundo/paisaje/)        Fondo con paralaje, sigue a la cámara
 ├─ Mundo
-│  ├─ BajadaXallitic               Calle empedrada, público y barrera; reutiliza Tramo
-│  ├─ Puente                       Cruce; colisión independiente
-│  ├─ LimiteDeSalida               Pared invisible detrás de la bajada
+│  ├─ BajadaXallitic               Calle empedrada, público, barrera y trampolín; reutiliza Tramo
+│  ├─ LimiteDeSalida               Pared invisible bajo el borde del trampolín
 │  ├─ Terreno (GeneradorTerreno)   Crea los tramos como hijos
 │  │  ├─ Tramo000 (Tramo)
 │  │  ├─ Tramo001 …
@@ -110,7 +129,7 @@ Recorrido (recorrido.gd)           Reglas de la carrera y fases
 └─ Interfaz (HUD)                  Datos, equipo, indicaciones y pausa
 ```
 
-**Fases** de `Recorrido.Fase`. `FUERZA` → `BAJADA` → `RECORRIDO` → `FIN`. La salida muestra el medidor de potencia con el melón inmóvil y la barrera puesta. Espacio fija la potencia, retira la barrera y lanza cuesta abajo. Durante `BAJADA`, `_avanzar_bajada()` hace rodar al melón sobre la calle y acelera según la potencia elegida. `Melon.freeze` es verdadero y `Melon.controlable` es falso. Así el largo de la bajada y las colisiones no borran la potencia de salida. Cuando todo el melón supera `Config.puente_fin_x`, comienza `RECORRIDO`, se activa la física del cuerpo con la velocidad elegida y vuelven los controles habituales. Los accesorios conservan su dibujo y su equipo, pero sus formas de colisión se desactivan hasta cruzar para evitar atascos sin control del jugador. La distancia y los bonos de altura se cuentan en la ruta por Xalapa, después del puente. La carrera termina al llegar a `Config.meta_m`, si el melón se rompe o si avanza menos de `Config.velocidad_min_avance` durante `Config.tiempo_sin_avance` segundos.
+**Fases** de `Recorrido.Fase`. `FUERZA` → `BAJADA` → `RECORRIDO` → `FIN`. La salida muestra el medidor de potencia con el melón inmóvil y la barrera puesta. Espacio fija la potencia, retira la barrera y lanza cuesta abajo. Durante `BAJADA`, `_avanzar_bajada()` hace rodar al melón sobre la calle y acelera según la potencia elegida, más un embalaje por la caída (`BajadaXallitic.embalaje()`) que se pierde al subir el trampolín final. `Melon.freeze` es verdadero y `Melon.controlable` es falso. Así el largo de la bajada y las colisiones no borran la potencia de salida. Cuando el melón llega al borde del trampolín (`Config.bajada_fin`), comienza `RECORRIDO`, se activa la física del cuerpo con la velocidad elegida hacia adelante más parte del impulso hacia arriba del trampolín (`Config.bajada_salto`) y vuelven los controles habituales. Los accesorios conservan su dibujo y su equipo, pero sus formas de colisión se desactivan hasta salir para evitar atascos sin control del jugador. La distancia y los bonos de altura se cuentan en la ruta por Xalapa, después del trampolín. La carrera termina al llegar a `Config.meta_m`, si el melón se rompe o si avanza menos de `Config.velocidad_min_avance` durante `Config.tiempo_sin_avance` segundos.
 
 **Cada paso de física**, `Recorrido._physics_process()`:
 
@@ -152,7 +171,7 @@ Melon (RigidBody2D, melon.gd)
 
 | Capa | Nombre | Quién |
 | --- | --- | --- |
-| 1 | Terreno | Segmentos del suelo, puente, cuña de la rampa |
+| 1 | Terreno | Segmentos del suelo, cuña de la rampa |
 | 2 | Melón | El melón; solo choca con la capa 1 |
 | 3 | Recogibles y obstáculos | Áreas que detectan al melón (máscara 2) |
 
@@ -160,7 +179,7 @@ Melon (RigidBody2D, melon.gd)
 
 | Carpeta | Escenas | Qué hacen |
 | --- | --- | --- |
-| `terreno/` | `tramo.tscn`, `puente.tscn`, `postal.tscn` + `generador_terreno.gd` | `GeneradorTerreno` crea tramos de `Config.largo_tramo` píxeles y los llena. Cada `Tramo` tiene contenedores fijos: `Decoracion`, `Postales`, `Suelo`, `Obstaculos`, `Publico`, `Coleccionables` y `Aire`. |
+| `terreno/` | `tramo.tscn`, `postal.tscn` + `generador_terreno.gd`, `bajada_xallitic.gd` | `GeneradorTerreno` crea tramos de `Config.largo_tramo` píxeles y los llena. Cada `Tramo` tiene contenedores fijos: `Decoracion`, `Postales`, `Suelo`, `Obstaculos`, `Publico`, `Coleccionables` y `Aire`. |
 | `obstaculos/` | `obstaculo.tscn` y ocho escenas heredadas | Cada tipo edita su forma de colisión en su escena. El efecto está en `Obstaculo.tocar()`. |
 | `ayudas/` | `poder.tscn`, `papalote.tscn`, `persona.tscn` | Poderes que se recogen, papalotes que impulsan con E y público que empuja con E. |
 | `paisaje/` | `paisaje.tscn` | Fondo lejano con paralaje. Cada capa del cielo es un nodo `CapaCielo` que puedes ocultar o ajustar en el inspector. |
@@ -199,7 +218,7 @@ Pieles, patrones, caras, detalles y estelas son listas en `Config`. Agrega la en
 
 ### Un poder
 
-Agrega su entrada en `Config.poderes` y su id en `Config.orden_poderes`, su efecto en `Melon.recibir_poder()` y su imagen en `Poder.TEXTURAS`, en `mundo/ayudas/poder.gd`. Las imágenes provisionales están en `recursos/poderes/` y se comparten entre la ruta y el pasaporte.
+Agrega su entrada en `Config.poderes` y su id en `Config.orden_poderes` (o en `Config.orden_recargas` si debe salir con la jamaica y la miel, que `GeneradorTerreno._poner_recargas()` coloca con su propia separación), su efecto en `Melon.recibir_poder()` y su imagen en `Poder.TEXTURAS`, en `mundo/ayudas/poder.gd`. Las imágenes provisionales están en `recursos/poderes/` y se comparten entre la ruta y el pasaporte.
 
 ### Una postal
 
@@ -230,6 +249,8 @@ Se ejecutan desde la terminal y nunca tocan tu guardado: cada una usa su propio 
 
 `Melon.iniciar_slam()` activa el picado con S o flecha abajo. `_integrate_forces()` impone la velocidad de caída y resuelve el fallo contra el suelo con `Config.slam_conserva`. `acertar_slam()` aplica el impulso y termina el picado. No consume cargas de salto.
 
-`mundo/ayudas/melon_rodante.gd` dibuja cada objetivo con `Aspecto` y lo mueve sobre la altura del terreno. `GeneradorTerreno` los conserva como hijos propios, porque cruzan entre tramos. Usa un generador aleatorio separado para conservar la distribución previa del camino. `Recorrido` llama a `preparar_corredores(bajada)` al preparar la salida y a `actualizar_melones()` durante la bajada y la carrera. Los seis rivales arrancan con `_lanzar()` y no aparecen otros al generar terreno. Cada objetivo comprueba el recorrido relativo de ambos centros entre pasos para detectar golpes desde arriba, incluso a alta velocidad. Los objetivos usados y los que quedan atrás se liberan. `margen_slam()` calcula una tolerancia horizontal de 12 a 36 píxeles según la velocidad relativa. El barrido conserva el radio vertical para rechazar golpes desde abajo. El HUD usa ese mismo margen y proyecta el avance de ambos melones durante la caída para anticipar el aviso de S.
+`mundo/ayudas/melon_rodante.gd` dibuja cada objetivo con `Aspecto` y lo mueve con una física propia sobre `Tramo.altura()`, sin cuerpo rígido ni colisiones. En el suelo suma la gravedad a lo largo de la pendiente y un empuje hacia su `rapidez`, ajustada según su distancia al jugador (`Config.ritmo_melones`). Despega cuando el suelo cae más rápido que su arco, rebota al caer con el rebote de su tamaño y salta a intervalos aleatorios con su propio `rng`. `avanzar()` recibe la posición y la velocidad del jugador. Si el jugador está a más de `Config.vuelo_melones_desde` sobre el suelo y a menos de `Config.alcance_vuelo_melones`, `_altura_vuelo()` fija una altura por debajo de él (`Config.bajo_jugador_melones`). `_volar()` iguala su avance y `_impulsar_hacia()` lo sube cada vez que cae por debajo de esa altura. No hay vuelo si el jugador cae en picado o si el rival ya está `usado`. `GeneradorTerreno` los conserva como hijos propios, porque cruzan entre tramos. Usa un generador aleatorio separado para conservar la distribución previa del camino. `Recorrido` llama a `preparar_corredores(bajada)` al preparar la salida y a `actualizar_melones()` durante la bajada y la carrera. Los seis rivales arrancan con `_lanzar()` y no aparecen otros al generar terreno. Cada objetivo comprueba el recorrido relativo de ambos centros entre pasos para detectar golpes desde arriba, incluso a alta velocidad. Un objetivo acertado queda `usado`, se achata y frena un momento, y sigue corriendo. Solo se liberan los que quedan atrás. `margen_slam()` calcula una tolerancia horizontal de 16 a 40 píxeles según la velocidad relativa. El barrido conserva el radio vertical para rechazar golpes desde abajo.
 
-`melones_guardados` aporta hasta seis fichas al azar, sin repetirlas. Los espacios vacíos se completan con diseños propios. Cada `MelonRodante` conserva una copia de la apariencia y una textura en su `Lienzo`, igual que el melón del jugador. Así los dibujos grandes no se rehacen al rodar. La bajada usa dos filas, que se unen al cruzar el puente. Después el rival cae hasta la calle y reduce su velocidad hasta su ritmo de rodado.
+`prevision_slam()` estima cuándo llega el picado al objetivo y cuánto desvío horizontal quedaría. Si el objetivo está en el aire, sigue su arco hasta el suelo. `alcance_slam()` suma los radios, el margen y lo que `Config.slam_guiado` alcanza a corregir en ese tiempo. `GeneradorTerreno.objetivo_slam()` elige el objetivo con menor desvío dentro de ese alcance. Durante el picado, `_guiar_slam()` pide con `Melon.empujar()` una corrección horizontal limitada y marca el objetivo con `en_mira`, que le impide saltar o impulsar un rebote. El HUD llama a `objetivo_slam()` con `Config.slam_confianza_aviso` para avisar solo de caídas con holgura. `actualizar_melones()` usa esa misma consulta para poner `Marca.ACERTABLE` en el objetivo, y durante el picado pone `Marca.FIJADO` en el que devuelve `_guiar_slam()`. `MelonRodante._draw()` dibuja la mira y el soplo de sus impulsos.
+
+`melones_guardados` aporta hasta seis fichas al azar, sin repetirlas. Los espacios vacíos se completan con diseños propios. Cada `MelonRodante` conserva una copia de la apariencia y una textura en su `Lienzo`, igual que el melón del jugador. Así los dibujos grandes no se rehacen al rodar. La bajada usa dos filas, que se unen en el trampolín. Después el rival sale volando hasta la calle y reduce su velocidad hasta su ritmo de rodado.

@@ -14,7 +14,7 @@ extends CanvasLayer
 ##   Efectos       una ficha por efecto activo del melón, con sus segundos
 ##   Lanzamiento   barra de fuerza con la zona perfecta marcada
 ##   Aviso         tecla dibujada (%Tecla) y qué hace ahora (%Indicacion)
-##   Ayuda         teclas del juego; disponibles después del puente
+##   Ayuda         teclas del juego; disponibles después del trampolín
 ##   Pausa         menú de pausa con controles y créditos del fondo
 ##
 ## No guarda estado de la carrera: Recorrido llama a actualizar(self) cada cuadro.
@@ -227,7 +227,7 @@ func _actualizar_indicacion(r: Recorrido) -> void:
 			_indicar("Espacio", "Soltar · Potencia %d%%" % int(r.fuerza * 100))
 			urgente = r.fuerza >= Config.zona_perfecta.x
 		Recorrido.Fase.BAJADA:
-			_indicar("", "Bajando Xallitic · Controles después del puente")
+			_indicar("", "Bajando Xallitic · Controles después del trampolín")
 			tecla.visible = false
 		Recorrido.Fase.FIN:
 			_indicar("", r.texto_fin)
@@ -258,18 +258,8 @@ func _actualizar_indicacion(r: Recorrido) -> void:
 
 
 func _hay_melon_debajo(r: Recorrido) -> bool:
-	if r.melon.en_suelo:
-		return false
-	for otro in r.terreno.melones:
-		var diferencia := otro.global_position - r.melon.global_position
-		if diferencia.y <= 0.0 or diferencia.y >= 450.0:
-			continue
-		var radios: float = otro.radio + r.melon.radio
-		var tiempo := maxf(0.0, diferencia.y - radios * 0.5) / maxf(Config.slam_caida, r.melon.linear_velocity.y)
-		var al_caer: float = diferencia.x + (otro.velocidad - r.melon.linear_velocity.x) * tiempo
-		if absf(al_caer) < radios + otro.margen_slam(r.melon) * 0.5:
-			return true
-	return false
+	# Con holgura: solo avisa cuando la corrección del picado sobra para acertar.
+	return not r.melon.en_suelo and r.terreno.objetivo_slam(r.melon, Config.slam_confianza_aviso) != null
 
 
 func _indicar(p_tecla: String, texto: String) -> void:

@@ -1,0 +1,20 @@
+[gd_scene format=3]
+
+[ext_resource type="Script" path="res://pantallas/menu/melon_menu.gd" id="1"]
+
+[node name="MelonMenu" type="Node2D"]
+script = ExtResource("1")
+
+[node name="Aspecto" type="Sprite2D" parent="."]
+texture_filter = 2
+
+[node name="Lienzo" type="SubViewport" parent="."]
+transparent_bg = true
+handle_input_locally = false
+size = Vector2i(256, 256)
+render_target_update_mode = 1
+
+[node name="Dibujo" type="Node2D" parent="Lienzo"]
+position = Vector2(128, 128)
+
+[connection signal="draw" from="Lienzo/Dibujo" to="." method="_dibujar_aspecto"]

@@ -42,9 +42,12 @@ var max_accesorios := 3
 var angulos_slots: Array = [-90.0, -20.0, -160.0]
 
 # --- Lanzamiento -------------------------------------------------------------
-var bajada_inicio := Vector2(-2050, -680)
-var bajada_fin := Vector2(-520, 0)    # entrada al puente de puente.tscn
-var puente_fin_x := 40.0             # salida del puente; aquí vuelven los controles
+var bajada_inicio := Vector2(-2900, -1000)   # arriba hay una explanada plana para la salida
+var bajada_fin := Vector2(40, 0)      # borde del trampolín; aquí vuelven los controles
+var bajada_hondo := 240.0             # px que el fondo de la bajada queda bajo el borde
+var bajada_subida := 560.0            # px de largo del trampolín final
+var bajada_embalaje := 500.0          # px/s extra al llegar al fondo; se pierde en el trampolín
+var bajada_salto := 0.8               # parte del impulso hacia arriba del trampolín que se conserva al salir
 var fuerza_freq := 0.75              # ciclos por segundo de la barra
 var lanz_vel_min := 430.0
 var lanz_vel_max := 760.0
@@ -76,14 +79,36 @@ var slam_caida := 1250.0             # velocidad mínima del picado
 var slam_impulso := Vector2(420, -850)
 var slam_conserva := 0.6             # velocidad que queda al fallar contra el suelo
 var slam_recarga := 0.45
-var slam_margen := Vector2(12, 36)   # tolerancia lateral mínima y máxima, en píxeles
+var slam_margen := Vector2(16, 40)   # tolerancia lateral mínima y máxima, en píxeles
 var slam_tolerancia := 0.035         # margen según la velocidad relativa, en segundos
+var slam_alcance := 460.0            # altura máxima a la que el picado busca un melón debajo
+var slam_guiado := 1700.0            # px/s² de corrección horizontal hacia ese melón
+var slam_confianza_aviso := 0.5      # parte del margen y la corrección que cuenta el aviso de S
 var rivales_salida := 6
 var separacion_salida := 75.0
 var carriles_salida := Vector2(28, 76)
 var ritmo_rivales := Vector2(0.94, 1.16)
-var frenado_melones := 180.0
-var velocidad_melones := Vector2(180, 300)
+var frenado_melones := 180.0          # px/s² al pasar de su ritmo en el suelo
+var aceleracion_melones := 320.0      # px/s² para recuperar su ritmo
+var velocidad_melones := Vector2(420, 620)   # ritmo de crucero de cada melón
+var ritmo_melones := Vector2(0.75, 1.35)     # ajuste del ritmo según su distancia al jugador
+var alcance_ritmo_melones := 4000.0   # px de distancia para llegar a ese ajuste
+var salto_melones := Vector2(340, 640)       # velocidad vertical de sus saltos
+var pausa_saltos_melones := Vector2(1.1, 2.8)
+var prob_rebote_melones := 0.35       # caídas que rebotan con impulso
+var salida_min_melones := 90.0        # por debajo de este rebote se quedan rodando
+var aplastado_melones := 0.4          # s achatado y lento tras recibir un slam
+# Vuelo: si el jugador está a más de vuelo_melones_desde px sobre el suelo y a menos de
+# alcance_vuelo_melones px de distancia, los rivales lo siguen al aire, por debajo de él.
+var vuelo_melones_desde := 650.0      # más que un salto normal
+var alcance_vuelo_melones := 1800.0
+# Más hondo que lo que devuelve un slam (slam_impulso.y ≈ 370 px): cada golpe en
+# lo alto cuesta algo de altura y no sostiene el vuelo por sí solo.
+var bajo_jugador_melones := Vector2(320, 540)  # px por debajo del jugador
+var impulso_vuelo_melones := 1500.0   # px/s de cada impulso en el aire, como máximo
+var margen_vuelo_melones := 40.0      # px extra que sube cada impulso
+var aleteo_melones := Vector2(0.45, 1.0)     # s entre impulsos
+var control_vuelo_melones := 700.0    # px/s² para igualar el avance del jugador
 var primer_melon_camino_x := 1000.0
 var separacion_melones := Vector2(1000, 1500)
 
@@ -152,10 +177,11 @@ var paso_puntos := 40.0
 var largo_tramo := 2400.0
 var generar_adelante := 3500.0       # px de terreno listos por delante
 var borrar_atras := 2500.0
-# Primer tramo: suelo bajo el puente y calle empedrada en bajada.
-var calle_inicio_x := -800.0
+# Primer tramo: calle empedrada en bajada, al pie del trampolín.
+var calle_inicio_x := 40.0
+var casas_inicio_x := -800.0         # origen del sorteo de casas del primer tramo; moverlo cambia cada ruta
 var calle_fin_x := 2800.0
-var calle_y := 260.0                 # suelo bajo el puente (el puente está en y = 0)
+var calle_y := 260.0                 # el borde del trampolín está en y = 0
 var calle_bajada_x := 250.0
 var calle_caida := 350.0
 var inicio_obstaculos_x := 900.0
@@ -185,7 +211,7 @@ var prob_casas := 0.6
 var marcador_cada_m := 50
 var lugares: Dictionary = {}          # metros -> nombre; se llena con las postales al iniciar
 
-# Ruta de fantasía, medida desde la salida del puente. Los huecos entre postales
+# Ruta de fantasía, medida desde el borde del trampolín. Los huecos entre postales
 # de Xalapa se reservan para añadir lugares sin mover la meta ni los guardados.
 var salida_xalapa_m := 1800.0
 var costa_m := 2300.0
@@ -270,7 +296,15 @@ var poderes: Dictionary = {
 	"chile": {"nombre": "Chile xalapeño", "descripcion": "Embestida de 1.5 s. Rompe puestos y resiste golpes.", "color": Color("cf5142"), "duracion": 1.5, "impulso": Vector2(260, -80)},
 	"niebla": {"nombre": "Niebla de Xalapa", "descripcion": "Protege de golpes y charcos durante 3 s.", "color": Color("79aaa8"), "duracion": 3.0, "impulso": Vector2.ZERO},
 	"tamal": {"nombre": "Tamal de hoja", "descripcion": "Recupera un golpe y un rebote, hasta su máximo.", "color": Color("72974b"), "duracion": 0.0, "impulso": Vector2.ZERO},
+	"jamaica": {"nombre": "Agua de jamaica", "descripcion": "Recarga todas las cargas de salto.", "color": Color("c2304f"), "duracion": 0.0, "impulso": Vector2.ZERO},
+	"miel": {"nombre": "Miel de Coatepec", "descripcion": "Recupera golpe y medio de resistencia, hasta su máximo.", "color": Color("e0a43a"), "duracion": 0.0, "impulso": Vector2.ZERO},
 }
+# Recargas: jamaica y miel se alternan sobre la calle con su propia separación,
+# aparte de orden_poderes, para no espaciar más los demás poderes.
+var orden_recargas: Array = ["jamaica", "miel"]
+var primer_recarga_x := 1300.0
+var separacion_recargas := Vector2(900.0, 1300.0)
+var miel_recupera := 1.5             # golpes de resistencia
 var cafe_aceleracion := 110.0        # px/s² hacia adelante mientras dura el café
 var cafe_vel_max := 1400.0           # el café no acelera por encima de esta velocidad
 var primer_poder_x := 700.0
@@ -283,7 +317,7 @@ var bonus_postal := 60
 # Las fotografías se asignan por id en recursos/arte_xalapa.tres y solo aparecen
 # al terminar el intento. Los lugares no generan edificios ni fotos en el camino.
 var postales: Array = [
-	{"id": "xallitic", "nombre": "Barrio de Xallitic", "metros": 0, "nota": "El puente es la salida de esta carrera."},
+	{"id": "xallitic", "nombre": "Barrio de Xallitic", "metros": 0, "nota": "Su bajada es la salida de esta carrera."},
 	{"id": "diamante", "nombre": "Callejón del Diamante", "metros": 100, "nota": "Cafés, artesanías y una calle para pasear."},
 	{"id": "catedral", "nombre": "Catedral de Xalapa", "metros": 200, "nota": "Una silueta del centro entre fachadas y balcones."},
 	{"id": "juarez", "nombre": "Parque Juárez", "metros": 300, "nota": "Una pausa verde sobre las lomas del centro."},

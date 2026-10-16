@@ -15,7 +15,7 @@ extends Control
 ## Taller asigna pestana_dibujo y modo_dibujo, y llama queue_redraw() cuando
 ## cambia algo del melón. Esta vista solo lee Juego; nunca lo modifica.
 
-const ESCENARIO := preload("res://recursos/taller_xallitic.svg")
+const ESCENARIO := preload("res://recursos/taller_xallitic.png")
 const ESCALA := 4.0                     # píxeles por unidad de radio, como máximo
 const VERDE := Color("2b5745")          # estela si su entrada no trae color
 const SOMBRA := Color(0.17, 0.25, 0.19, 0.15)
