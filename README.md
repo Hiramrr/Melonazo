@@ -53,65 +53,32 @@ Se activan al recogerlos y tienen siluetas diferentes. Aparecen cada 200 a 300 m
 | Niebla de Xalapa | Protege de golpes y del frenado de obstáculos durante 3 segundos |
 | Tamal de hoja | Recupera un punto de resistencia y un rebote hasta su máximo. Conserva los rebotes extra de la jarana |
 
-## Escenas y nodos
+## Estructura del proyecto
 
-Las tres pantallas tienen su estructura estable en archivos `.tscn`. Las listas de opciones y el terreno infinito se generan durante la partida.
+Cada carpeta agrupa una parte del juego. Las escenas (`.tscn`) y sus scripts (`.gd`) viven juntos, con nombres en `snake_case`.
 
 ```text
-escenas/
-  Taller.tscn                 Vista previa, pestañas y pie con balance
-  Recorrido.tscn
-	Paisaje                   Instancia del fondo con paralaje
-	Mundo
-	  Puente                  Instancia con cuerpo estático y calzada
-	  Terreno                 Contenedor de los tramos generados
-	  Melon                   Instancia del cuerpo físico
-	Camara                    Cámara con seguimiento
-	Efectos                   Flecha y avisos del recorrido
-	Interfaz                  Instancia de HUD.tscn
-  Resultados.tscn              Desglose de la carrera y regreso al taller
-  Melon.tscn                  Cuerpo, tres colisiones de accesorios y estela
-  interfaz/
-	HUD.tscn                  Datos, lanzamiento, efectos, ayuda y menú de pausa
-  mundo/
-	Tramo.tscn                Suelo, Decoracion, Postales, Obstaculos,
-							  Publico, Coleccionables y Aire
-	Paisaje.tscn              Cielo, cerros, ciudad y niebla dibujados por capas
-							  Ilustración opcional. Fondo dibujado sin imagen.
-							  Nodos Cielo, Sol, NubesAltas, NubesCercanas,
-							  Bandadas y Papalotes
-	Puente.tscn               Puente de salida con colisión independiente
-	Postal.tscn               Monumento o lugar del recorrido
-	Poder.tscn                Area2D, zona de recogida y etiqueta
-	Papalote.tscn             Impulso aéreo con E, recarga y protección
-	Obstaculo.tscn            Área de interacción y colisión de las rampas
-	Publico.tscn              Persona que puede empujar una vez
-	obstaculos/               Ocho variantes heredadas con colisiones editables
+globales/        Autoloads: Config (reglas y valores) y Juego (progreso y guardado)
+pantallas/       Las tres pantallas del juego
+  taller/          Preparar el melón: aspecto, dibujo, accesorios, mejoras y pasaporte
+  recorrido/       La carrera: lanzamiento, cámara, efectos y HUD
+  resultados/      Desglose de aplausos y postal del lugar alcanzado
+melon/           El melón: física, dibujo, estela y accesorios
+  accesorios/      Un archivo por accesorio; se cargan solos
+mundo/           Todo lo que aparece en la carrera
+  terreno/         Generador del camino, tramos, puente y postales de lugares
+  obstaculos/      Escena base y una escena heredada por tipo
+  ayudas/          Poderes, papalotes y público que empuja
+  paisaje/         Fondo con paralaje y capas del cielo
+interfaz/        Tema visual compartido y componentes de interfaz
+recursos/        Imágenes, fotografías, icono y datos de arte (arte_xalapa.tres)
+pruebas/         Scripts de verificación automática
+docs/            Documentación técnica
 ```
 
-`Config` y `Juego` son los únicos autoloads. `scripts/config.gd` reúne los valores de física, economía, opciones de apariencia, accesorios, poderes y postales. `scripts/juego.gd` conserva el estado y calcula las recompensas. Cada componente tiene un script propio, salvo el puente, cuya geometría está hecha con nodos editables. `recursos/tema_xalapa.tres` controla el aspecto de los menús y `recursos/icono.svg` es el icono del proyecto.
+La escena inicial es `pantallas/taller/taller.tscn`. El flujo es Taller → Recorrido → Resultados → Taller.
 
-### Añadir un accesorio
-
-Cada accesorio es un archivo en `scripts/accesorios/` que extiende `Accesorio` (`scripts/accesorios/accesorio.gd`). `Config` carga todos los archivos de esa carpeta al iniciar, así que no hay listas que actualizar en otro lado:
-
-1. Copia un accesorio parecido, por ejemplo `sombrero.gd`, con el nombre del nuevo id (`maraca.gd`).
-2. En `_init()` define `nombre`, `carisma`, `accion`, `costo`, `orden`, `color`, `forma` e `inicial`.
-3. En `usar(m)` combina los efectos de `Melon`: `planear`, `embestir`, `caida_lenta`, `rodar`, `proteger`, `reparar`, `atraer_aplausos`, `sumar_rebote`, `empujar` y `fijar_velocidad`.
-4. Si necesita física propia durante unos segundos, llama a `m.activar(self, segundos)` y escribe `fisica(m, v, dt)`. El HUD muestra su tiempo restante solo.
-5. Para un dibujo especial escribe `dibujar_detalle()` o reemplaza `dibujar()`, como hace el paraguas.
-
-### Añadir opciones de aspecto
-
-Pieles, patrones, caras, detalles y estelas son listas en `Config`. Agrega la entrada al final de su lista (los índices se guardan) y su dibujo en el `match` correspondiente de `scripts/aspecto.gd`. El taller crea las opciones solo. La pestaña Dibujo vive en `escenas/interfaz/PanelDibujo.tscn` con `scripts/panel_dibujo.gd`; los colores rápidos y los límites de trazos están en `Config.colores_dibujo`, `grosor_dibujo`, `max_trazos` y `max_puntos_dibujo`.
-
-Las capas de física son 1 para terreno, 2 para melón y 3 para recogibles y obstáculos. El melón solo colisiona con terreno. Las áreas detectan al melón. Cada segmento del suelo tiene una colisión convexa con nombre `Segmento###`.
-
-Para cambiar el terreno, ajusta `formas_tramo`, `largo_tramo`, `semilla_terreno` y las separaciones en `Config`. La semilla fija permite practicar la misma ruta. Las rampas y los toldos dan impulso una sola vez por carrera. El toldo devuelve parte de la velocidad de caída; no relanza un melón lento a una velocidad mínima. Para cambiar un lugar, edita sus datos en `postales` y su dibujo en `scripts/postal.gd`. El tipo de poder se puede seleccionar desde el inspector de `Poder.tscn`.
-
-En `Paisaje.tscn`, cada capa del cielo tiene un nodo independiente. Puedes ocultar el sol, las bandadas o los papalotes del fondo, y ajustar `separacion`, `velocidad` y `paralaje` desde el inspector. Esas capas son decorativas. Los papalotes jugables viven en `Papalote.tscn` y el contenedor `Aire` de cada tramo. Sus alturas, separación e impulso se ajustan en `Config`. La generación aérea usa su propio azar para conservar la ruta del suelo.
-
-El melón pierde velocidad por el aire y por el rodado. La bajada inicial es menos pronunciada que en el primer prototipo. Si el avance cae por debajo de 2.5 metros por segundo durante 1.6 segundos, termina el intento. No hay un temporizador que castigue dejar de pulsar botones.
+La explicación de cada escena, su árbol de nodos, cómo se comunican y cómo añadir accesorios, opciones de aspecto, obstáculos o postales está en [docs/arquitectura.md](docs/arquitectura.md).
 
 ## Arte y sustitución de recursos
 
@@ -125,7 +92,7 @@ El fondo del recorrido es una fotografía real de Xalapa desde el Ágora, de Kof
 
 Para sustituir el fondo, cambia `paisaje` y actualiza `credito_paisaje` en `recursos/arte_xalapa.tres`. Para quitarlo, vacía `paisaje` y guarda el recurso. El recorrido recupera los fondos dibujados por código. Los autores y licencias están en `recursos/fotos/README.md`.
 
-El personaje y sus accesorios siguen dibujados por código en `Aspecto.dibujar_melon` y `scripts/accesorios/`. El tema compartido de botones, pestañas, menús y medidor está en `recursos/tema_xalapa.tres`.
+El personaje y sus accesorios siguen dibujados por código en `melon/aspecto.gd` y `melon/accesorios/`. El tema compartido de botones, pestañas, menús y medidor está en `interfaz/tema_xalapa.tres`.
 
 La revisión gráfica usa una ventana con render real y no modifica el progreso. Comprueba los límites de los controles y guarda capturas de todas las pestañas y pantallas en `user://revision_grafica/`, a 1280 × 720 y a 960 × 540. Incluye la fuerza de lanzamiento, los espacios de accesorios vacíos, un resultado con todas las recompensas y el modo sin fotografías.
 

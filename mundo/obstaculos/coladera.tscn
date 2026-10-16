@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://mundo/obstaculos/obstaculo.tscn" id="1"]
+[sub_resource type="RectangleShape2D" id="Zona"]
+size = Vector2(56, 10)
+
+[node name="Coladera" instance=ExtResource("1")]
+tipo = "coladera"
+medida = Vector2(56, 10)
+
+[node name="Zona" parent="." index="0"]
+position = Vector2(0, -5.0)
+shape = SubResource("Zona")

@@ -24,7 +24,7 @@ func _verificar() -> void:
 	juego.archivo_guardado = "user://prueba_vuelo_%d.json" % OS.get_process_id()
 	juego.tamano = 1
 	juego.niveles = {"fuerza": 0, "resistencia": 0, "rebotes": 0}
-	var melon = load("res://escenas/Melon.tscn").instantiate()
+	var melon = load("res://melon/melon.tscn").instantiate()
 	root.add_child(melon)
 	melon.freeze = true
 	melon.set_physics_process(false)
@@ -37,7 +37,7 @@ func _verificar() -> void:
 	melon.t_bloqueo = 0.0
 	melon.rebotes = 0
 	comprobar(not melon.saltar(), "No hay saltos sin cargas")
-	var papalote = load("res://escenas/mundo/Papalote.tscn").instantiate()
+	var papalote = load("res://mundo/ayudas/papalote.tscn").instantiate()
 	root.add_child(papalote)
 	papalote.position = Vector2(config.papalote_rango + 10, 0)
 	comprobar(not papalote.impulsar(melon) and not papalote.usado, "E no alcanza papalotes lejanos")
@@ -51,7 +51,7 @@ func _verificar() -> void:
 	comprobar(not papalote.impulsar(melon) and melon._dv == impulso, "Cada papalote funciona una sola vez")
 	melon.t_bloqueo = 0.0
 	comprobar(melon.saltar() and is_equal_approx(melon.linear_velocity.y + melon._dv.y, -config.papalote_elevacion), "Pulsar Espacio y E juntos no duplica el impulso vertical")
-	var otro = load("res://escenas/mundo/Papalote.tscn").instantiate()
+	var otro = load("res://mundo/ayudas/papalote.tscn").instantiate()
 	root.add_child(otro)
 	melon.rebotes = juego.rebotes_max() + 1
 	melon._dv = Vector2.ZERO
@@ -94,12 +94,12 @@ func carrera(tamano: int) -> Dictionary:
 	seed(config.semilla_terreno)
 	juego.tamano = tamano
 	juego.accesorios = []
-	change_scene_to_file("res://escenas/Recorrido.tscn")
+	change_scene_to_file("res://pantallas/recorrido/recorrido.tscn")
 	await process_frame
 	await process_frame
 	var recorrido = current_scene
 	var ultimo_x := -1.0
-	for tramo in recorrido.tramos:
+	for tramo in recorrido.terreno.tramos:
 		for p in tramo.papalotes:
 			if ultimo_x >= 0:
 				var separacion: float = p.position.x - ultimo_x
@@ -127,7 +127,7 @@ func carrera(tamano: int) -> Dictionary:
 			Input.action_press("empujon")
 		elif m.rebotes > 0 and m.t_bloqueo <= 0.0 and m.linear_velocity.y > 100.0:
 			var siguiente = null
-			for tramo in recorrido.tramos:
+			for tramo in recorrido.terreno.tramos:
 				for p in tramo.papalotes:
 					if not p.usado and p.position.x >= m.position.x - 100.0 and (siguiente == null or p.position.x < siguiente.position.x):
 						siguiente = p

@@ -76,7 +76,7 @@ func carrera(tamano: int, nivel: int, angulo: float, activa: bool, equipo := fal
 	juego.tamano = tamano
 	juego.accesorios = ["llantitas", "rebozo"] if equipo else []
 	juego.niveles = {"fuerza": nivel, "resistencia": mini(nivel, 5), "rebotes": mini(nivel, 5)}
-	change_scene_to_file("res://escenas/Recorrido.tscn")
+	change_scene_to_file("res://pantallas/recorrido/recorrido.tscn")
 	await process_frame
 	await process_frame
 	var recorrido = current_scene
@@ -105,7 +105,7 @@ func carrera(tamano: int, nivel: int, angulo: float, activa: bool, equipo := fal
 				Input.action_press("acc_1")
 			if not melon.en_suelo and melon.linear_velocity.y > 150 and melon.position.x > 900 and melon.slots[1] != null:
 				Input.action_press("acc_2")
-			for tramo in recorrido.tramos:
+			for tramo in recorrido.terreno.tramos:
 				for persona in tramo.personas:
 					if persona.en_rango and not persona.usado:
 						Input.action_press("empujon")

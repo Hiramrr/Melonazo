@@ -12,7 +12,7 @@ config_version=5
 
 config/name="¡Rueda, Melón!"
 config/description="Lanza, rebota y rueda por una Xalapa de fantasía. Prepara tu melón, descubre postales y recoge poderes xalapeños."
-run/main_scene="res://escenas/Taller.tscn"
+run/main_scene="res://pantallas/taller/taller.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="RuedaMelon"
 config/features=PackedStringArray("4.6")
@@ -20,8 +20,8 @@ config/icon="res://recursos/icono.svg"
 
 [autoload]
 
-Config="*res://scripts/config.gd"
-Juego="*res://scripts/juego.gd"
+Config="*res://globales/config.gd"
+Juego="*res://globales/juego.gd"
 
 [display]
 

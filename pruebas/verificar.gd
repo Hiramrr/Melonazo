@@ -19,6 +19,24 @@ func comprobar(condicion: bool, mensaje: String) -> void:
 	comprobaciones += 1
 
 
+## Mueve el ratón a pos (coordenadas del viewport) con el botón izquierdo
+## apretado, o lo aprieta (presionado = true) o suelta (false) ahí.
+func _raton(pos: Vector2, presionado = null) -> void:
+	var evento: InputEventMouse
+	if presionado == null:
+		evento = InputEventMouseMotion.new()
+		evento.button_mask = MOUSE_BUTTON_MASK_LEFT
+	else:
+		var boton := InputEventMouseButton.new()
+		boton.button_index = MOUSE_BUTTON_LEFT
+		boton.pressed = presionado
+		evento = boton
+	evento.position = pos
+	evento.global_position = pos
+	root.push_input(evento, true)
+	await process_frame
+
+
 func _verificar() -> void:
 	juego = root.get_node("Juego")
 	config = root.get_node("Config")
@@ -67,7 +85,7 @@ func _verificar() -> void:
 	comprobar(config.accesorios_iniciales == ["sombrero", "llantitas", "rebozo"], "Accesorios iniciales salen de cada archivo")
 	for id in config.orden_accesorios:
 		var acc = config.accesorios[id]
-		comprobar(is_instance_of(acc, load("res://scripts/accesorios/accesorio.gd")) and acc.id == id and acc.forma.size() >= 3, "Accesorio completo: " + id)
+		comprobar(is_instance_of(acc, load("res://melon/accesorios/accesorio.gd")) and acc.id == id and acc.forma.size() >= 3, "Accesorio completo: " + id)
 	juego.patron = 2
 	juego.detalle = 3
 	juego.cuerpo_propio = "ff8800"
@@ -114,7 +132,7 @@ func _verificar() -> void:
 	juego.tamano = 1
 	juego.niveles = {"fuerza": 0, "resistencia": 0, "rebotes": 0}
 	juego.accesorios = ["llantitas", "rebozo"]
-	var melon = load("res://escenas/Melon.tscn").instantiate()
+	var melon = load("res://melon/melon.tscn").instantiate()
 	melon.freeze = true
 	root.add_child(melon)
 	melon.configurar(1, ["rebozo", "flor", "jarana"], 3, juego.rebotes_max())
@@ -163,7 +181,7 @@ func _verificar() -> void:
 		suelo.add_child(zona)
 		suelo.position = Vector2(0, 100)
 		root.add_child(suelo)
-		var caida = load("res://escenas/Melon.tscn").instantiate()
+		var caida = load("res://melon/melon.tscn").instantiate()
 		caida.position = Vector2(0, -500)
 		root.add_child(caida)
 		caida.configurar(1, [], 3, 1)
@@ -181,13 +199,19 @@ func _verificar() -> void:
 		suelo.queue_free()
 		await process_frame
 
-	change_scene_to_file("res://escenas/Taller.tscn")
+	change_scene_to_file("res://pantallas/taller/taller.tscn")
 	await process_frame
 	await process_frame
-	comprobar(current_scene.get_node("%Vista") != null, "Taller con nodos editables")
-	comprobar(current_scene.listas.size() == 5, "Taller ofrece piel, patrón, cara, detalle y estela")
-	var panel = current_scene.get_node("%Dibujo")
-	current_scene.pestanas.current_tab = panel.get_index()
+	var taller = current_scene
+	var pestanas: TabContainer = taller.get_node("%Pestanas")
+	comprobar(taller.get_node("%Vista") != null, "Taller con nodos editables")
+	var titulos: Array = []
+	for i in pestanas.get_tab_count():
+		titulos.append(pestanas.get_tab_title(i))
+	comprobar(titulos == ["Tu melón", "Dibujo", "Accesorios", "Mejoras", "Pasaporte"], "Pestañas del taller en orden y con su título")
+	comprobar(taller.get_node("%TuMelon").listas.size() == 5, "Taller ofrece piel, patrón, cara, detalle y estela")
+	var panel = taller.get_node("%Dibujo")
+	pestanas.current_tab = pestanas.get_tab_idx_from_control(panel)
 	var antes: int = juego.dibujo.size()
 	var clic := InputEventMouseButton.new()
 	clic.button_index = MOUSE_BUTTON_LEFT
@@ -200,9 +224,12 @@ func _verificar() -> void:
 	panel.entrada_vista(clic, Vector2(3.0, 0.2))
 	comprobar(juego.dibujo.size() == antes + 1 and juego.dibujo[-1]["puntos"].size() == 3, "Pincel crea un trazo con sus puntos")
 	comprobar(juego.dibujo[-1]["puntos"][-1].length() <= 1.0, "El trazo no se sale del melón")
-	panel._borrando = true
-	panel._borrar_en(Vector2(0.5, 0.2))
-	panel._borrando = false
+	panel.goma.button_pressed = true
+	clic.pressed = true
+	panel.entrada_vista(clic, Vector2(0.5, 0.2))
+	clic.pressed = false
+	panel.entrada_vista(clic, Vector2(0.5, 0.2))
+	panel.pincel.button_pressed = true
 	comprobar(juego.dibujo.size() == antes, "Goma borra el trazo que toca")
 	panel.entrada_vista(arrastre, Vector2.ZERO)
 	clic.pressed = true
@@ -211,23 +238,30 @@ func _verificar() -> void:
 	panel.entrada_vista(clic, Vector2(0.1, 0.1))
 	panel.deshacer()
 	comprobar(juego.dibujo.size() == antes, "Deshacer quita el último trazo")
+	# Con el ratón de verdad: los eventos pasan por el viewport y deben llegar a la vista.
+	var centro: Vector2 = taller.get_node("%Vista").get_global_rect().get_center()
+	await _raton(centro + Vector2(-30, 0), true)
+	await _raton(centro + Vector2(0, 5))
+	await _raton(centro + Vector2(30, 10))
+	await _raton(centro + Vector2(30, 10), false)
+	comprobar(juego.dibujo.size() == antes + 1 and juego.dibujo[-1]["puntos"].size() == 3, "El ratón dibuja sobre la vista previa del taller")
 	juego.dibujo = []
-	change_scene_to_file("res://escenas/Recorrido.tscn")
+	change_scene_to_file("res://pantallas/recorrido/recorrido.tscn")
 	await process_frame
 	await process_frame
 	var recorrido = current_scene
-	comprobar(recorrido.tramos.size() >= 2 and recorrido.melon.freeze, "Terreno listo antes del lanzamiento")
-	comprobar(recorrido.get_node("Mundo/Terreno").get_child_count() == recorrido.tramos.size(), "Tramos en contenedor propio")
-	comprobar(recorrido.tramos[0].get_node("Postales").get_child_count() == 3, "Primer tramo contiene Xallitic, Diamante y Catedral")
+	comprobar(recorrido.terreno.tramos.size() >= 2 and recorrido.melon.freeze, "Terreno listo antes del lanzamiento")
+	comprobar(recorrido.get_node("Mundo/Terreno").get_child_count() == recorrido.terreno.tramos.size(), "Tramos en contenedor propio")
+	comprobar(recorrido.terreno.tramos[0].get_node("Postales").get_child_count() == 3, "Primer tramo contiene Xallitic, Diamante y Catedral")
 	var consumibles: Array = []
-	for t in recorrido.tramos:
+	for t in recorrido.terreno.tramos:
 		for nodo in t.get_node("Coleccionables").get_children():
 			if nodo is Area2D and nodo.has_signal("recogido"):
 				consumibles.append(nodo)
 	comprobar(consumibles.size() >= 1 and consumibles.size() <= 3, "Los primeros tramos contienen pocos poderes")
 	comprobar(consumibles[0].tipo == "cafe" and consumibles[1].tipo == "chile", "Poderes alternan de forma reproducible")
 	var ultimo_x := -1.0
-	for t in recorrido.tramos:
+	for t in recorrido.terreno.tramos:
 		for nodo in t.get_node("Coleccionables").get_children():
 			if nodo is Area2D and nodo.has_signal("recogido"):
 				var altura: float = t.altura(nodo.position.x) - nodo.position.y
@@ -239,19 +273,19 @@ func _verificar() -> void:
 	# Reentrar en un área no debe generar impulso gratis otra vez.
 	recorrido.fase = 2
 	recorrido.melon.controlable = true
-	var rampa = load("res://escenas/mundo/obstaculos/Rampa.tscn").instantiate()
+	var rampa = load("res://mundo/obstaculos/rampa.tscn").instantiate()
 	root.add_child(rampa)
-	recorrido._on_obstaculo(recorrido.melon, rampa)
+	recorrido._al_tocar_obstaculo(recorrido.melon, rampa)
 	var impulso: Vector2 = recorrido.melon._dv
-	recorrido._on_obstaculo(recorrido.melon, rampa)
+	recorrido._al_tocar_obstaculo(recorrido.melon, rampa)
 	comprobar(not rampa.activo and recorrido.melon._dv == impulso, "Rampa da un solo impulso por carrera")
-	var toldo = load("res://escenas/mundo/obstaculos/Toldo.tscn").instantiate()
+	var toldo = load("res://mundo/obstaculos/toldo.tscn").instantiate()
 	root.add_child(toldo)
 	recorrido.melon.linear_velocity = Vector2(80, 300)
-	recorrido._on_obstaculo(recorrido.melon, toldo)
+	recorrido._al_tocar_obstaculo(recorrido.melon, toldo)
 	var salida: Vector2 = recorrido.melon._v_fijar
 	recorrido.melon.linear_velocity = Vector2(0, 1200)
-	recorrido._on_obstaculo(recorrido.melon, toldo)
+	recorrido._al_tocar_obstaculo(recorrido.melon, toldo)
 	comprobar(not toldo.activo and recorrido.melon._v_fijar == salida, "Toldo no relanza al melón al reentrar")
 	comprobar(is_equal_approx(salida.x, 80) and is_equal_approx(salida.y, -270), "Toldo conserva parte de la caída sin añadir velocidad mínima")
 	rampa.queue_free()
