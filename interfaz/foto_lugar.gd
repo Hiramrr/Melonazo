@@ -12,15 +12,16 @@ extends VBoxContainer
 ##
 ## Hijos que crea configurar(), en orden:
 ##   Imagen     TextureRect con la foto (las pruebas de capturas lo buscan por nombre)
-##   (Label)    nombre del lugar
+##   (Label)    nombre del lugar (si con_titulo)
 ##   (Label)    autor de la foto
 ##   (HBox)     LinkButton "Fuente" y LinkButton con el nombre de la licencia
 
 
 ## Crea los hijos a partir de una entrada de ArteXalapa.fotografias:
 ## {textura, nombre, autor, fuente, licencia, url_licencia}. alto = alto mínimo de la foto.
+## con_titulo = false omite el nombre (cuando la tarjeta que la contiene ya lo muestra).
 ## Llamar una sola vez.
-func configurar(datos: Dictionary, alto := 200.0) -> void:
+func configurar(datos: Dictionary, alto := 200.0, con_titulo := true) -> void:
 	add_theme_constant_override("separation", 8)
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var imagen := TextureRect.new()
@@ -31,14 +32,17 @@ func configurar(datos: Dictionary, alto := 200.0) -> void:
 	imagen.custom_minimum_size.y = alto
 	imagen.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	add_child(imagen)
-	var titulo := Label.new()
-	titulo.text = datos["nombre"]
-	titulo.add_theme_font_size_override("font_size", 20)
-	titulo.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	add_child(titulo)
+	if con_titulo:
+		var titulo := Label.new()
+		titulo.text = datos["nombre"]
+		titulo.theme_type_variation = &"Subtitulo"
+		titulo.add_theme_font_size_override("font_size", 22)
+		titulo.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		add_child(titulo)
 	var credito := Label.new()
 	credito.text = "Foto: %s\nVersión reducida. Encuadre de pantalla." % datos["autor"]
-	credito.add_theme_font_size_override("font_size", 13)
+	credito.theme_type_variation = &"Suave"
+	credito.add_theme_font_size_override("font_size", 12)
 	credito.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(credito)
 	var enlaces := HBoxContainer.new()
@@ -49,6 +53,6 @@ func configurar(datos: Dictionary, alto := 200.0) -> void:
 		enlace.text = entrada[0]
 		enlace.uri = entrada[1]
 		enlace.tooltip_text = entrada[1]
-		enlace.add_theme_font_size_override("font_size", 14)
+		enlace.add_theme_font_size_override("font_size", 13)
 		enlace.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		enlaces.add_child(enlace)

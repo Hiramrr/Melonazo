@@ -12,7 +12,7 @@ extends Node2D
 ##   Obstaculos          obstaculos/*.tscn
 ##   Publico             personas que empujan (ayudas/persona.tscn)
 ##   Coleccionables      aplausos sueltos y poderes
-##   Aire                papalotes y sus aplausos guía
+##   Aire                papalotes, rutas de aplausos y poderes en altura
 ## El suelo y los letreros se dibujan en _draw() de este nodo (z 0).
 
 const PostalEscena := preload("res://mundo/terreno/postal.tscn")

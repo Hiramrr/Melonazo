@@ -39,12 +39,14 @@ var _t_oscilacion := 0.0               # reloj de la flecha y de la barra de fue
 # Marcador de la carrera
 var mejor_x := 0.0                     # punto más lejano alcanzado (px)
 var altura_m := 0.0                    # altura sobre el suelo, para el HUD
+var altura_max_m := 0.0
 var recolectados := 0                  # aplausos sueltos recogidos
 var poderes_recogidos := 0
 var empujones := 0                     # cada empujón vale menos que el anterior
 var papalotes_usados := 0
 var postales_intento: Array = []       # ids de postales alcanzadas en esta carrera
 var papalote_cercano: Papalote         # el que se activaría al pulsar E
+var papalote_siguiente: Papalote       # orienta el vuelo aunque quede fuera de pantalla
 var texto_fin := ""
 
 var _t_sin_avance := 0.0
@@ -102,13 +104,14 @@ func _process(delta: float) -> void:
 			_t_fin -= delta
 			if _t_fin <= 0.0:
 				_t_fin = INF
-				Juego.registrar_intento(mejor_x / Config.px_por_metro, melon.carisma(), recolectados, melon.roto, poderes_recogidos)
-				get_tree().change_scene_to_file(ESCENA_RESULTADOS)
+				Juego.registrar_intento(mejor_x / Config.px_por_metro, melon.carisma(), recolectados, melon.roto, poderes_recogidos, altura_max_m)
+				Animacion.cambiar_escena(ESCENA_RESULTADOS)
 	var apuntando := fase == Fase.ANGULO or fase == Fase.FUERZA
 	efectos.mostrar_flecha = apuntando
 	efectos.origen_flecha = melon.global_position
 	efectos.angulo = angulo
 	efectos.angulo_fijado = fase == Fase.FUERZA
+	efectos.objetivo_aereo = papalote_siguiente if fase == Fase.RECORRIDO else null
 	camara.actualizar(melon, not apuntando, delta)
 	hud.actualizar(self)
 
@@ -122,6 +125,11 @@ func _physics_process(delta: float) -> void:
 	var tramo := terreno.tramo_en(x)
 	if tramo != null:
 		altura_m = maxf(0.0, tramo.altura(x) - melon.global_position.y - melon.radio) / Config.px_por_metro
+		if altura_m > altura_max_m:
+			for zona in Config.zonas_cielo:
+				if altura_max_m < zona["metros"] and altura_m >= zona["metros"]:
+					efectos.avisar(zona["nombre"], melon.global_position + Vector2(0, -100))
+			altura_max_m = altura_m
 	_actualizar_interacciones()
 	_atraer_aplausos(delta)
 	_revisar_postales()
@@ -131,7 +139,7 @@ func _physics_process(delta: float) -> void:
 func _revisar_avance(x: float, delta: float) -> void:
 	var avance := x - mejor_x
 	mejor_x = maxf(mejor_x, x)
-	if avance > Config.velocidad_min_avance * delta:
+	if avance > Config.velocidad_min_avance * delta or not melon.en_suelo:
 		_t_sin_avance = 0.0
 	else:
 		_t_sin_avance += delta
@@ -193,17 +201,20 @@ func _actualizar_interacciones() -> void:
 	var cercana: Persona = null
 	var mejor_d := Config.publico_rango
 	papalote_cercano = null
+	papalote_siguiente = null
 	var distancia_aire := Config.papalote_rango
 	for t in terreno.tramos:
-		if t.x1 < pos.x - MARGEN_INTERACCION or t.x0 > pos.x + MARGEN_INTERACCION:
-			continue
-		for p in t.personas:
-			var d: float = (p.global_position + Vector2(0, -40)).distance_to(pos)
-			p.en_rango = not p.usado and d < Config.publico_rango
-			if p.en_rango and d < mejor_d:
-				cercana = p
-				mejor_d = d
+		if t.x1 >= pos.x - MARGEN_INTERACCION and t.x0 <= pos.x + MARGEN_INTERACCION:
+			for p in t.personas:
+				var d: float = (p.global_position + Vector2(0, -40)).distance_to(pos)
+				p.en_rango = not p.usado and d < Config.publico_rango
+				if p.en_rango and d < mejor_d:
+					cercana = p
+					mejor_d = d
 		for p in t.papalotes:
+			if not p.usado and p.global_position.x >= pos.x - Config.papalote_rango:
+				if papalote_siguiente == null or p.global_position.x < papalote_siguiente.global_position.x:
+					papalote_siguiente = p
 			var d: float = p.global_position.distance_to(pos)
 			p.en_rango = not p.usado and d <= Config.papalote_rango
 			if p.en_rango and d <= distancia_aire:
@@ -213,7 +224,7 @@ func _actualizar_interacciones() -> void:
 		return
 	if papalote_cercano != null and papalote_cercano.impulsar(melon):
 		papalotes_usados += 1
-		efectos.avisar("¡Al cielo!", melon.global_position + Vector2(0, -100))
+		efectos.avisar("¡Viento de Xalapa!" if papalote_cercano.corriente else "¡Al cielo!", melon.global_position + Vector2(0, -100))
 	elif cercana != null:
 		_empujar_con(cercana)
 

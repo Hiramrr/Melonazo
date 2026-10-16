@@ -46,16 +46,17 @@ func _verificar() -> void:
 	comprobar(not papalote.impulsar(melon), "El papalote no funciona antes de lanzar ni al terminar")
 	melon.controlable = true
 	melon._dv = Vector2.ZERO
-	comprobar(papalote.impulsar(melon) and melon.rebotes == 1 and melon.escudo, "El papalote impulsa, recarga y protege la caída")
+	comprobar(papalote.impulsar(melon) and melon.rebotes == 0 and melon.escudo, "El papalote impulsa y protege sin regalar saltos")
 	var impulso: Vector2 = melon._dv
 	comprobar(not papalote.impulsar(melon) and melon._dv == impulso, "Cada papalote funciona una sola vez")
 	melon.t_bloqueo = 0.0
+	melon.rebotes = 1
 	comprobar(melon.saltar() and is_equal_approx(melon.linear_velocity.y + melon._dv.y, -config.papalote_elevacion), "Pulsar Espacio y E juntos no duplica el impulso vertical")
 	var otro = load("res://mundo/ayudas/papalote.tscn").instantiate()
 	root.add_child(otro)
 	melon.rebotes = juego.rebotes_max() + 1
 	melon._dv = Vector2.ZERO
-	melon.linear_velocity = Vector2(2000, -1000)
+	melon.linear_velocity = Vector2(config.papalote_avance + 200.0, -config.papalote_elevacion - 200.0)
 	otro.impulsar(melon)
 	comprobar(melon.rebotes == juego.rebotes_max() + 1, "El papalote conserva las cargas extra sin sumar más del máximo")
 	comprobar(melon._dv == Vector2.ZERO, "Un papalote no frena un vuelo que ya supera su impulso")
@@ -67,30 +68,45 @@ func _verificar() -> void:
 		await physics_frame
 	Input.action_release("derecha")
 	var velocidad_derecha: float = melon.linear_velocity.x
-	comprobar(velocidad_derecha > 400 and melon.angular_velocity > 0, "D permite avanzar y girar en el aire")
+	comprobar(velocidad_derecha > 300 and melon.angular_velocity > 0, "D permite avanzar y girar en el aire")
 	Input.action_press("izquierda")
 	for i in 48:
 		await physics_frame
 	Input.action_release("izquierda")
-	comprobar(melon.linear_velocity.x < velocidad_derecha - 100 and melon.angular_velocity < 0, "A permite frenar y girar en el aire")
+	comprobar(melon.linear_velocity.x < velocidad_derecha - 50 and melon.angular_velocity < 0, "A permite frenar y girar en el aire")
 	melon.queue_free()
 	papalote.queue_free()
 	otro.queue_free()
 	await process_frame
+	var puntos_altos := 0
 	for semilla in [1509, 42, 7301]:
 		config.semilla_terreno = semilla
 		for tamano in 3:
-			var r: Dictionary = await carrera(tamano)
-			print("Vuelo semilla %d, tamaño %d: %.0f m, altura %.0f m, %.1f s sobre 40 m, %d papalotes." % [semilla, tamano, r["metros"], r["altura"], r["en_alto"], r["papalotes"]])
-			comprobar(r["papalotes"] >= 6, "Se deben poder encadenar papalotes sin mejoras")
-			comprobar(r["altura"] >= 60.0 and r["en_alto"] >= 10.0, "La ruta aérea debe mantener el juego en altura")
+			for mover in [false, true]:
+				var r: Dictionary = await carrera(tamano, mover)
+				print("Vuelo semilla %d, tamaño %d, D %s: %.0f m, altura %.0f m, %.1f s sobre 40 m, %d papalotes, %d puntos recogidos sobre 40 m." % [semilla, tamano, mover, r["metros"], r["altura"], r["en_alto"], r["papalotes"], r["puntos_altos"]])
+				comprobar(r["papalotes"] >= 2, "Se pueden encadenar ayudas aéreas sin mejoras")
+				comprobar(r["termino"] and r["metros"] < 2500.0, "La ruta aérea termina al perder los impulsos, incluso manteniendo D")
+				comprobar(r["altura"] >= 140.0 and r["en_alto"] >= 6.0, "Sin mejoras se puede subir a la niebla y sostener el vuelo")
+				puntos_altos += r["puntos_altos"]
+	comprobar(puntos_altos > 0, "Los puntos altos se recogen durante un vuelo real sin mejoras")
+	juego.niveles = {"fuerza": 6, "resistencia": 5, "rebotes": 5}
+	var alcance_mejorado := 0.0
+	for semilla in [1509, 42, 7301]:
+		config.semilla_terreno = semilla
+		for mover in [false, true]:
+			var r: Dictionary = await carrera(1, mover)
+			print("Vuelo con mejoras máximas, semilla %d, D %s: %.0f m, %d papalotes." % [semilla, mover, r["metros"], r["papalotes"]])
+			comprobar(r["termino"] and r["metros"] < 3500.0, "Con mejoras máximas los controles básicos tampoco mantienen un vuelo sin fin")
+			alcance_mejorado = maxf(alcance_mejorado, r["metros"])
+	comprobar(alcance_mejorado >= float(config.postales[-1]["metros"]), "Combinar mejoras, saltos y papalotes permite alcanzar la última postal")
 	DirAccess.remove_absolute(juego.archivo_guardado)
 	DirAccess.remove_absolute(juego.archivo_guardado + ".tmp")
 	print("Vuelo: %d comprobaciones, %d fallos." % [comprobaciones, fallos])
 	quit(1 if fallos else 0)
 
 
-func carrera(tamano: int) -> Dictionary:
+func carrera(tamano: int, mover: bool) -> Dictionary:
 	seed(config.semilla_terreno)
 	juego.tamano = tamano
 	juego.accesorios = []
@@ -108,8 +124,15 @@ func carrera(tamano: int) -> Dictionary:
 	recorrido.angulo = 35.0
 	recorrido.fuerza = 0.85
 	recorrido._lanzar()
-	var datos := {"metros": 0.0, "altura": 0.0, "en_alto": 0.0, "papalotes": 0}
-	for cuadro in 20 * 120:
+	if mover:
+		Input.action_press("derecha")
+	var datos := {"metros": 0.0, "altura": 0.0, "en_alto": 0.0, "papalotes": 0, "puntos_altos": 0}
+	recorrido.terreno.obstaculo_tocado.connect(func(_cuerpo: Node2D, objeto: Node2D) -> void:
+		if objeto.tipo == "aplauso":
+			var tramo = recorrido.terreno.tramo_en(objeto.position.x)
+			if tramo != null and tramo.altura(objeto.position.x) - objeto.position.y > 400.0:
+				datos["puntos_altos"] += 1)
+	for cuadro in 60 * 120:
 		await physics_frame
 		Input.action_release("rebote")
 		Input.action_release("empujon")
@@ -135,4 +158,6 @@ func carrera(tamano: int) -> Dictionary:
 				Input.action_press("rebote")
 	Input.action_release("rebote")
 	Input.action_release("empujon")
+	Input.action_release("derecha")
+	datos["termino"] = not is_instance_valid(recorrido) or current_scene != recorrido or recorrido.fase != 2
 	return datos

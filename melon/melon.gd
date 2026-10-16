@@ -6,6 +6,8 @@ extends RigidBody2D
 ##   Cuerpo                  CollisionShape2D circular (el radio depende del tamaño)
 ##   Accesorio1..3           una forma convexa por accesorio equipado, en su lado;
 ##                           por eso importa de qué lado cae el melón
+##   Aspecto                 dibujo que se conserva hasta cambiar equipo o romperse
+##   Lienzo                  textura del aspecto, dibujada una vez a doble resolución
 ##   Estela                  rastro decorativo (melon/estela.gd)
 ##
 ## Qué hace este script:
@@ -19,13 +21,14 @@ extends RigidBody2D
 
 signal aviso(texto: String)             ## texto flotante para el recorrido
 signal se_rompio                        ## sin resistencia: termina la carrera
+signal danado(cantidad: float)          ## perdió resistencia (1.0 = un golpe completo)
 
 # --- Estado general ----------------------------------------------------------
 var tamano := 1                         # índice en Config.tamanos
 var slots: Array = [null, null, null]   # accesorio por tecla 1-2-3 (null = usado/perdido)
 var radio := 22.0
-var resistencia := 3                    # golpes que aguanta antes de romperse
-var resistencia_max := 3
+var resistencia := 3.0                  # golpes que aguanta antes de romperse; las caídas
+var resistencia_max := 3.0              # medianas quitan fracciones
 var rebotes := 1                        # cargas para saltar o rebotar con impulso
 var controlable := false                # true entre el lanzamiento y el final
 var roto := false
@@ -70,10 +73,15 @@ var _activos: Array = []                # [{acc, t}] accesorios con física prop
 var _consulta: PhysicsShapeQueryParameters2D
 
 
+func _ready() -> void:
+	$Lienzo.world_2d = World2D.new()
+	$Aspecto.texture = $Lienzo.get_texture()
+
+
 ## Prepara el melón para una carrera. ids = accesorios equipados por tecla.
 
 
-func configurar(p_tamano: int, ids: Array, p_resistencia: int, p_rebotes: int) -> void:
+func configurar(p_tamano: int, ids: Array, p_resistencia: float, p_rebotes: int) -> void:
 	tamano = p_tamano
 	var d := datos()
 	radio = d["radio"]
@@ -101,7 +109,7 @@ func configurar(p_tamano: int, ids: Array, p_resistencia: int, p_rebotes: int) -
 		if Config.accesorios.has(ids[i]):
 			slots[i] = ids[i]
 	_crear_formas()
-	queue_redraw()
+	_actualizar_aspecto()
 
 
 ## Valores del tamaño actual en Config.tamanos.
@@ -137,7 +145,7 @@ func _quitar_slot(i: int) -> void:
 			_formas.erase(nodo)
 			nodo.set_deferred("disabled", true)
 	slots[i] = null
-	queue_redraw()
+	_actualizar_aspecto()
 
 
 # --- Pedidos desde fuera -----------------------------------------------------
@@ -160,17 +168,25 @@ func fijar_velocidad(v: Vector2) -> void:
 	_v_fijar = v
 
 
-## Resta un punto de resistencia, salvo si algo lo protege.
+## Resta un golpe completo de resistencia, salvo si algo lo protege.
 func golpe() -> void:
-	if t_invulnerable > 0.0 or t_niebla > 0.0 or t_chile > 0.0 or roto:
+	danar(1.0)
+
+
+## Resta resistencia, salvo si algo lo protege. Solo un golpe completo da
+## invulnerabilidad y aviso; los raspones solo bajan la barra.
+func danar(cantidad: float) -> void:
+	if t_invulnerable > 0.0 or t_niebla > 0.0 or t_chile > 0.0 or roto or cantidad <= 0.0:
 		return
-	resistencia -= 1
-	t_invulnerable = Config.invulnerable_tras_golpe
-	aviso.emit("¡Golpe! (%d)" % resistencia)
-	if resistencia <= 0:
+	resistencia = maxf(0.0, resistencia - cantidad)
+	danado.emit(cantidad)
+	if cantidad >= 1.0:
+		t_invulnerable = Config.invulnerable_tras_golpe
+		aviso.emit("¡Golpe!")
+	if resistencia <= 0.0:
 		roto = true
 		controlable = false
-		queue_redraw()
+		_actualizar_aspecto()
 		se_rompio.emit()
 
 
@@ -224,8 +240,8 @@ func proteger() -> void:
 
 
 ## Recupera resistencia sin pasar del máximo.
-func reparar(puntos := 1) -> void:
-	resistencia = mini(resistencia_max, resistencia + puntos)
+func reparar(puntos := 1.0) -> void:
+	resistencia = minf(resistencia_max, resistencia + puntos)
 
 
 ## Durante dur segundos los aplausos cercanos vuelan hacia el melón.
@@ -277,16 +293,13 @@ func recibir_poder(id: String) -> void:
 	aviso.emit("¡%s!" % Config.poderes[id]["nombre"])
 
 
-## Texto para el HUD con los efectos activos y sus segundos restantes.
-func efectos_activos() -> String:
-	var efectos: Array = []
+## Efectos activos para el HUD: [[nombre, segundos restantes], ...].
+func efectos_lista() -> Array:
 	var lista: Array = [["Café", t_cafe], ["Chile", t_chile], ["Niebla", t_niebla], ["Aplausos al vuelo", t_iman], ["Planeo", t_planeo], ["Paraguas", t_paraguas], ["Llantitas", t_llantas]]
 	for activo in _activos:
 		lista.append([activo["acc"].nombre, activo["t"]])
-	for efecto in lista:
-		if efecto[1] > 0.0:
-			efectos.append("%s %.1f s" % [efecto[0], efecto[1]])
-	return " · ".join(efectos)
+	return lista.filter(func(efecto: Array) -> bool: return efecto[1] > 0.0)
+
 
 
 # --- Física ------------------------------------------------------------------
@@ -446,12 +459,15 @@ func _aterrizar(state: PhysicsDirectBodyState2D, nrm: Vector2, v: Vector2) -> Ve
 			nueva += adelante * impacto * Config.caida_a_rodado
 		state.angular_velocity = tang.length() / radio * signf(tang.x)
 
-	if impacto > float(datos()["umbral_caida"]) and t_niebla <= 0.0 and t_chile <= 0.0:
+	var umbral: float = datos()["umbral_caida"]
+	if impacto > umbral and t_niebla <= 0.0 and t_chile <= 0.0:
 		if escudo:
 			escudo = false
 			aviso.emit("El escudo amortiguó la caída")
 		else:
 			golpe()
+	elif impacto > umbral * Config.raspon_desde:
+		danar(Config.raspon_max * inverse_lerp(umbral * Config.raspon_desde, umbral, impacto))
 	return nueva
 
 
@@ -467,8 +483,16 @@ func _slot_en_contacto(state: PhysicsDirectBodyState2D) -> int:
 
 # --- Dibujo ------------------------------------------------------------------
 
+func _actualizar_aspecto() -> void:
+	$Lienzo.render_target_update_mode = SubViewport.UPDATE_ONCE
+	$Lienzo/Dibujo.queue_redraw()
+
+
+func _dibujar_aspecto() -> void:
+	Aspecto.dibujar_melon($Lienzo/Dibujo, radio, slots, roto)
+
+
 func _draw() -> void:
-	Aspecto.dibujar_melon(self, radio, slots, roto)
 	if not controlable:
 		return
 	if t_embestida > 0.0:

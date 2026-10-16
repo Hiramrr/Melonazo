@@ -1,51 +1,162 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene format=3]
 
 [ext_resource type="Script" path="res://pantallas/recorrido/hud/hud.gd" id="1"]
 [ext_resource type="Theme" path="res://interfaz/tema_xalapa.tres" id="2"]
 [ext_resource type="PackedScene" path="res://pantallas/recorrido/hud/slot_accesorio.tscn" id="3"]
+[ext_resource type="Script" path="res://interfaz/ficha.gd" id="ficha"]
+[ext_resource type="Script" path="res://interfaz/pips.gd" id="pips"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/aplauso.svg" id="ico_aplauso"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/carisma.svg" id="ico_carisma"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/poder.svg" id="ico_poder"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/impulso.svg" id="ico_impulso"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/altura.svg" id="ico_altura"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/papalote.svg" id="ico_papalote"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/pausa.svg" id="ico_pausa"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/jugar.svg" id="ico_jugar"]
+[ext_resource type="Texture2D" path="res://recursos/iconos/lugar.svg" id="ico_lugar"]
 
-[sub_resource type="StyleBoxFlat" id="Panel"]
-bg_color = Color(0.125, 0.239, 0.22, 1)
-content_margin_left = 16.0
-content_margin_top = 12.0
-content_margin_right = 16.0
-content_margin_bottom = 12.0
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_left = 4
-corner_radius_bottom_right = 4
-
-[sub_resource type="StyleBoxFlat" id="Claro"]
-content_margin_left = 8.0
-content_margin_top = 6.0
-content_margin_right = 8.0
-content_margin_bottom = 6.0
-bg_color = Color(1, 0.98, 0.925, 1)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.125, 0.239, 0.22, 1)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_left = 4
-corner_radius_bottom_right = 4
-
-[sub_resource type="StyleBoxFlat" id="PausaPanel"]
-content_margin_left = 32.0
-content_margin_top = 32.0
-content_margin_right = 32.0
-content_margin_bottom = 32.0
-bg_color = Color(1, 0.98, 0.925, 1)
+[sub_resource type="StyleBoxFlat" id="Oscuro"]
+content_margin_left = 14.0
+content_margin_top = 8.0
+content_margin_right = 14.0
+content_margin_bottom = 10.0
+bg_color = Color(0.09, 0.18, 0.165, 0.78)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
 border_color = Color(0.125, 0.239, 0.22, 1)
-corner_radius_top_left = 4
-corner_radius_top_right = 4
-corner_radius_bottom_left = 4
-corner_radius_bottom_right = 4
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="Aviso"]
+content_margin_left = 12.0
+content_margin_top = 6.0
+content_margin_right = 20.0
+content_margin_bottom = 8.0
+bg_color = Color(0.09, 0.18, 0.165, 0.85)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 6
+border_color = Color(1, 0.976, 0.925, 0.9)
+corner_radius_top_left = 26
+corner_radius_top_right = 26
+corner_radius_bottom_right = 26
+corner_radius_bottom_left = 26
+
+[sub_resource type="StyleBoxFlat" id="BarraRuta"]
+content_margin_top = 3.0
+content_margin_bottom = 3.0
+bg_color = Color(1, 0.976, 0.925, 0.25)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="RellenoRuta"]
+bg_color = Color(1, 0.784, 0.239, 1)
+corner_radius_top_left = 5
+corner_radius_top_right = 5
+corner_radius_bottom_right = 5
+corner_radius_bottom_left = 5
+
+[sub_resource type="StyleBoxFlat" id="BarraResistencia"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+bg_color = Color(0.09, 0.18, 0.165, 0.9)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 0.976, 0.925, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="RellenoResistencia"]
+bg_color = Color(0.424, 0.765, 0.373, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="BarraFuerza"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+bg_color = Color(0.09, 0.18, 0.165, 0.9)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 4
+border_color = Color(1, 0.976, 0.925, 1)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+
+[sub_resource type="StyleBoxFlat" id="RellenoFuerza"]
+bg_color = Color(1, 0.784, 0.239, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="BotonRedondo"]
+content_margin_left = 10.0
+content_margin_top = 8.0
+content_margin_right = 10.0
+content_margin_bottom = 12.0
+bg_color = Color(0.91, 0.333, 0.247, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 7
+border_color = Color(0.125, 0.239, 0.22, 1)
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+
+[sub_resource type="StyleBoxFlat" id="BotonRedondoPulsado"]
+content_margin_left = 10.0
+content_margin_top = 12.0
+content_margin_right = 10.0
+content_margin_bottom = 8.0
+bg_color = Color(0.8, 0.27, 0.2, 1)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.125, 0.239, 0.22, 1)
+corner_radius_top_left = 30
+corner_radius_top_right = 30
+corner_radius_bottom_right = 30
+corner_radius_bottom_left = 30
+expand_margin_top = -4.0
+
+[sub_resource type="StyleBoxFlat" id="Cinta"]
+content_margin_left = 40.0
+content_margin_top = 4.0
+content_margin_right = 40.0
+content_margin_bottom = 10.0
+bg_color = Color(0.91, 0.333, 0.247, 1)
+border_width_left = 4
+border_width_top = 4
+border_width_right = 4
+border_width_bottom = 8
+border_color = Color(0.125, 0.239, 0.22, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
 
 [node name="HUD" type="CanvasLayer"]
 process_mode = 3
@@ -61,53 +172,154 @@ grow_vertical = 2
 mouse_filter = 2
 theme = ExtResource("2")
 
-[node name="Datos" type="PanelContainer" parent="Pantalla"]
-offset_left = 20.0
-offset_top = 16.0
-offset_right = 372.0
-offset_bottom = 166.0
+[node name="Datos" type="VBoxContainer" parent="Pantalla"]
+offset_left = 22.0
+offset_top = 10.0
+offset_right = 402.0
+offset_bottom = 200.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("Panel")
+theme_override_constants/separation = 4
 
-
-[node name="Filas" type="VBoxContainer" parent="Pantalla/Datos"]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="Nombre" type="Label" parent="Pantalla/Datos/Filas"]
+[node name="Nombre" type="Label" parent="Pantalla/Datos"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.84, 0.9, 0.78, 1)
-theme_override_font_sizes/font_size = 13
+theme_type_variation = &"TextoHUD"
+theme_override_font_sizes/font_size = 15
+theme_override_constants/outline_size = 6
 text = "Melón · Récord 0 m"
 clip_text = true
 
-[node name="Distancia" type="Label" parent="Pantalla/Datos/Filas"]
+[node name="Distancia" type="Label" parent="Pantalla/Datos"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(1, 0.98, 0.925, 1)
-theme_override_font_sizes/font_size = 40
-text = "0 m"
 theme_type_variation = &"Titulo"
+theme_override_font_sizes/font_size = 64
+theme_override_constants/line_spacing = -12
+text = "0 m"
 
+[node name="Resistencia" type="ProgressBar" parent="Pantalla/Datos"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(240, 26)
+layout_mode = 2
+size_flags_horizontal = 0
+mouse_filter = 2
+theme_override_styles/background = SubResource("BarraResistencia")
+theme_override_styles/fill = SubResource("RellenoResistencia")
+max_value = 3.0
+step = 0.0
+value = 3.0
+show_percentage = false
 
-[node name="Estado" type="Label" parent="Pantalla/Datos/Filas"]
+[node name="Impulsos" type="Control" parent="Pantalla/Datos"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_font_sizes/font_size = 15
-text = "Resistencia · Rebotes · Carisma"
-theme_override_colors/font_color = Color(0.84, 0.9, 0.78, 1)
+size_flags_horizontal = 0
+mouse_filter = 2
+script = ExtResource("pips")
+icono = ExtResource("ico_impulso")
+lado = 26.0
+apagado = Color(0.1, 0.15, 0.14, 0.55)
 
+[node name="Contadores" type="HBoxContainer" parent="Pantalla/Datos"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 6
+
+[node name="Aplausos" type="PanelContainer" parent="Pantalla/Datos/Contadores"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("ficha")
+icono = ExtResource("ico_aplauso")
+tam_texto = 17
+lado_icono = 24.0
+
+[node name="Carisma" type="PanelContainer" parent="Pantalla/Datos/Contadores"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("ficha")
+icono = ExtResource("ico_carisma")
+tam_texto = 17
+lado_icono = 24.0
+
+[node name="Poderes" type="PanelContainer" parent="Pantalla/Datos/Contadores"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("ficha")
+icono = ExtResource("ico_poder")
+tam_texto = 17
+lado_icono = 24.0
+
+[node name="Lugar" type="PanelContainer" parent="Pantalla"]
+unique_name_in_owner = true
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -190.0
+offset_top = 14.0
+offset_right = 190.0
+offset_bottom = 90.0
+grow_horizontal = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Oscuro")
+
+[node name="Caja" type="VBoxContainer" parent="Pantalla/Lugar"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 4
+
+[node name="Fila" type="HBoxContainer" parent="Pantalla/Lugar/Caja"]
+layout_mode = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="Pin" type="TextureRect" parent="Pantalla/Lugar/Caja/Fila"]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+mouse_filter = 2
+texture = ExtResource("ico_lugar")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="LugarActual" type="Label" parent="Pantalla/Lugar/Caja/Fila"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TextoHUD"
+theme_override_font_sizes/font_size = 19
+text = "Barrio de Xallitic"
+
+[node name="Ruta" type="ProgressBar" parent="Pantalla/Lugar/Caja"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+mouse_filter = 2
+theme_override_styles/background = SubResource("BarraRuta")
+theme_override_styles/fill = SubResource("RellenoRuta")
+max_value = 1.0
+show_percentage = false
+
+[node name="Siguiente" type="Label" parent="Pantalla/Lugar/Caja"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TextoHUD"
+theme_override_colors/font_color = Color(0.86, 0.92, 0.84, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_constants/outline_size = 4
+text = "Siguiente: Callejón del Diamante · 100 m"
+horizontal_alignment = 1
+clip_text = true
 
 [node name="Equipo" type="HBoxContainer" parent="Pantalla"]
 unique_name_in_owner = true
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -392.0
-offset_top = 16.0
-offset_right = -112.0
-offset_bottom = 108.0
+offset_left = -350.0
+offset_top = 14.0
+offset_right = -94.0
+offset_bottom = 98.0
 grow_horizontal = 0
 mouse_filter = 2
 theme_override_constants/separation = 8
@@ -131,141 +343,161 @@ unique_name_in_owner = true
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -100.0
+offset_left = -82.0
 offset_top = 16.0
 offset_right = -20.0
-offset_bottom = 60.0
+offset_bottom = 78.0
 grow_horizontal = 0
-theme_type_variation = &"Button"
-text = "II   Esc"
+tooltip_text = "Pausa (Esc)"
+focus_mode = 0
+theme_override_constants/icon_max_width = 26
+theme_override_styles/normal = SubResource("BotonRedondo")
+theme_override_styles/hover = SubResource("BotonRedondo")
+theme_override_styles/pressed = SubResource("BotonRedondoPulsado")
+theme_override_styles/hover_pressed = SubResource("BotonRedondoPulsado")
+icon = ExtResource("ico_pausa")
+icon_alignment = 1
+expand_icon = true
 
-
-[node name="Vuelo" type="Label" parent="Pantalla"]
+[node name="Vuelo" type="HBoxContainer" parent="Pantalla"]
 unique_name_in_owner = true
 visible = false
+anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -392.0
-offset_top = 120.0
+offset_left = -350.0
+offset_top = 110.0
 offset_right = -20.0
-offset_bottom = 174.0
+offset_bottom = 146.0
 grow_horizontal = 0
 mouse_filter = 2
-theme_override_font_sizes/font_size = 15
-theme_override_styles/normal = SubResource("Claro")
-text = "Altura 0 m · Papalotes 0\nEspacio usa 1 impulso · E recarga"
+theme_override_constants/separation = 8
+alignment = 2
 
-
-[node name="Lugar" type="Label" parent="Pantalla"]
+[node name="Altura" type="PanelContainer" parent="Pantalla/Vuelo"]
 unique_name_in_owner = true
-offset_left = 20.0
-offset_top = 178.0
-offset_right = 372.0
-offset_bottom = 230.0
+layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_outline_color = Color(0.08, 0.18, 0.15, 1)
-theme_override_constants/outline_size = 0
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("Claro")
-text = "Barrio de Xallitic"
+tooltip_text = "Altura sobre la calle"
+script = ExtResource("ficha")
+icono = ExtResource("ico_altura")
+texto = "0 m"
+tam_texto = 17
+lado_icono = 24.0
 
+[node name="Papalotes" type="PanelContainer" parent="Pantalla/Vuelo"]
+unique_name_in_owner = true
+layout_mode = 2
+mouse_filter = 2
+tooltip_text = "Papalotes usados"
+script = ExtResource("ficha")
+icono = ExtResource("ico_papalote")
+tam_texto = 17
+lado_icono = 24.0
+
+[node name="Efectos" type="HBoxContainer" parent="Pantalla"]
+unique_name_in_owner = true
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = -150.0
+offset_right = -24.0
+offset_bottom = -114.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/separation = 8
+alignment = 1
 
 [node name="Lanzamiento" type="VBoxContainer" parent="Pantalla"]
 unique_name_in_owner = true
-anchors_preset = 10
+anchors_preset = 7
 anchor_left = 0.5
-anchor_right = 0.5
 anchor_top = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
-offset_left = -200.0
-offset_top = -170.0
-offset_right = 200.0
-offset_bottom = -112.0
+offset_left = -270.0
+offset_top = -200.0
+offset_right = 270.0
+offset_bottom = -110.0
 grow_horizontal = 2
-mouse_filter = 2
-theme_override_constants/separation = 8
 grow_vertical = 0
+mouse_filter = 2
+theme_override_constants/separation = 2
 
+[node name="ZonaPerfecta" type="Label" parent="Pantalla/Lanzamiento"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TextoHUD"
+theme_override_font_sizes/font_size = 18
+text = "ZONA PERFECTA"
+horizontal_alignment = 2
 
 [node name="Fuerza" type="ProgressBar" parent="Pantalla/Lanzamiento"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 18)
+custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 mouse_filter = 2
+theme_override_styles/background = SubResource("BarraFuerza")
+theme_override_styles/fill = SubResource("RellenoFuerza")
 show_percentage = false
 
+[node name="Aviso" type="PanelContainer" parent="Pantalla"]
+unique_name_in_owner = true
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -150.0
+offset_top = -104.0
+offset_right = 150.0
+offset_bottom = -54.0
+grow_horizontal = 2
+grow_vertical = 0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("Aviso")
 
-[node name="ZonaPerfecta" type="Label" parent="Pantalla/Lanzamiento"]
+[node name="Fila" type="HBoxContainer" parent="Pantalla/Aviso"]
 layout_mode = 2
 mouse_filter = 2
-theme_override_colors/font_outline_color = Color(0.08, 0.18, 0.15, 1)
-theme_override_constants/outline_size = 0
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("Claro")
-text = "Zona perfecta   80 % a 100 %"
-horizontal_alignment = 1
+theme_override_constants/separation = 10
+alignment = 1
 
-
-[node name="Indicacion" type="Label" parent="Pantalla"]
+[node name="Tecla" type="Label" parent="Pantalla/Aviso/Fila"]
 unique_name_in_owner = true
-anchors_preset = 10
-anchor_left = 0.5
-anchor_right = 0.5
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = -300.0
-offset_top = -106.0
-offset_right = 300.0
-offset_bottom = -62.0
-grow_horizontal = 2
-mouse_filter = 2
-theme_override_colors/font_outline_color = Color(0.08, 0.18, 0.15, 1)
-theme_override_constants/outline_size = 0
-theme_override_font_sizes/font_size = 20
-theme_override_styles/normal = SubResource("Claro")
-text = "Espacio para fijar el ángulo"
-horizontal_alignment = 1
-grow_vertical = 0
-
-
-[node name="Efectos" type="Label" parent="Pantalla"]
-unique_name_in_owner = true
-anchors_preset = 12
-anchor_top = 1.0
-anchor_bottom = 1.0
-anchor_right = 1.0
-offset_left = 24.0
-offset_top = -216.0
-offset_right = -24.0
-offset_bottom = -182.0
-grow_vertical = 0
-mouse_filter = 2
-theme_override_colors/font_color = Color(1, 0.98, 0.925, 1)
-theme_override_colors/font_outline_color = Color(0.08, 0.18, 0.15, 1)
-theme_override_constants/outline_size = 5
+layout_mode = 2
+size_flags_vertical = 4
+theme_type_variation = &"Tecla"
 theme_override_font_sizes/font_size = 18
-autowrap_mode = 2
+text = "Espacio"
 
+[node name="Indicacion" type="Label" parent="Pantalla/Aviso/Fila"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TextoHUD"
+theme_override_font_sizes/font_size = 22
+text = "Fijar el ángulo"
+vertical_alignment = 1
 
-[node name="Ayuda" type="Label" parent="Pantalla"]
-anchors_preset = 12
+[node name="Ayuda" type="HBoxContainer" parent="Pantalla"]
+unique_name_in_owner = true
+anchors_preset = 7
+anchor_left = 0.5
 anchor_top = 1.0
+anchor_right = 0.5
 anchor_bottom = 1.0
-anchor_right = 1.0
-offset_left = 20.0
-offset_top = -46.0
-offset_right = -20.0
-offset_bottom = -16.0
+offset_left = -400.0
+offset_top = -44.0
+offset_right = 400.0
+offset_bottom = -12.0
+grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
-theme_override_colors/font_outline_color = Color(0.08, 0.18, 0.15, 1)
-theme_override_constants/outline_size = 0
-theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("Panel")
-text = "A / D  Mover y girar     Espacio  Saltar / rebotar     E  Papalote / público     1 / 2 / 3  Accesorios"
-theme_override_colors/font_color = Color(1, 0.98, 0.925, 1)
-horizontal_alignment = 1
-
+theme_override_constants/separation = 6
+alignment = 1
 
 [node name="Pausa" type="ColorRect" parent="Pantalla"]
 unique_name_in_owner = true
@@ -276,8 +508,7 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0.08, 0.16, 0.14, 0.88)
-
+color = Color(0.06, 0.13, 0.12, 0.8)
 
 [node name="Centro" type="CenterContainer" parent="Pantalla/Pausa"]
 layout_mode = 1
@@ -287,41 +518,75 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="Panel" type="PanelContainer" parent="Pantalla/Pausa/Centro"]
+[node name="Columna" type="VBoxContainer" parent="Pantalla/Pausa/Centro"]
+unique_name_in_owner = true
 layout_mode = 2
-theme_override_styles/panel = SubResource("PausaPanel")
+theme_override_constants/separation = -22
 
-[node name="Opciones" type="VBoxContainer" parent="Pantalla/Pausa/Centro/Panel"]
-custom_minimum_size = Vector2(400, 0)
+[node name="Cinta" type="PanelContainer" parent="Pantalla/Pausa/Centro/Columna"]
+z_index = 1
 layout_mode = 2
-theme_override_constants/separation = 20
+size_flags_horizontal = 4
+theme_override_styles/panel = SubResource("Cinta")
 
-[node name="Titulo" type="Label" parent="Pantalla/Pausa/Centro/Panel/Opciones"]
+[node name="Titulo" type="Label" parent="Pantalla/Pausa/Centro/Columna/Cinta"]
 layout_mode = 2
-theme_override_font_sizes/font_size = 36
+theme_type_variation = &"Titulo"
+theme_override_font_sizes/font_size = 44
+text = "PAUSA"
+horizontal_alignment = 1
+
+[node name="Panel" type="PanelContainer" parent="Pantalla/Pausa/Centro/Columna"]
+layout_mode = 2
+
+[node name="Opciones" type="VBoxContainer" parent="Pantalla/Pausa/Centro/Columna/Panel"]
+custom_minimum_size = Vector2(440, 0)
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Respiro" type="Label" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones"]
+custom_minimum_size = Vector2(0, 30)
+layout_mode = 2
+theme_type_variation = &"Subtitulo"
+theme_override_font_sizes/font_size = 20
 text = "Un respiro."
 horizontal_alignment = 1
-theme_type_variation = &"Titulo"
+vertical_alignment = 2
 
-
-[node name="Continuar" type="Button" parent="Pantalla/Pausa/Centro/Panel/Opciones"]
+[node name="Continuar" type="Button" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
 theme_type_variation = &"Principal"
+theme_override_font_sizes/font_size = 24
 text = "Seguir rodando"
+icon = ExtResource("ico_jugar")
+expand_icon = true
 
-[node name="Aviso" type="Label" parent="Pantalla/Pausa/Centro/Panel/Opciones"]
+[node name="Volver" type="Button" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
+theme_override_font_sizes/font_size = 19
+text = "Volver al taller"
+
+[node name="Aviso" type="Label" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones"]
+layout_mode = 2
+theme_type_variation = &"Suave"
 text = "Volver al taller abandona esta carrera."
 horizontal_alignment = 1
 
-[node name="Volver" type="Button" parent="Pantalla/Pausa/Centro/Panel/Opciones"]
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 48)
+[node name="Separador" type="HSeparator" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones"]
 layout_mode = 2
-text = "Volver al taller"
+
+[node name="Controles" type="GridContainer" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 4
+theme_override_constants/h_separation = 10
+theme_override_constants/v_separation = 6
+columns = 2
 
 [connection signal="pressed" from="Pantalla/BotonPausa" to="." method="_alternar_pausa"]
-[connection signal="pressed" from="Pantalla/Pausa/Centro/Panel/Opciones/Continuar" to="." method="_alternar_pausa"]
-[connection signal="pressed" from="Pantalla/Pausa/Centro/Panel/Opciones/Volver" to="." method="_volver"]
+[connection signal="pressed" from="Pantalla/Pausa/Centro/Columna/Panel/Opciones/Continuar" to="." method="_alternar_pausa"]
+[connection signal="pressed" from="Pantalla/Pausa/Centro/Columna/Panel/Opciones/Volver" to="." method="_volver"]

@@ -2,7 +2,7 @@
 
 [ext_resource type="Script" path="res://mundo/ayudas/poder.gd" id="1"]
 [sub_resource type="CircleShape2D" id="Recogida"]
-radius = 28.0
+radius = 40.0
 
 [node name="Poder" type="Area2D"]
 z_index = 4
@@ -16,14 +16,14 @@ shape = SubResource("Recogida")
 
 [node name="Nombre" type="Label" parent="."]
 offset_left = -100.0
-offset_top = -51.0
+offset_top = -68.0
 offset_right = 100.0
-offset_bottom = -29.0
+offset_bottom = -43.0
 mouse_filter = 2
 theme_override_colors/font_color = Color(1, 0.97, 0.87, 1)
 theme_override_colors/font_outline_color = Color(0.12, 0.22, 0.18, 1)
 theme_override_constants/outline_size = 5
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 text = "Poder xalapeño"
 horizontal_alignment = 1
 

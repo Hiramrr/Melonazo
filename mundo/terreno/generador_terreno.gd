@@ -45,7 +45,8 @@ const COLORES_ROPA: Array = [
 
 var tramos: Array = []                 # Tramo vivos, de izquierda a derecha
 var rng := RandomNumberGenerator.new() # forma del suelo, obstáculos, público, aplausos y poderes
-var rng_aire := RandomNumberGenerator.new()  # solo papalotes: así no cambian la ruta del suelo
+var rng_aire := RandomNumberGenerator.new()  # papalotes; no cambian la ruta del suelo
+var rng_premios := RandomNumberGenerator.new()  # puntos y poderes en altura
 
 var _fin := Vector2.ZERO               # último punto del último tramo
 var _n_tramos := 0
@@ -53,17 +54,27 @@ var _poderes_generados := 0
 var _siguiente_poder_x := 0.0          # los poderes siguen su propia separación entre tramos
 var _papalotes_generados := 0
 var _siguiente_papalote_x := 0.0
+var _altura_papalote := 0.0
+var _siguientes_premios: Array[float] = []
+var _grupos_premios: Array[int] = []
+var _patrones_premios: Array[int] = []
 
 
 ## Fija la semilla (Config.semilla_terreno; -1 = al azar) y crea los primeros tramos.
 func iniciar() -> void:
 	_siguiente_poder_x = Config.primer_poder_x
 	_siguiente_papalote_x = Config.primer_papalote_x
+	_altura_papalote = Config.altura_papalotes.x
 	if Config.semilla_terreno >= 0:
 		rng.seed = Config.semilla_terreno
 	else:
 		rng.randomize()
 	rng_aire.seed = rng.seed + 871
+	rng_premios.seed = rng.seed + 1747
+	for i in Config.franjas_premios_aire.size():
+		_siguientes_premios.append(900.0 + i * 320.0 + rng_premios.randf_range(0.0, 400.0))
+		_grupos_premios.append(0)
+		_patrones_premios.append(-1)
 	while _fin.x < Config.generar_adelante:
 		_crear_tramo()
 
@@ -161,9 +172,10 @@ func _poblar(t: Tramo) -> void:
 	_poner_casas(t)
 	_poner_obstaculos(t, inicio)
 	_poner_publico(t)
-	_poner_aplausos(t, inicio)
+	_poner_aplausos(t, maxf(t.x0 + 60.0, 280.0))
 	_poner_poderes(t)
 	_poner_papalotes(t)
+	_poner_premios_aire(t)
 	_poner_postales(t)
 	_poner_marcadores(t)
 	t.queue_redraw()
@@ -240,14 +252,14 @@ func _poner_publico(t: Tramo) -> void:
 		x += rng.randf_range(Config.separacion_publico.x, Config.separacion_publico.y)
 
 
-## Grupos de cuatro aplausos en arco, a una altura que pide saltar.
+## Grupos de monedas en arcos bajos, al alcance de saltos cortos desde la salida.
 func _poner_aplausos(t: Tramo, inicio: float) -> void:
-	var x := inicio + rng.randf_range(0.0, Config.separacion_aplausos.x)
-	while x < t.x1 - 200.0:
+	var x := inicio + rng.randf_range(0.0, 380.0)
+	while x < t.x1 - 220.0:
 		var alto := rng.randf_range(Config.altura_aplausos.x, Config.altura_aplausos.y)
-		for i in 4:
-			var ax := x + i * 45.0
-			var ap := _crear_obstaculo("aplauso", Vector2(ax, t.altura(ax) - alto - sin(i / 3.0 * PI) * 40.0))
+		for i in 3:
+			var ax := x + i * 60.0
+			var ap := _crear_obstaculo("aplauso", Vector2(ax, t.altura(ax) - alto - sin(i / 2.0 * PI) * 25.0))
 			ap.name = "Aplauso"
 			t.get_node("Coleccionables").add_child(ap)
 		x += rng.randf_range(Config.separacion_aplausos.x, Config.separacion_aplausos.y)
@@ -258,29 +270,73 @@ func _poner_aplausos(t: Tramo, inicio: float) -> void:
 func _poner_poderes(t: Tramo) -> void:
 	while _siguiente_poder_x < t.x1:
 		var x := _siguiente_poder_x
-		var poder := PoderEscena.instantiate() as Poder
-		poder.tipo = Config.orden_poderes[_poderes_generados % Config.orden_poderes.size()]
-		poder.name = poder.tipo.capitalize()
-		poder.position = Vector2(x, t.altura(x) - rng.randf_range(Config.altura_poderes.x, Config.altura_poderes.y))
+		var tipo: String = Config.orden_poderes[_poderes_generados % Config.orden_poderes.size()]
+		var poder := _crear_poder(tipo, Vector2(x, t.altura(x) - rng.randf_range(Config.altura_poderes.x, Config.altura_poderes.y)))
 		t.get_node("Coleccionables").add_child(poder)
-		poder.recogido.connect(poder_recogido.emit)
 		_poderes_generados += 1
 		_siguiente_poder_x += rng.randf_range(Config.separacion_poderes.x, Config.separacion_poderes.y)
 
 
-## Ruta aérea: un papalote cada cierta distancia, con aplausos en diagonal que
-## marcan la subida. Usa rng_aire para no alterar la ruta del suelo.
+func _crear_poder(tipo: String, posicion: Vector2) -> Poder:
+	var poder := PoderEscena.instantiate() as Poder
+	poder.tipo = tipo
+	poder.name = tipo.capitalize()
+	poder.position = posicion
+	poder.recogido.connect(poder_recogido.emit)
+	return poder
+
+
+## Ruta ascendente hasta las nubes. Cada tercera ayuda es una corriente de niebla.
 func _poner_papalotes(t: Tramo) -> void:
 	while _siguiente_papalote_x < t.x1:
 		var papalote := PapaloteEscena.instantiate() as Papalote
-		var alto: float = Config.alturas_papalotes[_papalotes_generados % Config.alturas_papalotes.size()]
-		papalote.position = Vector2(_siguiente_papalote_x, t.altura(_siguiente_papalote_x) - alto)
+		if _papalotes_generados > 0:
+			_altura_papalote = minf(Config.altura_papalotes.y, _altura_papalote + rng_aire.randf_range(280.0, 400.0))
+		papalote.corriente = _papalotes_generados % 3 == 2
+		papalote.position = Vector2(_siguiente_papalote_x, t.altura(_siguiente_papalote_x) - _altura_papalote)
 		t.get_node("Aire").add_child(papalote)
 		t.papalotes.append(papalote)
-		for i in 4:
-			t.get_node("Aire").add_child(_crear_obstaculo("aplauso", papalote.position + Vector2(-210 + i * 50, 135 - i * 35)))
+		if _papalotes_generados % 4 == 0:
+			var posicion_tamal := papalote.position + Vector2(170, -120)
+			posicion_tamal.x = minf(posicion_tamal.x, t.x1 - 40.0)
+			t.get_node("Aire").add_child(_crear_poder("tamal", posicion_tamal))
 		_papalotes_generados += 1
 		_siguiente_papalote_x += rng_aire.randf_range(Config.separacion_papalotes.x, Config.separacion_papalotes.y)
+
+
+## Grupos cortos y separados, con filas, arcos y diagonales en cada franja.
+## Cada cuatro grupos, un poder ocupa el centro de la fila de puntos.
+func _poner_premios_aire(t: Tramo) -> void:
+	for franja in Config.franjas_premios_aire.size():
+		var limites: Vector2 = Config.franjas_premios_aire[franja]
+		while _siguientes_premios[franja] < t.x1:
+			var x := _siguientes_premios[franja]
+			var cantidad := rng_premios.randi_range(2, 3)
+			var ancho := (cantidad - 1) * 85.0
+			x = maxf(x, t.x0 + ancho / 2.0 + 20.0)
+			if x + ancho / 2.0 > t.x1 - 20.0:
+				break
+			var centro := Vector2(x, t.altura(x) - rng_premios.randf_range(limites.x, limites.y))
+			var patron := rng_premios.randi_range(0, 3)
+			if patron == _patrones_premios[franja]:
+				patron = (patron + rng_premios.randi_range(1, 3)) % 4
+			var con_poder := (_grupos_premios[franja] + franja) % 4 == 1
+			for i in cantidad:
+				var u := float(i) / (cantidad - 1)
+				var dy := 0.0
+				match patron:
+					1: dy = -sin(u * PI) * 90.0
+					2: dy = (0.5 - u) * 180.0
+					3: dy = (u - 0.5) * 180.0
+				var posicion := centro + Vector2((u - 0.5) * ancho, dy)
+				if con_poder and i == cantidad / 2:
+					var tipo: String = Config.orden_poderes[(franja + int(_grupos_premios[franja] / 4.0)) % Config.orden_poderes.size()]
+					t.get_node("Aire").add_child(_crear_poder(tipo, posicion))
+				else:
+					t.get_node("Aire").add_child(_crear_obstaculo("aplauso", posicion))
+			_patrones_premios[franja] = patron
+			_grupos_premios[franja] += 1
+			_siguientes_premios[franja] = x + rng_premios.randf_range(Config.separacion_premios_aire.x, Config.separacion_premios_aire.y)
 
 
 ## Lugares de Xalapa (Config.postales) que caen dentro del tramo.

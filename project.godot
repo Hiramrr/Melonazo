@@ -22,6 +22,7 @@ config/icon="res://recursos/icono.svg"
 
 Config="*res://globales/config.gd"
 Juego="*res://globales/juego.gd"
+Animacion="*res://globales/animacion.gd"
 
 [display]
 
@@ -33,6 +34,10 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/size/min_width=960
 window/size/min_height=540
+
+[gui]
+
+theme/custom="res://interfaz/tema_xalapa.tres"
 
 [input]
 
@@ -101,6 +106,7 @@ common/physics_ticks_per_second=120
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=3
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
 environment/defaults/default_clear_color=Color(0.79607844, 0.87058824, 0.8392157, 1)

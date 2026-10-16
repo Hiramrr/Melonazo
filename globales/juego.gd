@@ -112,8 +112,8 @@ func mult_fuerza() -> float:
 
 
 ## Golpes que aguanta el melón con el tamaño elegido.
-func resistencia_max() -> int:
-	return int(Config.tamanos[tamano]["resistencia"]) + niveles["resistencia"] * Config.resistencia_por_nivel
+func resistencia_max() -> float:
+	return float(Config.tamanos[tamano]["resistencia"]) + niveles["resistencia"] * Config.resistencia_por_nivel
 
 
 ## Cargas de salto y rebote impulsado al empezar cada carrera.
@@ -125,9 +125,11 @@ func rebotes_max() -> int:
 
 ## Calcula y cobra los aplausos de una carrera, marca las postales nuevas,
 ## actualiza el récord y guarda. El desglose queda en "ultimo".
-func registrar_intento(distancia_m: float, carisma: int, recolectados: int, roto: bool, poderes := 0) -> void:
+func registrar_intento(distancia_m: float, carisma: int, recolectados: int, roto: bool, poderes := 0, altura_m := 0.0) -> void:
 	distancia_m = maxf(0.0, distancia_m)
+	altura_m = maxf(0.0, altura_m)
 	var por_distancia := int(distancia_m * Config.aplausos_por_metro)
+	var por_altura := int(altura_m * Config.aplausos_por_metro_altura)
 	var por_carisma := carisma * Config.aplausos_por_carisma
 	var por_recolectados := recolectados * Config.valor_aplauso_suelto
 	var nuevas: Array = []
@@ -136,7 +138,7 @@ func registrar_intento(distancia_m: float, carisma: int, recolectados: int, roto
 			visitados.append(postal["id"])
 			nuevas.append(postal["nombre"])
 	var por_visitas: int = nuevas.size() * Config.bonus_postal
-	var total := por_distancia + por_carisma + por_recolectados + por_visitas
+	var total := por_distancia + por_altura + por_carisma + por_recolectados + por_visitas
 	var nuevo := distancia_m > record_m
 	if nuevo:
 		record_m = distancia_m
@@ -147,7 +149,34 @@ func registrar_intento(distancia_m: float, carisma: int, recolectados: int, roto
 		"recolectados": recolectados, "roto": roto, "por_distancia": por_distancia,
 		"por_carisma": por_carisma, "por_recolectados": por_recolectados, "total": total,
 		"por_visitas": por_visitas, "visitas_nuevas": nuevas, "poderes": poderes,
+		"altura": altura_m, "por_altura": por_altura,
 	}
+	guardar()
+
+
+## Vuelve a los valores de una partida nueva y los guarda: aplausos, récord,
+## mejoras, accesorios, postales, intentos, aspecto y dibujo. Pensado para
+## probar el juego desde cero (botón "Reiniciar progreso" del taller).
+func reiniciar_progreso() -> void:
+	aplausos = Config.aplausos_iniciales
+	record_m = 0.0
+	niveles = {"fuerza": 0, "resistencia": 0, "rebotes": 0}
+	desbloqueados = Config.accesorios_iniciales.duplicate()
+	visitados = []
+	intentos = 0
+	ultimo = {}
+	nombre_melon = "Melón"
+	tamano = 1
+	accesorios = ["llantitas", "rebozo"]
+	piel = 0
+	patron = 0
+	cara = 0
+	detalle = 0
+	estela = 0
+	cuerpo_propio = ""
+	rayas_propio = ""
+	dibujo = []
+	_guardado_bloqueado = false
 	guardar()
 
 

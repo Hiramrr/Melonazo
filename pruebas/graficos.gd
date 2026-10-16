@@ -8,9 +8,13 @@ func _initialize() -> void:
 	call_deferred("_revisar")
 
 
-func _foto(nombre: String, controles: Array = []) -> void:
+## espera = segundos extra antes de la captura, para que terminen las animaciones
+## de entrada (taller, pausa y resultados).
+func _foto(nombre: String, controles: Array = [], espera := 0.0) -> void:
 	for i in 8:
 		await process_frame
+	if espera > 0.0:
+		await create_timer(espera).timeout
 	var limites := Rect2(Vector2.ZERO, root.get_visible_rect().size)
 	for id in controles:
 		var control: Control = current_scene.get_node(id)
@@ -27,6 +31,7 @@ func _revisar() -> void:
 	var ilustracion: Texture2D = arte.paisaje
 	var fotografias := arte.fotografias.duplicate()
 	var juego := root.get_node("Juego")
+	juego.archivo_guardado = "user://prueba_graficos_%d.json" % OS.get_process_id()
 	var ultimo: Dictionary = juego.ultimo.duplicate(true)
 	var esperadas := 3
 	for resolucion in [Vector2i(1280, 720), Vector2i(960, 540)]:
@@ -36,10 +41,10 @@ func _revisar() -> void:
 		await process_frame
 		await process_frame
 		var pestanas: TabContainer = current_scene.get_node("%Pestanas")
-		esperadas += pestanas.get_tab_count() + 8
+		esperadas += pestanas.get_tab_count() + 10
 		for pesta in pestanas.get_tab_count():
 			current_scene.get_node("%Pestanas").current_tab = pesta
-			await _foto(prefijo + "taller-" + str(pesta), ["%BtnPuente", "%Balance", "%Vista"])
+			await _foto(prefijo + "taller-" + str(pesta), ["%BtnPuente", "%Balance", "%Vista"], 1.0 if pesta == 0 else 0.0)
 		change_scene_to_file("res://pantallas/recorrido/recorrido.tscn")
 		await _foto(prefijo + "recorrido", ["Interfaz/%Distancia", "Interfaz/%Equipo", "Interfaz/%Fuerza", "Interfaz/%Indicacion"])
 		current_scene.fase = 1
@@ -55,23 +60,29 @@ func _revisar() -> void:
 		current_scene.melon.controlable = true
 		current_scene.melon.position = current_scene.terreno.tramos[0].papalotes[0].position + Vector2(-90, 30)
 		await _foto(prefijo + "ruta-aerea", ["Interfaz/%Vuelo", "Interfaz/%Indicacion", "Interfaz/%Equipo"])
-		assert(current_scene.hud.indicacion.text.begins_with("E · Papalote"), "Falta la indicación para activar el papalote")
-		current_scene.melon.position = current_scene.terreno.tramos[0].papalotes[2].position + Vector2(-90, 30)
+		assert(current_scene.hud.tecla.text == "E" and current_scene.hud.indicacion.text.begins_with("Papalote"), "Falta la indicación para activar el papalote")
+		var poder_x: float = root.get_node("Config").primer_poder_x
+		current_scene.melon.position = Vector2(poder_x - 160.0, current_scene.terreno.tramos[0].altura(poder_x) - 110.0)
+		await _foto(prefijo + "premios-calle", ["Interfaz/%Vuelo", "Interfaz/%Equipo"])
+		current_scene.melon.position = Vector2(2200, current_scene.terreno.tramos[0].altura(2200) - 1100)
 		current_scene.postales_intento = ["xallitic", "diamante", "catedral"]
 		await _foto(prefijo + "vuelo-alto", ["Interfaz/%Vuelo", "Interfaz/%Indicacion"])
 		assert(current_scene.get_node("Paisaje/NubesCercanas").visible, "Faltan las nubes al subir sobre la ciudad")
+		current_scene.melon.position = Vector2(2200, current_scene.terreno.tramos[0].altura(2200) - 3000)
+		await _foto(prefijo + "cielo-alto", ["Interfaz/%Vuelo", "Interfaz/%Indicacion"])
 		current_scene.hud._alternar_pausa()
-		await _foto(prefijo + "pausa", ["Interfaz/%Continuar", "Interfaz/%Volver"])
+		await _foto(prefijo + "pausa", ["Interfaz/%Continuar", "Interfaz/%Volver"], 0.6)
 		current_scene.hud._alternar_pausa()
 		change_scene_to_file("res://pantallas/resultados/resultados.tscn")
-		await _foto(prefijo + "resultados", ["%BtnVolver", "%Total", "%Distancia"])
+		await _foto(prefijo + "resultados", ["%BtnVolver", "%Total", "%Distancia"], 3.0)
 		var nombres: Array = []
 		for postal in root.get_node("Config").postales:
 			nombres.append(postal["nombre"])
 		juego.ultimo = {"distancia": 12530, "record_nuevo": true, "por_distancia": 3759, "por_carisma": 90,
-			"por_recolectados": 60, "por_visitas": 480, "visitas_nuevas": nombres, "poderes": 12, "total": 4389}
+			"por_recolectados": 60, "por_visitas": 480, "visitas_nuevas": nombres, "poderes": 12,
+			"altura": 320.0, "por_altura": 320, "total": 4709}
 		change_scene_to_file("res://pantallas/resultados/resultados.tscn")
-		await _foto(prefijo + "resultados-completos", ["%BtnVolver", "%Total", "%Distancia", "%Titulo"])
+		await _foto(prefijo + "resultados-completos", ["%BtnVolver", "%Total", "%Distancia", "%Titulo"], 3.0)
 		juego.ultimo = ultimo
 	# Cada fotografía debe corresponder al último lugar alcanzado que tenga foto.
 	var config := root.get_node("Config")
@@ -101,6 +112,8 @@ func _revisar() -> void:
 		await _foto("sin-imagen-" + escena)
 	arte.paisaje = ilustracion
 	arte.fotografias = fotografias
+	if FileAccess.file_exists(juego.archivo_guardado):
+		DirAccess.remove_absolute(juego.archivo_guardado)
 	assert(capturas == esperadas, "Faltan capturas de revisión")
 	print("OK: %d capturas, controles dentro de pantalla, fotos por lugar y modo sin imágenes." % capturas)
 	quit()

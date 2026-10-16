@@ -10,7 +10,7 @@ const POSICION_LANZAMIENTO := Vector2(250, 60)
 const ADELANTO := Vector2(260, -40)    # el melón queda a la izquierda: se ve lo que viene
 const ANTICIPACION_MAX := Vector2(-70.0, 60.0)  # px hacia arriba / abajo según la velocidad vertical
 const VELOCIDAD_ZOOM_MIN := 3000.0     # a esta rapidez el zoom llega a ZOOM_MIN
-const ZOOM_MIN := 0.55
+const ZOOM_MIN := 0.72
 
 
 ## Llamar cada cuadro. Si siguiendo es false, vuelve a la vista del puente.

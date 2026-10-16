@@ -47,16 +47,16 @@ var angulo_max := 75.0
 var angulo_freq := 0.6               # ciclos por segundo de la flecha
 var fuerza_freq := 0.75              # ciclos por segundo de la barra
 var lanz_vel_min := 430.0
-var lanz_vel_max := 850.0
+var lanz_vel_max := 760.0
 var zona_perfecta := Vector2(0.80, 1.0)    # tramo de la barra (0..1) con bonus
-var bonus_perfecto := 1.2
+var bonus_perfecto := 1.15
 
 # --- Control en el aire ------------------------------------------------------
 var giro_max := 9.0                  # rad/s
 var giro_acel := 30.0                # rad/s²
-var control_aereo := 420.0           # px/s² con A/D o flechas
-var control_aereo_max := 1100.0      # el control no recorta impulsos más rápidos
-var salto_aereo_vel := 650.0
+var control_aereo := 110.0           # px/s² con A/D o flechas
+var control_aereo_max := 520.0       # el control no recorta impulsos más rápidos
+var salto_aereo_vel := 900.0
 var salto_aereo_avance := 100.0
 var vel_crucero := 1800.0            # px/s; por encima, frenado extra (evita rozar el suelo sin fin)
 var arrastre_extra := 1.0            # fracción por segundo del exceso que se pierde
@@ -64,7 +64,7 @@ var arrastre_extra := 1.0            # fracción por segundo del exceso que se p
 # --- Rebote impulsado --------------------------------------------------------
 var ventana_rebote := 0.26           # s antes de tocar suelo en que cuenta el Espacio
 var bloqueo_rebote := 0.45           # s sin poder volver a intentarlo (evita machacar)
-var rebote_mult_normal := 1.05       # multiplica la velocidad de impacto
+var rebote_mult_normal := 0.95       # multiplica la velocidad de impacto
 var rebote_min := 520.0              # velocidad mínima de salida del rebote
 var rebote_mult_tang := 1.25         # multiplica la velocidad a lo largo del suelo
 var rebote_pared_conserva := 0.6     # velocidad horizontal que queda al rebotar contra una pared
@@ -77,8 +77,12 @@ var lado_acc_freno := 0.72           # multiplica la velocidad al caer del lado 
 var lado_acc_giro := 6.0             # giro aleatorio extra (rad/s)
 var umbral_perder_acc := 520.0       # impacto que tira el accesorio
 var lado_redondo_conserva := 0.98    # fracción de velocidad conservada al caer redondo
-var caida_a_rodado := 0.35            # parte del impacto que se vuelve rodado hacia adelante (lanzar fuerte rinde)
+var caida_a_rodado := 0.2             # parte del impacto que se vuelve rodado hacia adelante
 var invulnerable_tras_golpe := 0.6
+# Raspón: una caída entre raspon_desde * umbral_caida y umbral_caida quita una
+# fracción de golpe que crece con el impacto, hasta raspon_max.
+var raspon_desde := 0.6
+var raspon_max := 0.35
 
 # --- Público -----------------------------------------------------------------
 var publico_rango := 165.0
@@ -89,11 +93,20 @@ var empuje_cansancio := 0.75         # cada empujón de la misma carrera vale 75
 
 # --- Ruta aérea --------------------------------------------------------------
 var primer_papalote_x := 600.0
-var separacion_papalotes := Vector2(650.0, 850.0)
-var alturas_papalotes: Array = [380.0, 580.0, 780.0, 580.0]
-var papalote_rango := 180.0
-var papalote_elevacion := 730.0
-var papalote_avance := 650.0         # velocidad horizontal mínima al recibir el impulso
+var separacion_papalotes := Vector2(950.0, 1250.0)
+var altura_papalotes := Vector2(380.0, 3300.0)
+var papalote_rango := 185.0
+var papalote_elevacion := 1180.0
+var papalote_avance := 850.0         # velocidad horizontal mínima al recibir el impulso
+var zonas_cielo: Array = [
+	{"nombre": "Tejados de Xallitic", "metros": 60.0},
+	{"nombre": "Niebla de Xalapa", "metros": 140.0},
+	{"nombre": "Viento del Macuiltépetl", "metros": 240.0},
+]
+var aplausos_por_metro_altura := 1.0
+# Premios a alturas de salto, papalote y vuelo con accesorios.
+var franjas_premios_aire: Array = [Vector2(500, 800), Vector2(1100, 1500), Vector2(1900, 2300), Vector2(2800, 3300)]
+var separacion_premios_aire := Vector2(1400.0, 2000.0)
 
 # --- Obstáculos e impulsores -------------------------------------------------
 # plano: se inclina con el suelo. Las medidas y formas viven en mundo/obstaculos.
@@ -117,7 +130,7 @@ var rampa_angulo := 35.0             # grados sobre la rampa
 var toldo_rebote := 0.9
 
 # --- Terreno -----------------------------------------------------------------
-var semilla_terreno := 1509          # -1 = distinto en cada intento
+var semilla_terreno := -1            # fija un número para repetir una ruta en pruebas
 var paso_puntos := 40.0
 var largo_tramo := 2400.0
 var generar_adelante := 3500.0       # px de terreno listos por delante
@@ -140,14 +153,14 @@ var formas_tramo: Array = [
 ]
 # Dificultad del camino según la distancia: 0 al inicio, 1 desde dificultad_metros.y.
 # Las cuestas y lomas crecen, y los obstáculos se juntan, conforme avanza la carrera.
-var dificultad_metros := Vector2(50.0, 1300.0)
-var terreno_suave := 0.4             # escala de cuestas y lomas con dificultad 0
+var dificultad_metros := Vector2(50.0, 800.0)
+var terreno_suave := 0.55            # escala de cuestas y lomas con dificultad 0
 var obstaculos_holgura := 1.6        # multiplica la separación de obstáculos con dificultad 0
 var prob_empedrado := 0.5
 var separacion_obstaculos := Vector2(280, 560)
 var separacion_publico := Vector2(380, 750)
-var separacion_aplausos := Vector2(600, 1100)
-var altura_aplausos := Vector2(160, 420)
+var separacion_aplausos := Vector2(700, 1000)
+var altura_aplausos := Vector2(55, 125)
 var prob_casas := 0.6
 
 # Letreros de distancia cada tantos metros. Donde hay una postal no se pone
@@ -235,9 +248,9 @@ var poderes: Dictionary = {
 }
 var cafe_aceleracion := 110.0        # px/s² hacia adelante mientras dura el café
 var cafe_vel_max := 1400.0           # el café no acelera por encima de esta velocidad
-var primer_poder_x := 1500.0
-var separacion_poderes := Vector2(2000.0, 3000.0)
-var altura_poderes := Vector2(110.0, 190.0)
+var primer_poder_x := 700.0
+var separacion_poderes := Vector2(1100.0, 1600.0)
+var altura_poderes := Vector2(110.0, 170.0)
 var bonus_postal := 60
 
 # --- Postales (pasaporte) -----------------------------------------------------

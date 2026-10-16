@@ -70,8 +70,14 @@ func _verificar() -> void:
 	var esperado: int = int(210.0 * config.aplausos_por_metro) + 3 * config.aplausos_por_carisma \
 		+ 2 * config.valor_aplauso_suelto + 3 * config.bonus_postal
 	comprobar(juego.ultimo["por_visitas"] == 3 * config.bonus_postal and juego.ultimo["total"] == esperado, "Desglose de premios")
-	juego.registrar_intento(100.0, 0, 0, false)
+	comprobar(juego.ultimo["por_altura"] == 0 and juego.ultimo["altura"] == 0.0, "Registrar sin altura conserva las recompensas anteriores")
+	var saldo_antes_altura: int = juego.aplausos
+	juego.registrar_intento(100.0, 0, 0, false, 0, 175.5)
 	comprobar(juego.ultimo["por_visitas"] == 0 and juego.record_m == 210, "No repetir premios ni bajar récord")
+	var premio_altura := int(175.5 * config.aplausos_por_metro_altura)
+	var total_con_altura := int(100.0 * config.aplausos_por_metro) + premio_altura
+	comprobar(juego.ultimo["altura"] == 175.5 and juego.ultimo["por_altura"] == premio_altura, "La altura máxima añade su bono al desglose")
+	comprobar(juego.ultimo["total"] == total_con_altura and juego.aplausos == saldo_antes_altura + total_con_altura, "El bono de altura se cobra una vez junto a la distancia")
 	juego.piel = 3
 	juego.cara = 4
 	juego.estela = 2
@@ -127,7 +133,23 @@ func _verificar() -> void:
 	juego.guardar()
 	comprobar(not juego.guardado_error.is_empty(), "Fallo de escritura se informa sin perder estado")
 	juego.archivo_guardado = ruta_prueba
-
+	juego.aplausos = 999
+	juego.record_m = 500.0
+	juego.intentos = 7
+	juego.visitados = ["xallitic"]
+	juego.niveles = {"fuerza": 2, "resistencia": 1, "rebotes": 3}
+	juego.nombre_melon = "Sucio"
+	juego.tamano = 2
+	juego.piel = 3
+	juego.dibujo = [{"color": Color.RED, "grosor": 0.1, "puntos": PackedVector2Array([Vector2(0.1, 0.2)])}]
+	juego.reiniciar_progreso()
+	comprobar(juego.aplausos == config.aplausos_iniciales and juego.record_m == 0.0 and juego.intentos == 0, "Reiniciar progreso limpia aplausos, récord e intentos")
+	comprobar(juego.niveles == {"fuerza": 0, "resistencia": 0, "rebotes": 0} and juego.visitados == [] and juego.ultimo == {}, "Reiniciar progreso limpia mejoras, postales y última carrera")
+	comprobar(juego.desbloqueados == config.accesorios_iniciales and juego.accesorios == ["llantitas", "rebozo"], "Reiniciar progreso restaura accesorios iniciales")
+	comprobar(juego.nombre_melon == "Melón" and juego.tamano == 1 and juego.piel == 0 and juego.dibujo == [], "Reiniciar progreso restaura nombre, tamaño, aspecto y dibujo")
+	juego.aplausos = 123
+	juego.cargar()
+	comprobar(juego.aplausos == config.aplausos_iniciales and juego.nombre_melon == "Melón", "Reiniciar progreso queda guardado en disco")
 
 	juego.tamano = 1
 	juego.niveles = {"fuerza": 0, "resistencia": 0, "rebotes": 0}
@@ -210,6 +232,10 @@ func _verificar() -> void:
 		titulos.append(pestanas.get_tab_title(i))
 	comprobar(titulos == ["Tu melón", "Dibujo", "Accesorios", "Mejoras", "Pasaporte"], "Pestañas del taller en orden y con su título")
 	comprobar(taller.get_node("%TuMelon").listas.size() == 5, "Taller ofrece piel, patrón, cara, detalle y estela")
+	comprobar(taller.get_node("%BtnReiniciar") != null and taller.get_node("%ConfirmarReinicio") != null, "Taller ofrece reiniciar el progreso con confirmación")
+	juego.aplausos = 999
+	taller._reiniciar_progreso()
+	comprobar(juego.aplausos == config.aplausos_iniciales and taller.get_node("%Balance").texto == str(config.aplausos_iniciales), "Reiniciar desde el taller actualiza la pantalla")
 	var panel = taller.get_node("%Dibujo")
 	pestanas.current_tab = pestanas.get_tab_idx_from_control(panel)
 	var antes: int = juego.dibujo.size()
@@ -258,7 +284,7 @@ func _verificar() -> void:
 		for nodo in t.get_node("Coleccionables").get_children():
 			if nodo is Area2D and nodo.has_signal("recogido"):
 				consumibles.append(nodo)
-	comprobar(consumibles.size() >= 1 and consumibles.size() <= 3, "Los primeros tramos contienen pocos poderes")
+	comprobar(consumibles.size() >= 3 and consumibles.size() <= 5, "Los primeros tramos muestran poderes desde el inicio")
 	comprobar(consumibles[0].tipo == "cafe" and consumibles[1].tipo == "chile", "Poderes alternan de forma reproducible")
 	var ultimo_x := -1.0
 	for t in recorrido.terreno.tramos:
@@ -314,6 +340,21 @@ func _verificar() -> void:
 	await process_frame
 	await process_frame
 	comprobar(current_scene.name == "Taller", "Ciclo completo vuelve al taller")
+	var guardado_antes_abandono := FileAccess.get_file_as_string(juego.archivo_guardado)
+	change_scene_to_file("res://pantallas/recorrido/recorrido.tscn")
+	await process_frame
+	await process_frame
+	recorrido = current_scene
+	recorrido.fase = 2
+	recorrido.mejor_x = 2000.0
+	recorrido.altura_max_m = 240.0
+	recorrido.recolectados = 8
+	recorrido.hud._alternar_pausa()
+	recorrido.hud._volver()
+	await process_frame
+	await process_frame
+	comprobar(not paused and current_scene.name == "Taller", "Abandonar desde la pausa vuelve al taller")
+	comprobar(FileAccess.get_file_as_string(juego.archivo_guardado) == guardado_antes_abandono, "Abandonar no cobra distancia, monedas ni bono de altura")
 	DirAccess.remove_absolute(juego.archivo_guardado)
 	DirAccess.remove_absolute(juego.archivo_guardado + ".tmp")
 	print("OK: %d comprobaciones, carrera completa y guardado aislado." % comprobaciones)

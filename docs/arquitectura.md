@@ -27,25 +27,51 @@ Taller ──"¡A rodar!"──▶ Recorrido ──fin de carrera──▶ Resul
 
 Las pantallas no se pasan datos directamente: el Taller escribe la elección del jugador en `Juego`, el Recorrido la lee, y al terminar llama a `Juego.registrar_intento()`. Resultados lee `Juego.ultimo`.
 
+Los cambios de pantalla pasan por `Animacion.cambiar_escena(ruta)`: carga la escena al instante y abre encima una cortina circular.
+
+## Interfaz (`interfaz/` y `globales/animacion.gd`)
+
+El estilo de todas las pantallas sale del tema `interfaz/tema_xalapa.tres`, que también es el tema del proyecto (`gui/theme/custom`). Usa la fuente incluida `recursos/fuentes/Fredoka.ttf` (licencia OFL), así se ve igual en Windows, macOS y Linux. No uses fuentes del sistema: no existen en todos los equipos.
+
+| Variación del tema | Base | Para qué |
+| --- | --- | --- |
+| `Titulo` | Label | Letra gruesa crema con contorno y sombra (logo, distancias, listones) |
+| `Subtitulo`, `Suave` | Label | Texto grueso de sección y texto secundario |
+| `TextoHUD` | Label | Texto crema con contorno, legible sobre el juego |
+| `Tecla` | Label | Tecla dibujada ("Espacio", "E", "1") |
+| `Principal`, `Comprar`, `Seleccion` | Button | Botón coral grande, botón verde de compra y opción elegida (amarilla) |
+| `Tarjeta`, `Chip`, `ChipClaro` | PanelContainer | Tarjetas de listas y fichas redondeadas |
+
+Los botones tienen "labio": el borde inferior es más grueso y, al presionarlos, el relleno baja y se hunden. La fuente no trae flechas, estrellas ni el símbolo de pausa. Esos dibujos son SVG en `recursos/iconos/` y se usan desde `Iconos` (`interfaz/iconos.gd`).
+
+| Componente | Archivo | Qué hace |
+| --- | --- | --- |
+| `Ficha` | `interfaz/ficha.gd` | Contador con ícono: aplausos, récord, carisma, altura |
+| `Pips` | `interfaz/pips.gd` | Fila de íconos que se llenan: corazones, impulsos, niveles |
+| `Selector` | `interfaz/selector.gd` | Elegir de una lista con flechas, como en un vestidor |
+| `FondoJuego` | `interfaz/fondo_juego.gd` | Fondo animado con rayos y papel picado (Taller y Resultados) |
+
+El autoload `Animacion` hace que cada botón crezca un poco con el ratón y se aplaste al pulsarlo. Se conecta solo a todos los botones. Dentro de listas con scroll no crece, porque el borde se cortaría. También ofrece `aparecer()`, `rebotar()`, `latir()`, `sellar()` y `contar()` para animar las entradas de pantalla, los contadores del HUD y el desglose de resultados.
+
 ## Taller (`pantallas/taller/`)
 
 ```text
 Taller (taller.gd)                 Coordina pestañas, pie y vista previa
-├─ Fondo
+├─ Fondo (FondoJuego)
 └─ Margen/Raiz
-   ├─ Cabecera                     Título
+   ├─ Cabecera                     Logo y fichas de aplausos (Balance) y récord (Record)
    ├─ Medio
    │  ├─ Previa
-   │  │  ├─ Vista (vista_melon.gd) Dibuja el melón; recibe el ratón para pintar
+   │  │  ├─ MarcoVista/Vista (vista_melon.gd) Dibuja el melón; recibe el ratón para pintar
    │  │  ├─ NombreVista
-   │  │  └─ Carisma
+   │  │  └─ Info                   Tamaño y ficha de carisma
    │  └─ Pestanas (TabContainer)
    │     ├─ TuMelon      (pestanas/pestana_melon.gd)       Nombre, tamaño y aspecto
    │     ├─ Dibujo       (pestanas/pestana_dibujo.tscn)    Pincel, goma y colores
    │     ├─ Accesorios   (pestanas/pestana_accesorios.gd)  Equipar y desbloquear
    │     ├─ Mejoras      (pestanas/pestana_mejoras.gd)     Comprar mejoras
    │     └─ Pasaporte    (pestanas/pestana_pasaporte.gd)   Postales, fotos y poderes
-   └─ Pie                          Aplausos, récord, errores y botón "¡A rodar!"
+   └─ Pie                          Errores, teclas de ayuda y botón "¡A rodar!"
 ```
 
 Cada pestaña modifica `Juego` y emite su señal `cambio`. El Taller escucha todas y llama a `refrescar()` en cada pestaña, en el pie y en la vista previa. Así ninguna pestaña necesita conocer a las demás. Hay dos excepciones que solo redibujan la vista, porque llegan en cada movimiento del ratón: `Dibujo.cambio` y `TuMelon.color_cambiado`.
@@ -98,6 +124,8 @@ El **HUD** (`hud/hud.tscn`) es un `CanvasLayer` con `process_mode` *Always*, as�
 Melon (RigidBody2D, melon.gd)
 ├─ Cuerpo          CircleShape2D; el radio depende del tamaño
 ├─ Accesorio1..3   Una forma convexa por accesorio equipado, en su lado
+├─ Aspecto         Sprite2D con la textura de piel, cara, trazos y accesorios
+├─ Lienzo/Dibujo   SubViewport de 512 píxeles, dibuja el aspecto a doble resolución
 └─ Estela          Rastro decorativo (estela.gd, top_level)
 ```
 
@@ -105,6 +133,7 @@ Melon (RigidBody2D, melon.gd)
 - Otros nodos **no cambian `linear_velocity` directamente**. Piden cambios con `empujar(dv)`, `frenar(mult)` o `fijar_velocidad(v)`, y el melón los aplica en el siguiente paso. Así nunca se pisan dos cambios en el mismo cuadro.
 - Los temporizadores de efectos (`t_planeo`, `t_cafe`…) se descuentan solos. Están en la lista `TEMPORIZADORES`.
 - `aspecto.gd` (`Aspecto`) dibuja piel, patrón, cara, detalle, dibujo libre y accesorios. Solo tiene funciones estáticas. Lo usan el melón del recorrido y la vista previa del taller.
+- En el recorrido, la señal `draw` de `Melon/Lienzo/Dibujo` llama a `_dibujar_aspecto()`. El `SubViewport` actualiza una textura una sola vez y el `Sprite2D` la muestra al mover y girar el cuerpo. `configurar()`, `_quitar_slot()` y la rotura piden un nuevo dibujo con `UPDATE_ONCE`. El `_draw()` del cuerpo solo actualiza aros y efectos. Así ni la CPU ni la GPU tienen que dibujar miles de puntos en cada fotograma.
 
 ### Capas de física
 
@@ -123,11 +152,15 @@ Melon (RigidBody2D, melon.gd)
 | `ayudas/` | `poder.tscn`, `papalote.tscn`, `persona.tscn` | Poderes que se recogen, papalotes que impulsan con E y público que empuja con E. |
 | `paisaje/` | `paisaje.tscn` | Fondo lejano con paralaje. Cada capa del cielo es un nodo `CapaCielo` que puedes ocultar o ajustar en el inspector. |
 
-**Generación reproducible.** El terreno usa `Config.semilla_terreno` (−1 = distinto en cada intento). Los papalotes usan un segundo generador (`rng_aire`) para no cambiar la ruta del suelo. Si cambias el orden de las llamadas en `GeneradorTerreno._poblar()`, cambian todas las rutas y las pruebas de balance pueden fallar.
+**Generación reproducible.** El terreno usa `Config.semilla_terreno`, con -1 por defecto para cambiar en cada intento. Una semilla fija permite repetir una ruta. Los papalotes usan `rng_aire` y las rutas de premios altos usan `rng_premios`. Ambos conservan el azar del suelo. Cambiar las llamadas a `rng` en `GeneradorTerreno._poblar()` cambia las rutas del suelo y puede afectar las pruebas de balance.
+
+La ruta aérea asciende desde `Config.altura_papalotes.x` hasta `Config.altura_papalotes.y`. Cada tercera ayuda activa `Papalote.corriente` y dibuja niebla con flechas de viento. Ambas variantes usan `impulsar()` con E y nunca recargan saltos. Los tamales cercanos a la primera ayuda y cada cuatro ayudas recuperan una carga. `Recorrido.papalote_siguiente` y `EfectosRecorrido.objetivo_aereo` señalan el siguiente destino fuera de pantalla.
+
+`Recorrido` conserva `altura_max_m` aunque el melón descienda. Al finalizar la pasa como sexto argumento opcional a `Juego.registrar_intento()`, que calcula `por_altura` con `Config.aplausos_por_metro_altura`. Las entradas de `Config.zonas_cielo` cambian el objetivo del HUD y anuncian las alturas alcanzadas. La falta de avance horizontal solo termina la carrera cuando el melón está en el suelo.
 
 ## Resultados (`pantallas/resultados/`)
 
-`resultados.gd` rellena los textos con `Juego.ultimo`. El panel `Postal` (`postal_resultados.gd`) muestra la foto del último lugar alcanzado que tenga fotografía, o la ilustración del puente si no hay.
+`resultados.gd` rellena los textos con `Juego.ultimo` y los anima: la distancia cuenta hacia arriba, las filas del desglose entran una por una, el récord nuevo cae como sello y al final cuenta el total. El panel `Postal` (`postal_resultados.gd`) muestra, como foto pegada con cinta, la foto del último lugar alcanzado que tenga fotografía, o la ilustración del puente si no hay.
 
 ## Cómo añadir cosas
 
@@ -153,7 +186,7 @@ Pieles, patrones, caras, detalles y estelas son listas en `Config`. Agrega la en
 
 ### Un poder
 
-Agrega su entrada en `Config.poderes` y su id en `Config.orden_poderes`, su efecto en `Melon.recibir_poder()` y su silueta en `mundo/ayudas/poder.gd`.
+Agrega su entrada en `Config.poderes` y su id en `Config.orden_poderes`, su efecto en `Melon.recibir_poder()` y su imagen en `Poder.TEXTURAS`, en `mundo/ayudas/poder.gd`. Las imágenes provisionales están en `recursos/poderes/` y se comparten entre la ruta y el pasaporte.
 
 ### Una postal
 
@@ -172,4 +205,6 @@ Se ejecutan desde la terminal y nunca tocan tu guardado: cada una usa su propio 
 | `verificar.gd` | Compras, guardado, datos inválidos, poderes, accesorios, taller, dibujo con ratón, pausa y una carrera completa |
 | `balance.gd` | 54 carreras sin controles y la progresión con mejoras |
 | `vuelo.gd` | Saltos, papalotes y la ruta aérea |
+| `distribucion.gd` | Cobertura del cielo, variedad de poderes y generación reproducible sin alterar el suelo |
+| `rendimiento.gd` | Dibujo personalizado conservado al mover y girar, con actualización de equipo, rotura y cielo. Abre una ventana |
 | `graficos.gd` | Capturas de todas las pantallas a dos resoluciones (abre una ventana) |

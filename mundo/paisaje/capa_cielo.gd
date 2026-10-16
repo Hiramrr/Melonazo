@@ -39,22 +39,30 @@ const SUBIDA_MAX := 35.0               # px máximos que la capa baja/sube al mo
 var mitad := Vector2(640, 360)         # media pantalla + MARGEN
 var vista := Vector2.ZERO              # centro de la cámara en el mundo
 var tiempo := 0.0                      # segundos acumulados, para animar
+var _nivel_cielo := 0
 
 
 ## Recibe el estado de la cámara y vuelve a dibujar. La llama Paisaje cada cuadro.
 func actualizar(tamano: Vector2, posicion_camara: Vector2, segundos: float) -> void:
+	var cambio_tamano := mitad != tamano / 2.0 + MARGEN
+	var nivel := clampi(int(-posicion_camara.y / 400.0), 0, 8)
+	var cambio_cielo := nivel != _nivel_cielo
+	_nivel_cielo = nivel
 	mitad = tamano / 2.0 + MARGEN
 	vista = posicion_camara
 	tiempo = segundos
-	queue_redraw()
+	if tipo != "fondo" or cambio_tamano or cambio_cielo:
+		queue_redraw()
 
 
 func _draw() -> void:
 	match tipo:
 		"fondo":
 			# Degradado vertical que cubre toda la pantalla.
+			var arriba := CIELO_ARRIBA.lerp(Color("4678aa"), _nivel_cielo / 8.0)
+			var abajo := CIELO_ABAJO.lerp(Color("bdd8df"), _nivel_cielo / 8.0)
 			draw_polygon(PackedVector2Array([Vector2(-mitad.x, -mitad.y), Vector2(mitad.x, -mitad.y), mitad, Vector2(-mitad.x, mitad.y)]),
-				PackedColorArray([CIELO_ARRIBA, CIELO_ARRIBA, CIELO_ABAJO, CIELO_ABAJO]))
+				PackedColorArray([arriba, arriba, abajo, abajo]))
 		"sol":
 			# Casi fijo arriba a la derecha; se desliza hasta 80 px con la cámara y vuelve.
 			var centro := Vector2(mitad.x * 0.55 - fposmod(vista.x * paralaje, 80), -mitad.y * 0.65)
@@ -70,13 +78,16 @@ func _draw() -> void:
 				var x := i * separacion - desplazamiento + (azar - 0.5) * separacion * 0.25
 				var altura := -mitad.y * (ALTURA_NUBES_ALTAS if tipo == "nubes_altas" else ALTURA_OTRAS)
 				altura += (azar - 0.5) * VARIACION_ALTURA - clampf((vista.y - REF_Y) * paralaje * 0.2, -SUBIDA_MAX, SUBIDA_MAX)
+				if tipo == "nubes_altas" or tipo == "nubes_cercanas":
+					altura += maxf(0.0, REF_Y - vista.y) * (0.18 if tipo == "nubes_altas" else 0.4)
 				match tipo:
 					"nubes_altas", "nubes_cercanas":
 						_nube(Vector2(x, altura), azar)
 					"aves":
 						_bandada(Vector2(x, altura - 40), i, azar)
 					"papalotes":
-						_papalote(Vector2(x, altura + 60), i, azar)
+						if azar < 0.45:
+							_papalote(Vector2(x, altura + 60), i, azar)
 
 
 ## Número pseudoaleatorio estable en [0, 1).

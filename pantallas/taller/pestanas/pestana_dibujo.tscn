@@ -15,13 +15,13 @@ theme_override_constants/separation = 10
 
 [node name="Nota" type="Label" parent="Caja"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0.36, 0.41, 0.37, 1)
-theme_override_font_sizes/font_size = 15
+theme_type_variation = &"Suave"
 text = "Pinta sobre tu melón. Se guarda al soltar el pincel. Ctrl+Z para deshacer."
 autowrap_mode = 2
 
 [node name="EtiHerramienta" type="Label" parent="Caja"]
 layout_mode = 2
+theme_type_variation = &"Subtitulo"
 theme_override_font_sizes/font_size = 18
 text = "Herramienta"
 
@@ -48,14 +48,15 @@ text = "Goma"
 
 [node name="EtiColor" type="Label" parent="Caja"]
 layout_mode = 2
+theme_type_variation = &"Subtitulo"
 theme_override_font_sizes/font_size = 18
 text = "Color"
 
 [node name="FilaColores" type="HFlowContainer" parent="Caja"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_constants/h_separation = 6
-theme_override_constants/v_separation = 6
+theme_override_constants/h_separation = 8
+theme_override_constants/v_separation = 8
 
 [node name="FilaOtro" type="HBoxContainer" parent="Caja"]
 layout_mode = 2
@@ -63,11 +64,13 @@ theme_override_constants/separation = 8
 
 [node name="EtiOtro" type="Label" parent="Caja/FilaOtro"]
 layout_mode = 2
+theme_type_variation = &"Subtitulo"
+theme_override_font_sizes/font_size = 16
 text = "Otro color"
 
 [node name="OtroColor" type="ColorPickerButton" parent="Caja/FilaOtro"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(80, 32)
+custom_minimum_size = Vector2(90, 42)
 layout_mode = 2
 color = Color(0.146, 0.243, 0.196, 1)
 edit_alpha = false
@@ -78,6 +81,7 @@ theme_override_constants/separation = 8
 
 [node name="EtiGrosor" type="Label" parent="Caja/FilaGrosor"]
 layout_mode = 2
+theme_type_variation = &"Subtitulo"
 theme_override_font_sizes/font_size = 18
 text = "Grosor"
 
@@ -110,8 +114,7 @@ text = "Borrar todo"
 [node name="Conteo" type="Label" parent="Caja"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_override_colors/font_color = Color(0.36, 0.41, 0.37, 1)
-theme_override_font_sizes/font_size = 15
+theme_type_variation = &"Suave"
 text = "Sin trazos todavía."
 
 [connection signal="color_changed" from="Caja/FilaOtro/OtroColor" to="." method="_elegir_color"]

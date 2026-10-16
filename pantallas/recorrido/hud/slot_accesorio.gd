@@ -4,7 +4,8 @@ extends PanelContainer
 ##
 ## Escena: pantallas/recorrido/hud/slot_accesorio.tscn, instanciada tres veces
 ## en el contenedor Equipo de hud.tscn. El HUD llama a mostrar() cuando cambia
-## el equipo del melón (al usar o perder un accesorio).
+## el equipo del melón (al usar o perder un accesorio). Al vaciarse, la casilla
+## da un salto y se apaga.
 
 @export_range(1, 3) var tecla := 1:
 	set(valor):
@@ -25,7 +26,10 @@ func _ready() -> void:
 
 ## Muestra el accesorio id, o la casilla vacía si id es null.
 func mostrar(id) -> void:
+	if _id != null and id == null and is_inside_tree():
+		Animacion.rebotar(self, 1.2)
 	_id = id
+	modulate = Color.WHITE if id != null else Color(1, 1, 1, 0.55)
 	var accesorio: Accesorio = Config.accesorios.get(id) if id != null else null
 	nombre.text = accesorio.nombre.get_slice(" ", 0) if accesorio else "Vacío"
 	tooltip_text = accesorio.nombre if accesorio else "Sin accesorio"
@@ -35,7 +39,8 @@ func mostrar(id) -> void:
 ## Conectada a la señal draw del nodo Icono.
 func _dibujar_icono() -> void:
 	if _id == null:
-		var y := 14.0
-		icono.draw_line(Vector2(icono.size.x * 0.5 - 5, y), Vector2(icono.size.x * 0.5 + 5, y), Color("a1ad99"), 2.0)
+		var c := icono.size * 0.5
+		icono.draw_arc(c, 12.0, 0, TAU, 24, Color(1, 1, 1, 0.35), 3.0, true)
 		return
-	Config.accesorios[_id].dibujar_icono(icono, Rect2(Vector2.ZERO, icono.size))
+	var lado := minf(icono.size.x, icono.size.y)
+	Config.accesorios[_id].dibujar_icono(icono, Rect2((icono.size - Vector2(lado, lado)) * 0.5, Vector2(lado, lado)))

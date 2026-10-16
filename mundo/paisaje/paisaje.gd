@@ -72,7 +72,8 @@ func _process(delta: float) -> void:
 		get_node(nombre).visible = arte.paisaje == null or global_position.y < ALTURA_CIELO
 	# Todos los hijos son CapaCielo.
 	for capa in get_children():
-		capa.actualizar(get_viewport_rect().size, global_position, _t)
+		if capa.visible:
+			capa.actualizar(get_viewport_rect().size, global_position, _t)
 	queue_redraw()
 
 

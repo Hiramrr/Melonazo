@@ -2,13 +2,16 @@ extends Control
 ## Pantalla del taller: preparar el melón antes de rodar.
 ##
 ## Escena: pantallas/taller/taller.tscn. Cada parte tiene su propio script:
-##   Previa/CajaPrevia/Vista     vista_melon.gd: dibuja el melón y recibe el ratón
+##   Fondo                       interfaz/fondo_juego.gd: rayos y papel picado animados
+##   Cabecera                    logo y fichas de aplausos (%Balance) y récord (%Record)
+##   Previa/.../Vista            vista_melon.gd: dibuja el melón y recibe el ratón
 ##   Pestanas/TuMelon            pestanas/pestana_melon.gd: nombre, tamaño y aspecto
 ##   Pestanas/Dibujo             pestanas/pestana_dibujo.tscn: dibujo libre
 ##   Pestanas/Accesorios         pestanas/pestana_accesorios.gd
 ##   Pestanas/Mejoras            pestanas/pestana_mejoras.gd
 ##   Pestanas/Pasaporte          pestanas/pestana_pasaporte.gd (solo lectura)
-##   Pie                         aplausos, récord, error de guardado y "¡A rodar!"
+##   Pie                         error de guardado, teclas de ayuda, "Reiniciar
+##                               progreso" (con confirmación) y "¡A rodar!"
 ##
 ## Este script solo coordina:
 ##   - Cuando una pestaña emite cambio (tocó Juego), _refrescar() pone al día
@@ -25,7 +28,8 @@ const RECORRIDO := "res://pantallas/recorrido/recorrido.tscn"
 # --- Vista previa ------------------------------------------------------------
 @onready var vista: VistaMelon = %Vista
 @onready var lbl_nombre_vista: Label = %NombreVista
-@onready var lbl_carisma: Label = %Carisma
+@onready var lbl_tamano: Label = %Tamano
+@onready var ficha_carisma: Ficha = %Carisma
 
 # --- Pestañas ----------------------------------------------------------------
 @onready var pestanas: TabContainer = %Pestanas
@@ -33,12 +37,20 @@ const RECORRIDO := "res://pantallas/recorrido/recorrido.tscn"
 @onready var pestana_dibujo: PestanaDibujo = %Dibujo
 @onready var pestana_accesorios: PestanaAccesorios = %Accesorios
 @onready var pestana_mejoras: PestanaMejoras = %Mejoras
+@onready var pestana_pasaporte: PestanaPasaporte = %Pasaporte
 
-# --- Pie ---------------------------------------------------------------------
-@onready var lbl_balance: Label = %Balance
-@onready var lbl_record: Label = %Record
+# --- Cabecera y pie ---------------------------------------------------------
+@onready var titulo: Label = %Titulo
+@onready var ficha_balance: Ficha = %Balance
+@onready var ficha_record: Ficha = %Record
 @onready var lbl_error: Label = %ErrorGuardo
+@onready var ayuda: HBoxContainer = %Ayuda
 @onready var btn_puente: Button = %BtnPuente
+@onready var btn_reiniciar: Button = %BtnReiniciar
+@onready var confirmar_reinicio: ConfirmationDialog = %ConfirmarReinicio
+
+var _aplausos_mostrados := -1
+var _carisma_mostrado := -1
 
 
 func _ready() -> void:
@@ -51,8 +63,27 @@ func _ready() -> void:
 	pestana_melon.color_cambiado.connect(vista.queue_redraw)
 	pestana_melon.nombre_confirmado.connect(btn_puente.grab_focus)
 	pestana_dibujo.cambio.connect(vista.queue_redraw)
+	for parte in [["Tab", "Elegir"], ["Enter", "Rodar"]]:
+		ayuda.add_child(Iconos.tecla(parte[0]))
+		var l := ComunTaller.etiqueta(parte[1], 15)
+		l.theme_type_variation = &"TextoHUD"
+		ayuda.add_child(l)
 	_refrescar()
 	btn_puente.grab_focus()
+	_animar_entrada()
+
+
+## Logo que se mece, botón que late y paneles que entran con rebote.
+func _animar_entrada() -> void:
+	titulo.pivot_offset = titulo.size * 0.5
+	titulo.rotation_degrees = -2.0
+	var vaiven := titulo.create_tween().set_loops()
+	vaiven.tween_property(titulo, "rotation_degrees", 2.0, 1.6).set_trans(Tween.TRANS_SINE)
+	vaiven.tween_property(titulo, "rotation_degrees", -2.0, 1.6).set_trans(Tween.TRANS_SINE)
+	Animacion.aparecer(titulo, 0.0, 0.4)
+	Animacion.aparecer(%Previa, 0.08, 0.85)
+	Animacion.aparecer(pestanas, 0.14, 0.9)
+	Animacion.aparecer(btn_puente, 0.25, 0.5).finished.connect(Animacion.latir.bind(btn_puente))
 
 
 ## Enter fuera de un campo de texto o botón = "¡A rodar!".
@@ -68,7 +99,22 @@ func _unhandled_input(event: InputEvent) -> void:
 func _ir() -> void:
 	Juego.nombre_melon = ComunTaller.nombre_melon()
 	Juego.guardar()
-	get_tree().change_scene_to_file(RECORRIDO)
+	Animacion.cambiar_escena(RECORRIDO)
+
+
+## Muestra la confirmación antes de borrar. Conectado a BtnReiniciar.pressed.
+func _pedir_reinicio() -> void:
+	confirmar_reinicio.popup_centered()
+
+
+## Borra el progreso y pone toda la pantalla al día. Conectado a
+## ConfirmarReinicio.confirmed en la escena.
+func _reiniciar_progreso() -> void:
+	Juego.reiniciar_progreso()
+	pestana_dibujo.refrescar()
+	pestana_pasaporte.refrescar()
+	_refrescar()
+	btn_puente.grab_focus()
 
 
 func _al_cambiar_pestana(_pestana: int) -> void:
@@ -80,10 +126,18 @@ func _refrescar() -> void:
 	pestana_melon.refrescar()
 	pestana_accesorios.refrescar()
 	pestana_mejoras.refrescar()
-	lbl_balance.text = "Aplausos: %d" % Juego.aplausos
-	lbl_record.text = "Récord: %d m" % int(Juego.record_m)
+	ficha_balance.texto = str(Juego.aplausos)
+	ficha_record.texto = "%d m" % int(Juego.record_m)
+	if _aplausos_mostrados >= 0 and _aplausos_mostrados != Juego.aplausos:
+		Animacion.rebotar(ficha_balance, 1.2)
+	_aplausos_mostrados = Juego.aplausos
 	lbl_error.text = Juego.guardado_error
 	lbl_error.tooltip_text = Juego.guardado_error
 	lbl_nombre_vista.text = ComunTaller.nombre_melon()
-	lbl_carisma.text = "%s   ·   Carisma %d" % [Config.tamanos[Juego.tamano]["nombre"], Juego.carisma_de(Juego.accesorios)]
+	lbl_tamano.text = Config.tamanos[Juego.tamano]["nombre"]
+	var carisma := Juego.carisma_de(Juego.accesorios)
+	ficha_carisma.texto = "Carisma %d" % carisma
+	if _carisma_mostrado >= 0 and _carisma_mostrado != carisma:
+		Animacion.rebotar(ficha_carisma, 1.2)
+	_carisma_mostrado = carisma
 	vista.queue_redraw()

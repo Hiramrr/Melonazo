@@ -45,7 +45,7 @@ func _ready() -> void:
 	grosor.max_value = Config.grosor_dibujo.y
 	for c in Config.colores_dibujo:
 		var b := Button.new()
-		b.custom_minimum_size = Vector2(34, 34)
+		b.custom_minimum_size = Vector2(42, 42)
 		b.tooltip_text = "#" + (c as Color).to_html(false)
 		b.pressed.connect(_elegir_color.bind(c))
 		fila_colores.add_child(b)
@@ -77,13 +77,19 @@ func refrescar() -> void:
 
 # --- Controles de la pestaña -------------------------------------------------
 
-## Muestra redonda de color; la elegida lleva un borde grueso.
+## Muestra redonda de color con labio; la elegida es más grande y de borde grueso.
 func _estilo_muestra(c: Color, elegido: bool) -> StyleBoxFlat:
 	var s := StyleBoxFlat.new()
 	s.bg_color = c
-	s.set_corner_radius_all(17)
-	s.set_border_width_all(4 if elegido else 1)
-	s.border_color = Color("253e32") if elegido else c.darkened(0.35)
+	s.set_corner_radius_all(21)
+	s.set_border_width_all(5 if elegido else 3)
+	s.border_width_bottom = 5 if elegido else 6
+	s.border_color = Color("203d38")
+	if elegido:
+		s.expand_margin_left = 3
+		s.expand_margin_right = 3
+		s.expand_margin_top = 3
+		s.expand_margin_bottom = 3
 	return s
 
 

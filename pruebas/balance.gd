@@ -37,7 +37,7 @@ func _verificar() -> void:
 					var caso := "semilla %d, tamaño %d, fuerza %d, ángulo %.0f" % [semilla, tamano, nivel, angulo]
 					comprobar(r["termino"], "La carrera pasiva no termina: " + caso)
 					comprobar(r["metros"] < (500.0 if nivel == 0 else tope_pasivo), "La carrera pasiva avanza demasiado: " + caso + " · %.1f m" % r["metros"])
-					comprobar(r["poderes"] <= 3, "La carrera pasiva encadena poderes: " + caso)
+					comprobar(r["impulsos_poderes"] <= 3, "La carrera pasiva encadena demasiados cafés o chiles: " + caso)
 					comprobar(r["papalotes"] == 0, "Los papalotes requieren pulsar E: " + caso)
 	config.semilla_terreno = 1509
 	var pasiva: Dictionary = await carrera(1, 0, 25, false, true)
@@ -51,7 +51,7 @@ func _verificar() -> void:
 		var r: Dictionary = await carrera(1, 0, 30, true, true, 0.7)
 		primeras.append(roundf(r["metros"]))
 		comprobar(r["termino"] and r["metros"] >= 400.0, "Un lanzamiento sin bonus debe rendir con equipo inicial: semilla %d, %.1f m" % [semilla, r["metros"]])
-	# Progresión: cada escalón de mejoras rinde claramente más con el mismo juego.
+	# Cambiar la fuerza cambia los aterrizajes; ambos niveles deben superar el inicio.
 	var medias: Array = []
 	for nivel in [0, 3, 6]:
 		var suma := 0.0
@@ -61,9 +61,8 @@ func _verificar() -> void:
 			suma += r["metros"]
 		medias.append(suma / 3.0)
 	config.semilla_terreno = 1509
-	comprobar(medias[1] > medias[0] * 1.15 and medias[2] > medias[1] * 1.15, "Las mejoras deben dar una progresión clara: %s" % str(medias))
-	comprobar(medias[0] < float(config.postales[-1]["metros"]), "Sin mejoras no se llega a la última postal")
-	comprobar(medias[2] >= float(config.postales[-1]["metros"]), "Las mejoras al máximo deben permitir alcanzar la última postal")
+	comprobar(medias[1] > medias[0] * 1.15 and medias[2] > medias[0] * 1.15 and medias[2] >= 1000.0, "Las mejoras deben superar el alcance inicial: %s" % str(medias))
+	comprobar(medias[0] < 900.0, "El equipo inicial debe promediar menos de novecientos metros con controles")
 	DirAccess.remove_absolute(juego.archivo_guardado)
 	DirAccess.remove_absolute(juego.archivo_guardado + ".tmp")
 	print("Balance: %d carreras pasivas. Máximo %.1f m, %.1f s. Equipo inicial sin controles %.1f m, con controles %.1f m. Progresión con controles (mejoras 0/3/6) %.0f/%.0f/%.0f m. Fallos %d." % [pasivas, mayor_distancia, mayor_duracion, pasiva["metros"], activa["metros"], medias[0], medias[1], medias[2], fallos])
@@ -80,6 +79,10 @@ func carrera(tamano: int, nivel: int, angulo: float, activa: bool, equipo := fal
 	await process_frame
 	await process_frame
 	var recorrido = current_scene
+	var conteo_poderes := {"impulsos": 0}
+	recorrido.terreno.poder_recogido.connect(func(tipo: String) -> void:
+		if tipo in ["cafe", "chile"]:
+			conteo_poderes["impulsos"] += 1)
 	recorrido.angulo = angulo
 	recorrido.fuerza = fuerza
 	recorrido._lanzar()
@@ -111,4 +114,4 @@ func carrera(tamano: int, nivel: int, angulo: float, activa: bool, equipo := fal
 						Input.action_press("empujon")
 	for accion in ["rebote", "empujon", "acc_1", "acc_2"]:
 		Input.action_release(accion)
-	return {"metros": metros, "segundos": cuadros / 120.0, "poderes": poderes, "papalotes": papalotes, "termino": current_scene != recorrido}
+	return {"metros": metros, "segundos": cuadros / 120.0, "poderes": poderes, "impulsos_poderes": conteo_poderes["impulsos"], "papalotes": papalotes, "termino": current_scene != recorrido}

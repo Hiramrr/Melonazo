@@ -22,7 +22,7 @@ extends Area2D
 		medida = valor
 		queue_redraw()
 @export var altura_toldo := 115.0
-@export var radio_aplauso := 14.0
+@export var radio_aplauso := 22.0
 var activo := true                         # false = ya no tiene efecto en esta carrera
 var roto := false                          # puesto destrozado
 
@@ -93,10 +93,12 @@ func _draw() -> void:
 	var h := medida.y
 	match tipo:
 		"aplauso":
-			draw_circle(Vector2.ZERO, radio_aplauso, Color(1, 0.82, 0.2))
-			draw_arc(Vector2.ZERO, radio_aplauso, 0, TAU, 20, Color(0.75, 0.5, 0.1), 2.0)
-			draw_circle(Vector2(-4, 0), 4.0, Color(1, 0.95, 0.7))
-			draw_circle(Vector2(4, 0), 4.0, Color(1, 0.95, 0.7))
+			draw_circle(Vector2.ZERO, radio_aplauso + 3.0, Color("fff4d6"))
+			draw_circle(Vector2.ZERO, radio_aplauso, Color("f2c14e"))
+			draw_arc(Vector2.ZERO, radio_aplauso, 0, TAU, 24, Color("624326"), 2.0, true)
+			draw_arc(Vector2.ZERO, radio_aplauso - 4.0, 0, TAU, 24, Color("fff0a4"), 1.5, true)
+			draw_circle(Vector2(-4, 0), 3.5, Color("624326"))
+			draw_circle(Vector2(4, 0), 3.5, Color("624326"))
 		"coladera":
 			draw_rect(Rect2(-w, -h, w * 2, h), Color(0.15, 0.15, 0.17))
 			var x := -w + 6.0

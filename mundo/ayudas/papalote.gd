@@ -2,7 +2,7 @@
 class_name Papalote
 extends Node2D
 ## Ayuda de la ruta aérea: un papalote flotando. Si el melón pasa cerca y el jugador
-## presiona E, lo lanza hacia arriba y adelante, le devuelve un rebote y lo protege
+## presiona E, lo lanza hacia arriba y adelante y lo protege
 ## de la siguiente caída fuerte.
 ## Cada papalote se puede usar una sola vez.
 ##
@@ -16,6 +16,8 @@ extends Node2D
 const TINTA := Color("294b43")
 const CREMA := Color("fff4d6")
 
+@export var corriente := false
+
 ## Ya se usó en esta carrera; se dibuja en gris.
 var usado := false
 ## El melón está lo bastante cerca para usarlo (muestra el aro y "E · Impulso").
@@ -28,7 +30,7 @@ var en_rango := false:
 
 ## Impulsa al melón si está a alcance y el papalote no se ha usado. Devuelve true si
 ## hubo impulso. Asegura una velocidad mínima hacia adelante y hacia arriba (no suma
-## si el melón ya va más rápido), suma un rebote hasta el máximo y activa su escudo.
+## si el melón ya va más rápido) y activa su escudo. Los saltos se recuperan con tamales.
 func impulsar(melon: Melon) -> bool:
 	if usado or not melon.controlable or melon.roto or global_position.distance_to(melon.global_position) > Config.papalote_rango:
 		return false
@@ -38,8 +40,6 @@ func impulsar(melon: Melon) -> bool:
 	# pedidos en este mismo paso de física; así Espacio + E no duplican la elevación.
 	var v := melon.linear_velocity + melon._dv
 	melon.empujar(Vector2(maxf(0.0, Config.papalote_avance - v.x), minf(0.0, -Config.papalote_elevacion - v.y)))
-	if melon.rebotes < Juego.rebotes_max():
-		melon.sumar_rebote()
 	melon.proteger()
 	queue_redraw()
 	return true
@@ -48,6 +48,9 @@ func impulsar(melon: Melon) -> bool:
 # --- Dibujo ------------------------------------------------------------------
 
 func _draw() -> void:
+	if corriente:
+		_dibujar_corriente()
+		return
 	var coral := Color("d86b51") if not usado else Color("9caaa1")
 	var rombo := PackedVector2Array([Vector2(0, -48), Vector2(38, -4), Vector2(0, 44), Vector2(-38, -4)])
 	if en_rango:
@@ -66,7 +69,28 @@ func _draw() -> void:
 	# Flecha hacia arriba mientras esté disponible.
 	if not usado:
 		draw_polyline(PackedVector2Array([Vector2(-12, 13), Vector2(0, -6), Vector2(12, 13)]), CREMA, 5, true)
-	var texto := "Usado" if usado else ("E · Impulso" if en_rango else "Papalote +1")
+	var texto := "Usado" if usado else ("E · Impulso" if en_rango else "Papalote")
 	var fuente := ThemeDB.fallback_font
 	draw_string_outline(fuente, Vector2(-90, -70), texto, HORIZONTAL_ALIGNMENT_CENTER, 180, 18, 5, TINTA)
 	draw_string(fuente, Vector2(-90, -70), texto, HORIZONTAL_ALIGNMENT_CENTER, 180, 18, CREMA)
+
+
+func nombre() -> String:
+	return "Corriente de niebla" if corriente else "Papalote"
+
+
+func _dibujar_corriente() -> void:
+	var color := Color("9aaca7") if usado else Color("83b9b0")
+	for i in 3:
+		var centro := Vector2((i - 1) * 32, 20 - sin(i * PI / 2) * 16)
+		draw_circle(centro, 28, TINTA)
+		draw_circle(centro, 24, color)
+	for i in 3:
+		var x := (i - 1) * 24.0
+		draw_polyline(PackedVector2Array([Vector2(x - 5, 0), Vector2(x + 5, -20), Vector2(x - 5, -40)]), CREMA, 4, true)
+	if en_rango:
+		draw_arc(Vector2.ZERO, 74, 0, TAU, 40, CREMA, 3, true)
+	var texto := "Usada" if usado else ("E · Subir" if en_rango else nombre())
+	var fuente := ThemeDB.fallback_font
+	draw_string_outline(fuente, Vector2(-110, -70), texto, HORIZONTAL_ALIGNMENT_CENTER, 220, 18, 5, TINTA)
+	draw_string(fuente, Vector2(-110, -70), texto, HORIZONTAL_ALIGNMENT_CENTER, 220, 18, CREMA)
