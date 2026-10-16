@@ -56,4 +56,4 @@ Las fotografías aparecen en el pasaporte, con independencia de los lugares desb
 - Cambios: Archivo original. Recorte proporcional en pantalla mediante AtlasTexture para excluir los bordes vacíos de la panorámica. Sin retoques generativos.
 - Descarga: [archivo original](https://upload.wikimedia.org/wikipedia/commons/2/25/Panorama_xalapa_desde_el_agora.jpg).
 
-El fondo se configura en `paisaje`, por separado de las fotos del pasaporte. Al cambiarlo también hay que actualizar `credito_paisaje`. El encuadre excluye bordes vacíos del panorama mediante AtlasTexture. La imagen generada anterior ya no se carga.
+El fondo se configura en `paisaje`, por separado de las fotos del pasaporte. Al cambiarlo también hay que actualizar `credito_paisaje`. El encuadre excluye bordes vacíos del panorama mediante AtlasTexture.

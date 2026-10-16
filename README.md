@@ -88,7 +88,7 @@ Las entradas de `fotografias` en `recursos/arte_xalapa.tres` permiten sustituir 
 
 El taller muestra una ilustración vectorial de Xallitic en `recursos/taller_xallitic.svg`. También aparece en los resultados cuando no hay una foto del lugar. El tema compartido usa verde tinta, papel crema y botones coral, con títulos redondeados. El HUD muestra cada accesorio con su dibujo y tecla, y marca la zona perfecta en el medidor.
 
-El fondo del recorrido es una fotografía real de Xalapa desde el Ágora, de Koffermejia, con licencia CC BY-SA 4.0. Se incluye en `recursos/fotos/panorama_xalapa.jpg`. `paisaje` usa un AtlasTexture para excluir los bordes vacíos de la panorámica y conserva sus proporciones. Los créditos y enlaces aparecen en el menú de pausa. La imagen generada anterior ya no se carga.
+El fondo del recorrido es una fotografía real de Xalapa desde el Ágora, de Koffermejia, con licencia CC BY-SA 4.0. Se incluye en `recursos/fotos/panorama_xalapa.jpg`. `paisaje` usa un AtlasTexture para excluir los bordes vacíos de la panorámica y conserva sus proporciones. Los créditos y enlaces aparecen en el menú de pausa.
 
 Para sustituir el fondo, cambia `paisaje` y actualiza `credito_paisaje` en `recursos/arte_xalapa.tres`. Para quitarlo, vacía `paisaje` y guarda el recurso. El recorrido recupera los fondos dibujados por código. Los autores y licencias están en `recursos/fotos/README.md`.
 
