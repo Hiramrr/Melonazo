@@ -1,0 +1,12 @@
+[gd_scene load_steps=3 format=3]
+[ext_resource type="PackedScene" path="res://escenas/mundo/Obstaculo.tscn" id="1"]
+[sub_resource type="CircleShape2D" id="Zona"]
+radius = 14.0
+
+[node name="Aplauso" instance=ExtResource("1")]
+tipo = "aplauso"
+medida = Vector2(28, 28)
+
+[node name="Zona" parent="." index="0"]
+position = Vector2(0, 0)
+shape = SubResource("Zona")

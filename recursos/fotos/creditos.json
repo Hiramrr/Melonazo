@@ -1,0 +1,57 @@
+[
+  {
+    "id": "xallitic",
+    "nombre": "Puente de Xallitic",
+    "archivo": "xallitic.jpg",
+    "autor": "Juan Javier Mora-Rivera",
+    "licencia": "CC BY-SA 4.0",
+    "url_licencia": "https://creativecommons.org/licenses/by-sa/4.0",
+    "fuente": "https://commons.wikimedia.org/wiki/File:Bajos_del_Puente_de_Xallitic,_Xalapa,_Veracruz.jpg",
+    "descarga": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/43/Bajos_del_Puente_de_Xallitic%2C_Xalapa%2C_Veracruz.jpg/1280px-Bajos_del_Puente_de_Xallitic%2C_Xalapa%2C_Veracruz.jpg",
+    "cambios": "Versión reducida de Wikimedia. Encuadre al mostrar en el juego. Sin retoques generativos."
+  },
+  {
+    "id": "catedral",
+    "nombre": "Catedral de Xalapa",
+    "archivo": "catedral.jpg",
+    "autor": "Soundtrckk",
+    "licencia": "CC BY-SA 3.0",
+    "url_licencia": "https://creativecommons.org/licenses/by-sa/3.0",
+    "fuente": "https://commons.wikimedia.org/wiki/File:Catedral_Metropolitana_de_Xalapa.jpg",
+    "descarga": "https://thumb.wikimedia.org/wikipedia/commons/thumb/0/0e/Catedral_Metropolitana_de_Xalapa.jpg/1280px-Catedral_Metropolitana_de_Xalapa.jpg",
+    "cambios": "Versión reducida de Wikimedia. Encuadre al mostrar en el juego. Sin retoques generativos."
+  },
+  {
+    "id": "juarez",
+    "nombre": "Vista desde Parque Juárez",
+    "archivo": "juarez.jpg",
+    "autor": "Burkhard Mücke",
+    "licencia": "CC BY-SA 4.0",
+    "url_licencia": "https://creativecommons.org/licenses/by-sa/4.0",
+    "fuente": "https://commons.wikimedia.org/wiki/File:Vista_del_Pico_de_Orizaba_desde_Parque_Ju%C3%A1rez_01.jpg",
+    "descarga": "https://thumb.wikimedia.org/wikipedia/commons/thumb/f/fb/Vista_del_Pico_de_Orizaba_desde_Parque_Ju%C3%A1rez_01.jpg/1280px-Vista_del_Pico_de_Orizaba_desde_Parque_Ju%C3%A1rez_01.jpg",
+    "cambios": "Versión reducida de Wikimedia. Encuadre al mostrar en el juego. Sin retoques generativos."
+  },
+  {
+    "id": "lagos",
+    "nombre": "Paseo de Los Lagos",
+    "archivo": "lagos.jpg",
+    "autor": "Adam Jones from Kelowna, BC, Canada",
+    "licencia": "CC BY-SA 2.0",
+    "url_licencia": "https://creativecommons.org/licenses/by-sa/2.0",
+    "fuente": "https://commons.wikimedia.org/wiki/File:Park_Scene_-_Paseo_de_los_Lagos_-_Xalapa_-_Veracruz_-_Mexico_-_04_(15470840693).jpg",
+    "descarga": "https://thumb.wikimedia.org/wikipedia/commons/thumb/4/46/Park_Scene_-_Paseo_de_los_Lagos_-_Xalapa_-_Veracruz_-_Mexico_-_04_%2815470840693%29.jpg/1280px-Park_Scene_-_Paseo_de_los_Lagos_-_Xalapa_-_Veracruz_-_Mexico_-_04_%2815470840693%29.jpg",
+    "cambios": "Versión reducida de Wikimedia. Encuadre al mostrar en el juego. Sin retoques generativos."
+  },
+  {
+    "id": "fondo",
+    "nombre": "Xalapa desde el Ágora",
+    "archivo": "panorama_xalapa.jpg",
+    "autor": "Koffermejia",
+    "licencia": "CC BY-SA 4.0",
+    "url_licencia": "https://creativecommons.org/licenses/by-sa/4.0",
+    "fuente": "https://commons.wikimedia.org/wiki/File:Panorama_xalapa_desde_el_agora.jpg",
+    "descarga": "https://upload.wikimedia.org/wikipedia/commons/2/25/Panorama_xalapa_desde_el_agora.jpg",
+    "cambios": "Archivo original. Recorte proporcional en pantalla mediante AtlasTexture para excluir los bordes vacíos de la panorámica. Sin retoques generativos."
+  }
+]
