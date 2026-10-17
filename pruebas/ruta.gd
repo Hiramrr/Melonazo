@@ -39,13 +39,43 @@ func _verificar() -> void:
 	r.melon.en_suelo = false
 	r._revisar_avance(config.meta_m * config.px_por_metro - 1.0, 1.0 / 120.0)
 	assert(r.fase == 2, "No se gana antes de cruzar la meta")
-	r.hud._actualizar_lugar(config.meta_m - 1.0, 300.0, 300.0)
+	r.hud._actualizar_lugar(config.meta_m - 1.0)
 	assert(r.hud.get_node("%Ruta").value < 1.0, "Volar alto no completa la barra de viaje")
 	assert("CUCosta" in r.hud.get_node("%Destino").text)
+	r.altura_m = 300.0
+	r.altura_max_m = 300.0
+	r.mejor_x = float(config.postales[4]["metros"]) * config.px_por_metro
+	r.hud.actualizar(r)
+	assert(r.hud.get_node("%LugarActual").text == "FEI · UV", "El vuelo no sustituye el lugar del viaje")
+	assert("Macuiltépetl" in r.hud.get_node("%Siguiente").text, "El próximo destino sigue visible al volar")
+	for i in config.etapas_ruta.size():
+		var inicio: float = config.etapas_ruta[i]["metros"]
+		r.hud._actualizar_lugar(inicio)
+		assert(r.hud.get_node("%Etapa").text == "%d/4 · %s" % [i + 1, config.etapas_ruta[i]["nombre"]])
+		if i > 0:
+			r.hud._actualizar_lugar(inicio - 0.01)
+			assert(r.hud.get_node("%Etapa").text.begins_with("%d/4" % i), "La etapa cambia en su límite")
+	var senales: Array = []
+	for x in range(0, int(config.meta_m * config.px_por_metro) + 1, 1000):
+		r.terreno.actualizar(x)
+		for tramo in r.terreno.tramos:
+			for marcador in tramo.marcadores:
+				if marcador.has("id") and not marcador["id"] in senales:
+					senales.append(marcador["id"])
+					assert(marcador["pos"].x == maxf(config.calle_inicio_x, marcador["metros"] * config.px_por_metro))
+	assert(senales == ids, "Los 19 lugares tienen señal en el camino, incluida la meta")
+	var senales_meta := 0
+	for tramo in r.terreno.tramos:
+		for marcador in tramo.marcadores:
+			if marcador.get("id", "") == "cucosta":
+				senales_meta += 1
+	assert(senales_meta == 1, "Solo hay una puerta de meta")
 	r._revisar_avance(config.meta_m * config.px_por_metro + 100.0, 1.0 / 120.0)
 	assert(r.fase == 3 and r.melon.freeze and not r.melon.controlable, "La llegada detiene la carrera, también en el aire")
 	assert(r.mejor_x == config.meta_m * config.px_por_metro and "cucosta" in r.postales_intento)
 	assert(r.texto_fin == "¡Llegaste al CUCosta!")
+	r.hud._actualizar_lugar(config.meta_m)
+	assert(r.hud.get_node("%Ruta").value == 1.0 and r.hud.get_node("%Destino").text == r.texto_fin)
 	r.terreno.actualizar(config.meta_m * config.px_por_metro)
 	var fin_terreno: float = r.terreno.tramos[-1].x1
 	r.terreno.actualizar(config.meta_m * config.px_por_metro * 2.0)
@@ -61,7 +91,7 @@ func _verificar() -> void:
 	assert(current_scene.get_node("%Titulo").text == "¡Llegaste al CUCosta!")
 	var postal = current_scene.get_node("Margen/Columnas/Postal")
 	assert(postal.lugar_id == "cucosta" and not postal.con_foto and not postal.visible, "Sin foto del CUCosta no se muestra otra ciudad ni una ilustración")
-	assert(postal.arte.paisaje == null, "Las fotografías solo aparecen al terminar")
+	assert(postal.arte.paisaje == null, "El paisaje panorámico permanece desactivado")
 	juego.registrar_intento(config.meta_m + 300.0, 0, 0, false)
 	assert(juego.ultimo["distancia"] == config.meta_m and juego.ultimo["por_visitas"] == 0)
 	juego.registrar_intento(config.meta_m - 1.0, 0, 0, false)

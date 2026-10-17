@@ -98,8 +98,6 @@ func carrera(tamano: int, fuerza: float, pulsar := false) -> Dictionary:
 			comprobar(r._x_bajada >= config.bajada_fin.x and r.melon.controlable and not r.melon.freeze, "Solo se habilitan física libre y controles al dejar el trampolín")
 			comprobar(r.melon.rebotes == juego.rebotes_max(), "La bajada conserva las cargas de salto")
 			comprobar(r.melon.slots == slots, "La bajada conserva los accesorios equipados")
-			for nodo in r.melon._formas:
-				comprobar(not nodo.disabled, "Las colisiones del equipo vuelven después del trampolín")
 			if pulsar:
 				r.melon.t_bloqueo = 0.0
 				comprobar(r.melon.saltar(), "El salto vuelve a funcionar después del trampolín")

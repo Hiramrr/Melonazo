@@ -24,6 +24,27 @@
 [resource]
 script = ExtResource("1")
 paisaje = null
+lugares_mapa = {
+"xallitic": ExtResource("foto_xallitic"),
+"juarez": ExtResource("foto_juarez"),
+"lagos": ExtResource("foto_lagos"),
+"aguila": ExtResource("foto_aguila"),
+"fei": ExtResource("foto_fei"),
+"macuiltepetl": ExtResource("foto_macuiltepetl"),
+"max": ExtResource("foto_max"),
+"experimental": ExtResource("foto_experimental"),
+"joya": ExtResource("foto_joya"),
+"bosques_perote": ExtResource("foto_bosques_perote"),
+"cofre_perote": ExtResource("foto_cofre_perote"),
+"pico_orizaba": ExtResource("foto_pico_orizaba"),
+"estrella_puebla": ExtResource("foto_estrella_puebla"),
+"escaleras_tlaxcala": ExtResource("foto_escaleras_tlaxcala"),
+"angel": ExtResource("foto_angel"),
+"teotihuacan": ExtResource("foto_teotihuacan"),
+"monarca": ExtResource("foto_monarca"),
+"costa": ExtResource("foto_costa"),
+"cucosta": ExtResource("foto_cucosta")
+}
 credito_paisaje = {
 "autor": "Koffermejia",
 "fuente": "https://commons.wikimedia.org/wiki/File:Panorama_xalapa_desde_el_agora.jpg",

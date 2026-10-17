@@ -20,7 +20,7 @@ extends Node2D
 ## la Salsa Valentina y postales.
 ## Al terminar registra el resultado en Juego y pasa a Resultados.
 
-enum Fase { FUERZA, BAJADA, RECORRIDO, FIN }
+enum Fase { FUERZA, BAJADA, RECORRIDO, FIN, REVIVIR }
 
 const ESCENA_RESULTADOS := "res://pantallas/resultados/resultados.tscn"
 const RADIO_IMAN := 240.0              # la flor atrae aplausos a esta distancia
@@ -59,12 +59,12 @@ var _t_fin := 0.0                      # espera antes de pasar a Resultados
 
 
 func _ready() -> void:
+	hud.valentina_elegida.connect(_elegir_valentina)
 	Musica.actualizar_recorrido(0.0)
 	PhysicsServer2D.area_set_param(get_world_2d().space, PhysicsServer2D.AREA_PARAM_GRAVITY, Config.gravedad)
 	terreno.iniciar()
 	terreno.preparar_corredores(bajada)
 	melon.configurar(Juego.tamano, Juego.accesorios, Juego.resistencia_max(), Juego.rebotes_max())
-	melon.colision_accesorios(false)
 	var pendiente := bajada.pendiente(Config.bajada_inicio.x)
 	var normal := Vector2(sin(pendiente), -cos(pendiente))
 	_x_bajada = Config.bajada_inicio.x
@@ -144,7 +144,6 @@ func _physics_process(delta: float) -> void:
 		melon.fijar_velocidad(bajada.velocidad_salida(_velocidad_salida))
 		melon.angular_velocity = _velocidad_salida / melon.radio
 		melon.controlable = true
-		melon.colision_accesorios(true)
 	if fase != Fase.RECORRIDO:
 		return
 	terreno.actualizar(x)
@@ -188,8 +187,7 @@ func _revisar_avance(x: float, delta: float) -> void:
 		_t_sin_avance += delta
 		if _t_sin_avance > Config.tiempo_sin_avance:
 			_t_sin_avance = 0.0
-			if not _usar_valentina():
-				_fin("¡Se detuvo!")
+			_ofrecer_valentina("¡Se detuvo!")
 
 
 func _revisar_postales() -> void:
@@ -218,17 +216,36 @@ func _on_melon_aviso(texto: String) -> void:
 
 
 func _on_melon_roto() -> void:
-	if not _usar_valentina():
-		_fin("¡Se rompió el melón!")
+	_ofrecer_valentina("¡Se rompió el melón!")
 
 
-## Si queda Salsa Valentina, gasta una y el melón sigue. Devuelve false si no hubo.
-func _usar_valentina() -> bool:
-	if fase != Fase.RECORRIDO or not Juego.usar_valentina():
-		return false
-	valentinas_usadas += 1
-	melon.revivir()
-	return true
+## Pausa la carrera para elegir; la salsa se gasta solo al aceptar.
+func _ofrecer_valentina(texto: String) -> void:
+	if fase == Fase.FIN or fase == Fase.REVIVIR:
+		return
+	if fase != Fase.RECORRIDO or Juego.valentinas <= 0:
+		_fin(texto)
+		return
+	fase = Fase.REVIVIR
+	texto_fin = texto
+	melon.controlable = false
+	hud.actualizar(self)
+	hud.preguntar_valentina()
+	get_tree().paused = true
+
+
+func _elegir_valentina(usar: bool) -> void:
+	if fase != Fase.REVIVIR:
+		return
+	get_tree().paused = false
+	if usar and Juego.usar_valentina():
+		valentinas_usadas += 1
+		_t_sin_avance = 0.0
+		fase = Fase.RECORRIDO
+		melon.revivir()
+	else:
+		_fin(texto_fin)
+	hud.actualizar(self)
 
 
 ## Conectada a Terreno.obstaculo_tocado. El efecto lo decide cada Obstaculo.

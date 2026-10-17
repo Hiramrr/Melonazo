@@ -13,8 +13,6 @@ func _init() -> void:
 	inicial = true
 	orden = 10
 	color = Color(0.9, 0.78, 0.4)
-	forma = [Vector2(-0.85, -0.05), Vector2(0.85, -0.05), Vector2(0.85, 0.1), Vector2(0.32, 0.42),
-		Vector2(-0.32, 0.42), Vector2(-0.85, 0.1)]
 
 
 func usar(m: Melon) -> void:

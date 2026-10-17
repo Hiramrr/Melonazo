@@ -22,6 +22,7 @@ func _verificar() -> void:
 	juego = root.get_node("Juego")
 	config = root.get_node("Config")
 	juego.archivo_guardado = "user://prueba_vuelo_%d.json" % OS.get_process_id()
+	juego.melones_guardados.clear()
 	juego.tamano = 1
 	juego.niveles = {"fuerza": 0, "resistencia": 0, "rebotes": 0}
 	var melon = load("res://melon/melon.tscn").instantiate()
@@ -86,25 +87,22 @@ func _verificar() -> void:
 				var r: Dictionary = await carrera(tamano, mover)
 				print("Vuelo semilla %d, tamaño %d, D %s: %.0f m, altura %.0f m, %.1f s sobre 40 m, %d papalotes, %d puntos recogidos sobre 40 m." % [semilla, tamano, mover, r["metros"], r["altura"], r["en_alto"], r["papalotes"], r["puntos_altos"]])
 				comprobar(r["papalotes"] >= 2, "Se pueden encadenar ayudas aéreas sin mejoras")
-				comprobar(r["termino"] and r["metros"] < 2500.0, "La ruta aérea termina al perder los impulsos, incluso manteniendo D")
+				comprobar(r["termino"] and r["metros"] < config.meta_m, "Sin mejoras la ruta aérea termina antes de la meta, incluso manteniendo D")
 				comprobar(r["altura"] >= 140.0 and r["en_alto"] >= 6.0, "Sin mejoras se puede subir a la niebla y sostener el vuelo")
 				puntos_altos += r["puntos_altos"]
 	comprobar(puntos_altos > 0, "Los puntos altos se recogen durante un vuelo real sin mejoras")
 	juego.niveles = {"fuerza": 6, "resistencia": 5, "rebotes": 5}
 	var alcance_mejorado := 0.0
-	var llegadas := 0
 	for semilla in [1509, 42, 7301]:
 		config.semilla_terreno = semilla
 		for mover in [false, true]:
 			var r: Dictionary = await carrera(1, mover)
 			print("Vuelo con mejoras máximas, semilla %d, D %s: %.0f m, %d papalotes." % [semilla, mover, r["metros"], r["papalotes"]])
-			comprobar(r["termino"] and r["metros"] < 3500.0, "Con mejoras máximas los controles básicos tampoco mantienen un vuelo sin fin")
+			comprobar(r["termino"] and r["metros"] <= config.meta_m, "Con mejoras máximas el vuelo termina antes de la meta o al cruzarla")
 			alcance_mejorado = maxf(alcance_mejorado, r["metros"])
 			if r["llegada"]:
-				llegadas += 1
-				comprobar(r["duracion"] >= 30.0, "El viaje completo requiere al menos medio minuto de juego")
 				print("Llegada al CUCosta en %.1f s, sin accesorios." % r["duracion"])
-	comprobar(alcance_mejorado >= config.meta_m and llegadas > 0, "Combinar mejoras, saltos y papalotes permite completar el viaje al CUCosta")
+	comprobar(alcance_mejorado >= config.salida_xalapa_m, "Las mejoras y las ayudas aéreas permiten salir de Xalapa en el viaje extendido")
 	DirAccess.remove_absolute(juego.archivo_guardado)
 	DirAccess.remove_absolute(juego.archivo_guardado + ".tmp")
 	print("Vuelo: %d comprobaciones, %d fallos." % [comprobaciones, fallos])
@@ -115,6 +113,7 @@ func carrera(tamano: int, mover: bool) -> Dictionary:
 	seed(config.semilla_terreno)
 	juego.tamano = tamano
 	juego.accesorios = []
+	juego.valentinas = 0
 	change_scene_to_file("res://pantallas/recorrido/recorrido.tscn")
 	await process_frame
 	await process_frame
@@ -138,7 +137,7 @@ func carrera(tamano: int, mover: bool) -> Dictionary:
 			var tramo = recorrido.terreno.tramo_en(objeto.position.x)
 			if tramo != null and tramo.altura(objeto.position.x) - objeto.position.y > 400.0:
 				datos["puntos_altos"] += 1)
-	for cuadro in 60 * 120:
+	for cuadro in 120 * 120:
 		await physics_frame
 		datos["duracion"] += 1.0 / 120.0
 		Input.action_release("rebote")
@@ -158,7 +157,7 @@ func carrera(tamano: int, mover: bool) -> Dictionary:
 		var entrando_al_cielo: bool = recorrido.papalotes_usados == 0 and m.position.x > config.primer_papalote_x - 180.0
 		if is_instance_valid(recorrido.papalote_cercano):
 			Input.action_press("empujon")
-		elif m.position.x > primer_salto_x and m.rebotes > 0 and m.t_bloqueo <= 0.0 and (m.linear_velocity.y > 100.0 or entrando_al_cielo):
+		elif m.position.x > primer_salto_x and m.puede_saltar() and m.t_bloqueo <= 0.0 and (m.linear_velocity.y > 100.0 or entrando_al_cielo):
 			var siguiente = null
 			for tramo in recorrido.terreno.tramos:
 				for p in tramo.papalotes:

@@ -25,9 +25,14 @@ func tocar(pista: AudioStream) -> void:
 	if _transicion:
 		_transicion.kill()
 	_transicion = create_tween()
+	# Si se cancela un cambio antes de sustituir la pista, conserva su posición.
+	if stream == pista and playing:
+		_transicion.tween_property(self, "volume_db", VOLUMEN_DB, 0.3)
+		return
 	if playing:
 		_transicion.tween_property(self, "volume_db", -50.0, 0.2)
 	_transicion.tween_callback(func() -> void:
+		stop()
 		stream = pista
 		volume_db = -50.0
 		play())

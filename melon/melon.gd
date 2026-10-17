@@ -4,9 +4,7 @@ extends RigidBody2D
 ##
 ## Escena: melon/melon.tscn
 ##   Cuerpo                  CollisionShape2D circular (el radio depende del tamaño)
-##   Accesorio1..3           una forma convexa por accesorio equipado, en su lado;
-##                           por eso importa de qué lado cae el melón
-##   Aspecto                 dibujo que se conserva hasta cambiar equipo o romperse
+##   Aspecto                 dibujo (con los PNG de los accesorios, sin colisión) que se conserva hasta cambiar equipo o romperse
 ##   Lienzo                  textura del aspecto, dibujada una vez a doble resolución
 ##   Estela                  rastro decorativo (melon/estela.gd)
 ##
@@ -81,7 +79,6 @@ var _dv := Vector2.ZERO                 # suma de empujar()
 var _mult := 1.0                        # producto de frenar()
 var _fijar := false                     # fijar_velocidad() pendiente
 var _v_fijar := Vector2.ZERO
-var _formas := {}                       # CollisionShape2D -> slot
 var _activos: Array = []                # [{acc, t}] accesorios con física propia
 var _consulta: PhysicsShapeQueryParameters2D
 
@@ -121,7 +118,7 @@ func configurar(p_tamano: int, ids: Array, p_resistencia: float, p_rebotes: int)
 	for i in mini(ids.size(), Config.max_accesorios):
 		if Config.accesorios.has(ids[i]):
 			slots[i] = ids[i]
-	_crear_formas()
+	_crear_forma()
 	_actualizar_aspecto()
 
 
@@ -134,35 +131,14 @@ func carisma() -> int:
 	return Juego.carisma_de(slots)
 
 
-## Ajusta las formas de colisión de la escena al radio y a los accesorios.
-func _crear_formas() -> void:
-	_formas.clear()
-	var circulo: CollisionShape2D = $Cuerpo
+## Ajusta la forma de colisión al radio. Los accesorios no tienen colisión.
+func _crear_forma() -> void:
 	var cs := CircleShape2D.new()
 	cs.radius = radio
-	circulo.shape = cs
-	for i in slots.size():
-		var nodo: CollisionShape2D = get_node("Accesorio%d" % (i + 1))
-		nodo.disabled = slots[i] == null
-		if slots[i] == null:
-			continue
-		var forma := ConvexPolygonShape2D.new()
-		forma.set_point_cloud(Config.accesorios[slots[i]].puntos(radio, deg_to_rad(Config.angulos_slots[i])))
-		nodo.shape = forma
-		_formas[nodo] = i
-
-
-## El equipo no debe atascar al melón durante la bajada sin controles.
-func colision_accesorios(habilitada: bool) -> void:
-	for nodo in _formas:
-		nodo.set_deferred("disabled", not habilitada)
+	($Cuerpo as CollisionShape2D).shape = cs
 
 
 func _quitar_slot(i: int) -> void:
-	for nodo in _formas.keys():
-		if _formas[nodo] == i:
-			_formas.erase(nodo)
-			nodo.set_deferred("disabled", true)
 	slots[i] = null
 	_actualizar_aspecto()
 
@@ -175,8 +151,11 @@ func empujar(dv: Vector2) -> void:
 
 
 ## Multiplica la velocidad; los melones con más inercia lo resienten menos.
+## Un frenón tira la pizza: su avance mínimo lo borraría en el siguiente paso.
 func frenar(mult: float) -> void:
 	_mult *= lerpf(mult, 1.0, datos()["inercia"])
+	if mult < 1.0:
+		t_pizza = 0.0
 
 
 ## Reemplaza la velocidad en el siguiente paso de física.
@@ -314,11 +293,17 @@ func acertar_slam() -> void:
 		return
 	slam_activo = false
 	t_slam = Config.slam_recarga
-	var v := linear_velocity + _dv
-	fijar_velocidad(Vector2(maxf(0.0, v.x) + Config.slam_impulso.x, Config.slam_impulso.y))
+	var vx := maxf(0.0, linear_velocity.x + _dv.x)
+	fijar_velocidad(Vector2(_impulso_hasta_crucero(vx, Config.slam_impulso.x), Config.slam_impulso.y))
 	_dv = Vector2.ZERO
 	_mult = 1.0
 	aviso.emit("¡Slam acertado! Más velocidad")
+
+
+## Suma la ganancia hasta Config.vel_crucero; si ya iba más rápido, no gana ni pierde.
+## Así encadenar slams o rebotes sostiene el ritmo, pero no lo dispara sin límite.
+func _impulso_hasta_crucero(rapidez: float, ganancia: float) -> float:
+	return maxf(rapidez, minf(rapidez + ganancia, Config.vel_crucero))
 
 
 ## Llama a acc.fisica() en cada paso durante dur segundos.
@@ -510,7 +495,7 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 
 
 ## Decide la velocidad al tocar suelo tras estar en el aire:
-## rebote impulsado, caída del lado de un accesorio o caída del lado redondo.
+## rebote impulsado o caída sobre el lado redondo.
 func _aterrizar(state: PhysicsDirectBodyState2D, nrm: Vector2, v: Vector2) -> Vector2:
 	var vp := _v_prev
 	var impacto := maxf(0.0, -vp.dot(nrm))
@@ -526,30 +511,20 @@ func _aterrizar(state: PhysicsDirectBodyState2D, nrm: Vector2, v: Vector2) -> Ve
 		if nrm.y > -0.5:
 			# Contra una pared (costado de rampa, escalón): salta por encima, nunca hacia atrás.
 			return Vector2(absf(vp.x) * Config.rebote_pared_conserva, -salida)
-		var rebote := tang * Config.rebote_mult_tang + nrm * salida
+		var avance := tang.length()
+		var rebote := tang.normalized() * _impulso_hasta_crucero(avance, avance * (Config.rebote_mult_tang - 1.0)) + nrm * salida
 		if vp.x > 0.0:
 			rebote.x = maxf(rebote.x, vp.x * Config.rebote_pared_conserva)
 		return rebote
 
-	var nueva := v
-	var slot := _slot_en_contacto(state)
-	if slot >= 0:
-		nueva = v * Config.lado_acc_freno
-		state.angular_velocity += randf_range(-1.0, 1.0) * Config.lado_acc_giro
-		if impacto > Config.umbral_perder_acc:
-			aviso.emit("¡Se cayó: %s!" % Config.accesorios[slots[slot]].nombre)
-			_quitar_slot(slot)
-		else:
-			aviso.emit("De lado...")
-	else:
-		var mat_rebote: float = datos()["rebote"]
-		nueva = tang * Config.lado_redondo_conserva + nrm * impacto * mat_rebote
-		if nrm.y < -0.5:
-			var adelante := Vector2(-nrm.y, nrm.x)
-			if adelante.x < 0.0:
-				adelante = -adelante
-			nueva += adelante * impacto * Config.caida_a_rodado
-		state.angular_velocity = tang.length() / radio * signf(tang.x)
+	var mat_rebote: float = datos()["rebote"]
+	var nueva := tang * Config.lado_redondo_conserva + nrm * impacto * mat_rebote
+	if nrm.y < -0.5:
+		var adelante := Vector2(-nrm.y, nrm.x)
+		if adelante.x < 0.0:
+			adelante = -adelante
+		nueva += adelante * impacto * Config.caida_a_rodado
+	state.angular_velocity = tang.length() / radio * signf(tang.x)
 
 	var umbral: float = datos()["umbral_caida"]
 	if impacto > umbral:
@@ -561,16 +536,6 @@ func _aterrizar(state: PhysicsDirectBodyState2D, nrm: Vector2, v: Vector2) -> Ve
 	elif impacto > umbral * Config.raspon_desde:
 		danar(Config.raspon_max * inverse_lerp(umbral * Config.raspon_desde, umbral, impacto))
 	return nueva
-
-
-## Slot del accesorio que tocó el suelo, o -1 si cayó del lado redondo.
-func _slot_en_contacto(state: PhysicsDirectBodyState2D) -> int:
-	for c in state.get_contact_count():
-		var dueno := shape_find_owner(state.get_contact_local_shape(c))
-		var nodo := shape_owner_get_owner(dueno)
-		if _formas.has(nodo):
-			return _formas[nodo]
-	return -1
 
 
 # --- Dibujo ------------------------------------------------------------------

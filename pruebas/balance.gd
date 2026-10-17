@@ -23,8 +23,9 @@ func _verificar() -> void:
 	juego = root.get_node("Juego")
 	config = root.get_node("Config")
 	juego.archivo_guardado = "user://prueba_balance_%d.json" % OS.get_process_id()
-	# Sin controles no se completa el pasaporte: la última postal exige jugar.
-	var tope_pasivo: float = float(config.postales[-1]["metros"]) * 0.8
+	aislar_progreso()
+	# Sin controles ni siquiera se sale de Xalapa en la ruta extendida.
+	var tope_pasivo: float = config.salida_xalapa_m
 	for semilla in [1509, 42, 7301]:
 		config.semilla_terreno = semilla
 		for tamano in 3:
@@ -36,7 +37,7 @@ func _verificar() -> void:
 					mayor_duracion = maxf(mayor_duracion, r["segundos"])
 					var caso := "semilla %d, tamaño %d, mejora %d, fuerza %.2f" % [semilla, tamano, nivel, fuerza]
 					comprobar(r["termino"], "La carrera pasiva no termina: " + caso)
-					comprobar(r["metros"] < (500.0 if nivel == 0 else tope_pasivo), "La carrera pasiva avanza demasiado: " + caso + " · %.1f m" % r["metros"])
+					comprobar(r["metros"] < (tope_pasivo * 0.5 if nivel == 0 else tope_pasivo), "Sin jugar no se supera la primera mitad de Xalapa sin mejoras ni se sale de la ciudad con mejoras: " + caso + " · %.1f m" % r["metros"])
 					comprobar(r["impulsos_poderes"] <= 3, "La carrera pasiva encadena demasiados chiles: " + caso)
 					comprobar(r["papalotes"] == 0, "Los papalotes requieren pulsar E: " + caso)
 	config.semilla_terreno = 1509
@@ -63,6 +64,14 @@ func _verificar() -> void:
 	config.semilla_terreno = 1509
 	comprobar(medias[1] > medias[0] * 1.15 and medias[2] > medias[0] * 1.15 and medias[2] >= 1000.0, "Las mejoras deben superar el alcance inicial: %s" % str(medias))
 	comprobar(medias[0] < 900.0, "El equipo inicial debe promediar menos de novecientos metros con controles")
+	var llegadas := 0
+	for semilla in [1509, 42, 7301]:
+		config.semilla_terreno = semilla
+		var r: Dictionary = await carrera(1, 6, true, true, 0.91, true)
+		if r["llegada"]:
+			llegadas += 1
+		print("Ruta completa, semilla %d: %.0f m, %.1f s, %d slams, llegada %s." % [semilla, r["metros"], r["segundos"], r["slams"], r["llegada"]])
+	comprobar(llegadas > 0, "Las mejoras, accesorios y slams permiten completar los 5200 metros con física real")
 	DirAccess.remove_absolute(juego.archivo_guardado)
 	DirAccess.remove_absolute(juego.archivo_guardado + ".tmp")
 	print("Balance: %d carreras pasivas. Máximo %.1f m, %.1f s. Equipo inicial sin controles %.1f m, con controles %.1f m. Progresión con controles (mejoras 0/3/6) %.0f/%.0f/%.0f m. Fallos %d." % [pasivas, mayor_distancia, mayor_duracion, pasiva["metros"], activa["metros"], medias[0], medias[1], medias[2], fallos])
@@ -70,10 +79,17 @@ func _verificar() -> void:
 	quit(1 if fallos else 0)
 
 
+## Juego ya cargó el guardado real: sus Salsas Valentina y fichas cambiarían las carreras.
+func aislar_progreso() -> void:
+	juego.valentinas = 0
+	juego.melones_guardados.clear()
+
+
 func carrera(tamano: int, nivel: int, activa: bool, equipo := false, fuerza := 0.91, con_slam := false, apuntar_slam := true) -> Dictionary:
 	seed(config.semilla_terreno)
 	juego.tamano = tamano
 	juego.accesorios = ["llantitas", "rebozo"] if equipo else []
+	juego.valentinas = 0
 	juego.niveles = {"fuerza": nivel, "resistencia": mini(nivel, 5), "rebotes": mini(nivel, 5)}
 	change_scene_to_file("res://pantallas/recorrido/recorrido.tscn")
 	await process_frame
@@ -92,7 +108,8 @@ func carrera(tamano: int, nivel: int, activa: bool, equipo := false, fuerza := 0
 	var metros := 0.0
 	var poderes := 0
 	var papalotes := 0
-	while is_instance_valid(recorrido) and current_scene == recorrido and cuadros < (60 if activa else 30) * 120:
+	var llegada := false
+	while is_instance_valid(recorrido) and current_scene == recorrido and cuadros < (120 if activa else 30) * 120:
 		await physics_frame
 		for accion in ["rebote", "empujon", "acc_1", "acc_2", "slam"]:
 			Input.action_release(accion)
@@ -102,6 +119,7 @@ func carrera(tamano: int, nivel: int, activa: bool, equipo := false, fuerza := 0
 		metros = recorrido.mejor_x / config.px_por_metro
 		poderes = recorrido.poderes_recogidos
 		papalotes = recorrido.papalotes_usados
+		llegada = recorrido.fase == 3 and metros >= config.meta_m and not recorrido.melon.roto
 		if activa and recorrido.fase == 2 and cuadros % 2 == 0:
 			var melon = recorrido.melon
 			if con_slam and melon.t_slam <= 0.0 and (not apuntar_slam or recorrido.hud._hay_melon_debajo(recorrido)):
@@ -118,4 +136,4 @@ func carrera(tamano: int, nivel: int, activa: bool, equipo := false, fuerza := 0
 						Input.action_press("empujon")
 	for accion in ["rebote", "empujon", "acc_1", "acc_2", "slam"]:
 		Input.action_release(accion)
-	return {"metros": metros, "segundos": cuadros / 120.0, "poderes": poderes, "impulsos_poderes": conteo_poderes["impulsos"], "papalotes": papalotes, "slams": conteo_poderes["slams"], "termino": current_scene != recorrido}
+	return {"metros": metros, "segundos": cuadros / 120.0, "poderes": poderes, "impulsos_poderes": conteo_poderes["impulsos"], "papalotes": papalotes, "slams": conteo_poderes["slams"], "llegada": llegada, "termino": current_scene != recorrido}

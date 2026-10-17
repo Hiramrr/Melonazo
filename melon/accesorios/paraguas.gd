@@ -14,8 +14,6 @@ func _init() -> void:
 	costo = 380
 	orden = 80
 	color = Color(0.6, 0.2, 0.7)
-	forma = [Vector2(-0.1, -0.1), Vector2(0.1, -0.1), Vector2(0.8, 0.32), Vector2(0.5, 0.62),
-		Vector2(-0.5, 0.62), Vector2(-0.8, 0.32)]
 
 
 func usar(m: Melon) -> void:

@@ -34,7 +34,7 @@ Las animaciones `aves_0` a `aves_7` y `papalote_0` a `papalote_7` toman la durac
 
 `globales/sprites.gd` carga ambos archivos con `preload`, por lo que Godot los incluye al exportar el juego. Cada píxel del PNG ocupa dos píxeles del mundo antes de aplicar la escala del objeto. El filtro Nearest mantiene los bordes al ampliar.
 
-El melón combina capas teñidas para conservar colores propios, caras y patrones. Los accesorios usan el mismo ángulo y radio que su colisión. El terreno coloca columnas de textura a la altura de la superficie física. Las coordenadas vectoriales que quedan en el juego describen movimiento y colisiones.
+El melón combina capas teñidas para conservar colores propios, caras y patrones. Los accesorios son solo PNG, sin colisión; se dibujan en el ángulo de su espacio y a la escala del radio. El terreno coloca columnas de textura a la altura de la superficie física. Las coordenadas vectoriales que quedan en el juego describen movimiento y colisiones.
 
 El dibujo libre conserva sus puntos en el guardado. `Aspecto.dibujar_trazos()` los rasteriza al cambiar el trazo y reutiliza la textura al mover o girar el melón. Los textos y controles nativos de Godot conservan sus fuentes y su comportamiento.
 

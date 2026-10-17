@@ -6,7 +6,7 @@ func _verificar() -> void:
 	config = root.get_node("Config")
 	juego = root.get_node("Juego")
 	juego.archivo_guardado = "user://prueba_impulsos_%d.json" % OS.get_process_id()
-	juego.melones_guardados.clear()
+	aislar_progreso()
 	var primer_melon: float = config.primer_melon_camino_x
 	var rampa: float = config.rampa_impulso
 	var toldo: float = config.toldo_avance
@@ -39,10 +39,12 @@ func _verificar() -> void:
 			r.terreno.actualizar_melones(r.melon, 0.0)
 			comprobar(r.terreno.melones.size() <= 20, "La ruta retira objetivos lejanos y mantiene una cantidad acotada")
 		posiciones.sort()
-		comprobar(posiciones.size() >= 10 and posiciones.size() <= 16, "Hay ayudas repartidas durante todo el viaje")
+		var largo: float = config.meta_m * config.px_por_metro - config.primer_melon_camino_x
+		comprobar(posiciones.size() >= floori(largo / config.separacion_melones.y) and posiciones.size() <= ceili(largo / config.separacion_melones.x) * 2, "Las ayudas cubren la ruta extendida, incluidas las parejas")
+		comprobar(posiciones[0] == config.primer_melon_camino_x and posiciones[-1] >= config.meta_m * config.px_por_metro - config.separacion_melones.y, "Los apoyos llegan hasta el último tramo")
 		for i in range(1, posiciones.size()):
 			var separacion := posiciones[i] - posiciones[i - 1]
-			comprobar(separacion >= config.separacion_melones.x and separacion <= config.separacion_melones.y, "La separación se conserva al cambiar de tramo")
+			comprobar(separacion >= minf(config.separacion_pareja_melones.x, config.separacion_melones.x) and separacion <= config.separacion_melones.y, "La separación de apoyos y parejas se conserva al cambiar de tramo")
 	var anteriores: Array = []
 	var nuevas: Array = []
 	var slams := [0, 0]

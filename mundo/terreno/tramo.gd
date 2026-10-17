@@ -7,7 +7,7 @@ extends Node2D
 ##
 ## Escena: mundo/terreno/tramo.tscn
 ##   Decoracion (z -2)   casas, árboles y papel picado; se dibuja en _dibujar_decoracion()
-##   Postales   (z -1)   lugares de Xalapa (postal.tscn); ver agregar_postal()
+##   Postales   (z -1)   imágenes de lugares de la ruta (postal.tscn); ver agregar_postal()
 ##   Suelo               StaticBody2D; construir() le agrega un "Segmento###" por tramo de línea
 ##   Obstaculos          obstaculos/*.tscn
 ##   Publico             personas que empujan (ayudas/persona.tscn)
@@ -20,7 +20,7 @@ const PostalEscena := preload("res://mundo/terreno/postal.tscn")
 var puntos := PackedVector2Array()   # superficie, de izquierda a derecha, con paso fijo en x
 var empedrado := false               # calle de piedra o pasto
 var color_suelo := Color(0.36, 0.52, 0.25)
-var marcadores: Array = []           # {pos, texto}: letreros de distancia
+var marcadores: Array = []           # {pos, texto}, con id y metros para lugares de la ruta
 var casas: Array = []                # {rect, color}: fachadas de fondo
 var personas: Array = []             # Persona del contenedor Publico
 var papalotes: Array = []            # Papalote del contenedor Aire
@@ -75,7 +75,7 @@ func pendiente(x: float) -> float:
 	return atan2(altura(x + 10.0) - altura(x - 10.0), 20.0)
 
 
-## datos: {pos: Vector2, tipo: String, nombre: String}. pos en coordenadas del tramo,
+## datos: {pos: Vector2, tipo: String}. pos en coordenadas del tramo,
 ## a ras de suelo (p. ej. Vector2(x, altura(x))).
 func agregar_postal(datos: Dictionary) -> Postal:
 	var p: Postal = PostalEscena.instantiate()
@@ -101,16 +101,26 @@ func _dibujar_decoracion() -> void:
 			_arbol(ci, Vector2(x, altura(x) + 30.0), h)
 		x += 130.0 + 200.0 * _azar(x + 1.0)
 	for c in casas:
-		_casa(ci, c["rect"], c["color"])
+		if _zona_urbana(c["rect"].position.x):
+			_casa(ci, c["rect"], c["color"])
 	for i in casas.size() - 1:
 		var a: Rect2 = casas[i]["rect"]
 		var b: Rect2 = casas[i + 1]["rect"]
-		if b.position.x - a.end.x < 260.0:
+		if _zona_urbana(a.position.x) and _zona_urbana(b.position.x) and b.position.x - a.end.x < 260.0:
 			Postal.dibujar_picado(ci, Vector2(a.end.x - 8, a.position.y + 26), Vector2(b.position.x + 8, b.position.y + 26), 34.0)
+
+
+func _zona_urbana(x: float) -> bool:
+	var metros := x / Config.px_por_metro
+	return metros < Config.salida_xalapa_m or metros >= float(Config.etapas_ruta[2]["metros"])
 
 
 func _arbol(ci: CanvasItem, p: Vector2, h: float) -> void:
 	var i := 0 if h < 0.25 else (3 if h > 0.8 else (1 if h < 0.55 else 2))
+	if p.x >= Config.costa_m * Config.px_por_metro:
+		i = 0
+	elif not _zona_urbana(p.x):
+		i = 1
 	Sprites.dibujar(ci, "terreno/arbol_%d" % i, Rect2(p + Vector2(-130, -270), Vector2(260, 280)))
 
 func _casa(ci: CanvasItem, r: Rect2, color: Color) -> void:
@@ -133,9 +143,41 @@ func _draw() -> void:
 		return
 	_dibujar_suelo("terreno/calle" if empedrado else "terreno/pasto", false)
 	for m in marcadores:
+		if m.has("id"):
+			_dibujar_lugar(m)
+			continue
 		var p: Vector2 = m["pos"]
 		Sprites.dibujar(self, "terreno/letrero", Rect2(p + Vector2(-40, -100), Vector2(80, 104)))
 		draw_string(ThemeDB.fallback_font, p + Vector2(-35, -77), m["texto"], HORIZONTAL_ALIGNMENT_CENTER, 70, 15, Color(0.15, 0.15, 0.15))
+
+
+func _dibujar_lugar(datos: Dictionary) -> void:
+	var p: Vector2 = datos["pos"]
+	var tinta := Color("253e32")
+	var papel := Color("f3eddb")
+	var meta: bool = datos["id"] == "cucosta"
+	var ancho := 440.0 if meta else 340.0
+	var alto := 280.0 if meta else 200.0
+	for lado in [-1.0, 1.0]:
+		Sprites.rectangulo(self, Rect2(p + Vector2(lado * (ancho / 2.0 - 12.0) - 6.0, -alto), Vector2(12, alto)), tinta)
+	var cartel := Rect2(p + Vector2(-ancho / 2.0, -alto), Vector2(ancho, 84))
+	Sprites.rectangulo(self, cartel, tinta)
+	Sprites.rectangulo(self, cartel.grow(-4.0), papel)
+	var titulo: String = "CUCosta · UdeG" if meta else datos["texto"]
+	var fuente := ThemeDB.fallback_font
+	var tamano := mini(22, floori(22.0 * (ancho - 24.0) / fuente.get_string_size(titulo, HORIZONTAL_ALIGNMENT_LEFT, -1, 22).x))
+	draw_string(fuente, cartel.position + Vector2(12, 31), titulo, HORIZONTAL_ALIGNMENT_CENTER, ancho - 24, tamano, tinta)
+	var detalle := "Meta · Puerto Vallarta" if meta else "%d m · CUCosta a %d m" % [datos["metros"], Config.meta_m - datos["metros"]]
+	draw_string(ThemeDB.fallback_font, cartel.position + Vector2(12, 60), detalle,
+		HORIZONTAL_ALIGNMENT_CENTER, ancho - 24, 17, tinta)
+	if meta:
+		for i in int(ancho / 20.0):
+			for fila in 2:
+				Sprites.rectangulo(self, Rect2(cartel.position + Vector2(i * 20, 84 + fila * 10), Vector2(20, 10)), tinta if (i + fila) % 2 == 0 else papel)
+		Sprites.rectangulo(self, Rect2(p + Vector2(-8, -174), Vector2(16, 174)), papel)
+		for i in 9:
+			Sprites.rectangulo(self, Rect2(p + Vector2(-8, -174 + i * 20), Vector2(8, 10)), tinta)
+			Sprites.rectangulo(self, Rect2(p + Vector2(0, -164 + i * 20), Vector2(8, 10)), tinta)
 
 ## Columnas de textura siguen la misma altura que usa la colisión del terreno.
 func _dibujar_suelo(id: String, bajada: bool) -> void:
@@ -148,6 +190,8 @@ func _dibujar_suelo(id: String, bajada: bool) -> void:
 		var inicio := y + (114.0 if bajada else 38.0)
 		Sprites.mosaico(self, "terreno/muro" if bajada else "terreno/tierra", Rect2(x, inicio, ancho, _fondo - inicio))
 		var color := Color.WHITE if empedrado or bajada else color_suelo
+		if not bajada and not empedrado and x >= Config.costa_m * Config.px_por_metro:
+			color = Color("c5ae7c")
 		var alto_superficie := tam.y if bajada else 54.0
 		var destino := Rect2(x, y - (0.0 if bajada else 16.0), ancho, alto_superficie)
 		var region := Rect2(fposmod(x, tam.x) / Pixel.ESCALA, 0, ancho / Pixel.ESCALA, alto_superficie / Pixel.ESCALA)

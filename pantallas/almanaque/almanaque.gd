@@ -179,7 +179,7 @@ func _elegir(indice: int) -> void:
 			var poder := _poder(id)
 			descripcion.text = poder["descripcion"]
 			if Config.poderes_tienda.has(id):
-				datos.text = "Precio: %d aplausos en la tiendita del taller\nTienes %d de %d\n\nSe usa sola: si el melón se rompe o se detiene, vuelve a la carrera con toda su resistencia." % [Config.valentina_costo, Juego.valentinas, Config.valentinas_max]
+				datos.text = "Precio: %d aplausos en la tiendita del taller\nTienes %d de %d\n\nSi el melón se rompe o se detiene, tienes %d segundos para decidir si usas una salsa. Revive con toda su resistencia. Si no la usas, la conservas y termina el intento." % [Config.valentina_costo, Juego.valentinas, Config.valentinas_max, int(Config.valentina_espera)]
 				return
 			var duracion := "Duración: %s s" % str(poder["duracion"]) if poder["duracion"] > 0 else "Efecto instantáneo"
 			datos.text = "%s\n\nSe activa al tocarlo. Busca los poderes por encima del camino y aprovecha los saltos para alcanzarlos." % duracion

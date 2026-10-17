@@ -7,9 +7,6 @@
 [sub_resource type="CircleShape2D" id="Cuerpo"]
 radius = 22.0
 
-[sub_resource type="ConvexPolygonShape2D" id="SlotVacio"]
-points = PackedVector2Array(-5, -5, 5, -5, 5, 5, -5, 5)
-
 [node name="Melon" type="RigidBody2D"]
 collision_layer = 2
 collision_mask = 1
@@ -23,18 +20,6 @@ textura_explosion = ExtResource("tex_explosion")
 
 [node name="Cuerpo" type="CollisionShape2D" parent="."]
 shape = SubResource("Cuerpo")
-
-[node name="Accesorio1" type="CollisionShape2D" parent="."]
-shape = SubResource("SlotVacio")
-disabled = true
-
-[node name="Accesorio2" type="CollisionShape2D" parent="."]
-shape = SubResource("SlotVacio")
-disabled = true
-
-[node name="Accesorio3" type="CollisionShape2D" parent="."]
-shape = SubResource("SlotVacio")
-disabled = true
 
 [node name="Aspecto" type="Sprite2D" parent="."]
 show_behind_parent = true

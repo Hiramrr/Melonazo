@@ -1,6 +1,7 @@
 extends SceneTree
 ## Godot --path . --script res://pruebas/pincel.gd
-## Verifica con render real que los giros no creen picos ni huecos.
+## Verifica con render real que los giros no creen picos ni huecos, y que el
+## trazo sea pixel art: sin bordes suavizados.
 
 class Lienzo extends Node2D:
 	var puntos := PackedVector2Array()
@@ -59,7 +60,11 @@ func _revisar() -> void:
 
 
 func _verificar_imagen(imagen: Image, lienzo: Lienzo) -> String:
-	var ancho := maxf(1.0, lienzo.radio * lienzo.grosor) * 0.5
+	# Un píxel del arte mide radio / 16 en pantalla; sus esquinas quedan a
+	# 0.71 píxeles del arte de su centro, que es lo que decide si se pinta.
+	var pixel := lienzo.radio / 16.0
+	var ancho := maxf(0.5 * pixel, lienzo.radio * lienzo.grosor * 0.5)
+	var margen := pixel * 0.75 + 1.0
 	for y in imagen.get_height():
 		for x in imagen.get_width():
 			var p := (Vector2(x, y) + Vector2.ONE * 0.5 - lienzo.position) / lienzo.radio
@@ -69,8 +74,10 @@ func _verificar_imagen(imagen: Image, lienzo: Lienzo) -> String:
 				distancia = minf(distancia, p.distance_to(q))
 			distancia *= lienzo.radio
 			var alpha := imagen.get_pixel(x, y).a
-			if alpha > 0.1 and distancia > ancho + 1.5:
+			if alpha > 0.1 and alpha < 0.9:
+				return "Borde suavizado en %s" % Vector2i(x, y)
+			if alpha > 0.1 and distancia > ancho + margen:
 				return "Pico fuera del grosor en %s" % Vector2i(x, y)
-			if alpha < 0.9 and distancia < ancho - 1.5:
+			if alpha < 0.9 and distancia < ancho - margen:
 				return "Hueco dentro del trazo en %s" % Vector2i(x, y)
 	return ""

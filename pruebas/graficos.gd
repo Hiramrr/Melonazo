@@ -5,6 +5,7 @@ var capturas := 0
 
 
 func _initialize() -> void:
+	AudioServer.set_bus_mute(0, true)
 	call_deferred("_revisar")
 
 
@@ -130,11 +131,20 @@ func _revisar() -> void:
 		assert(current_scene.get_node("Paisaje/NubesCercanas").visible, "Faltan las nubes al subir sobre la ciudad")
 		current_scene.melon.position = Vector2(2200, current_scene.terreno.tramos[0].altura(2200) - 3000)
 		await _foto(prefijo + "cielo-alto", ["Interfaz/%Vuelo", "Interfaz/%Indicacion"])
-		for metros in [1850.0, 2350.0, 2590.0]:
+		current_scene.set_physics_process(false)
+		current_scene.melon.freeze = true
+		current_scene.melon.fijar_velocidad(Vector2.ZERO)
+		current_scene.camara.zoom = Vector2.ONE
+		current_scene.efectos._avisos.clear()
+		current_scene.papalote_siguiente = null
+		var config_ruta := root.get_node("Config")
+		for metros in [float(config_ruta.postales[1]["metros"]), float(config_ruta.postales[7]["metros"]), config_ruta.salida_xalapa_m + 50.0, float(config_ruta.etapas_ruta[2]["metros"]) + 50.0, float(config_ruta.postales[14]["metros"]), config_ruta.costa_m + 50.0, config_ruta.meta_m - 10.0, config_ruta.meta_m]:
 			current_scene.terreno.actualizar(metros * root.get_node("Config").px_por_metro)
 			var tramo = current_scene.terreno.tramo_en(metros * root.get_node("Config").px_por_metro)
 			current_scene.melon.position = Vector2(metros * root.get_node("Config").px_por_metro, tramo.altura(metros * root.get_node("Config").px_por_metro) - 80.0)
-			await _foto(prefijo + "ruta-" + str(int(metros)), ["Interfaz/%Lugar", "Interfaz/%Destino"])
+			current_scene.mejor_x = current_scene.melon.position.x
+			current_scene.altura_m = 5.8
+			await _foto(prefijo + "ruta-" + str(int(metros)), ["Interfaz/%Lugar", "Interfaz/%Destino", "Interfaz/%Etapa", "Interfaz/%Siguiente"])
 			esperadas += 1
 		current_scene.hud._alternar_pausa()
 		await _foto(prefijo + "pausa", ["Interfaz/%Continuar", "Interfaz/%Volver", "Interfaz/%Columna"], 0.6)

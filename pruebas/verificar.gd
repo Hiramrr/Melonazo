@@ -92,7 +92,7 @@ func _verificar() -> void:
 	comprobar(config.accesorios_iniciales == ["sombrero", "llantitas", "rebozo"], "Accesorios iniciales salen de cada archivo")
 	for id in config.orden_accesorios:
 		var acc = config.accesorios[id]
-		comprobar(is_instance_of(acc, load("res://melon/accesorios/accesorio.gd")) and acc.id == id and acc.forma.size() >= 3, "Accesorio completo: " + id)
+		comprobar(is_instance_of(acc, load("res://melon/accesorios/accesorio.gd")) and acc.id == id and Sprites.datos("accesorios/" + id).has("frame"), "Accesorio completo: " + id)
 	juego.patron = 2
 	juego.detalle = 3
 	juego.cuerpo_propio = "ff8800"
@@ -302,7 +302,7 @@ func _verificar() -> void:
 	var recorrido = current_scene
 	comprobar(recorrido.terreno.tramos.size() >= 2 and recorrido.melon.freeze, "Terreno listo antes del lanzamiento")
 	comprobar(recorrido.terreno.tramos.all(func(t: Node) -> bool: return t.get_parent() == recorrido.terreno), "Tramos en contenedor propio")
-	comprobar(recorrido.terreno.tramos[0].get_node("Postales").get_child_count() == 0, "Las postales de lugares solo se muestran al terminar")
+	comprobar(recorrido.terreno.tramos[0].get_node("Postales").get_child_count() > 0, "El mapa muestra imágenes de sus puntos de interés")
 	var consumibles: Array = []
 	for t in recorrido.terreno.tramos:
 		for nodo in t.get_node("Coleccionables").get_children():

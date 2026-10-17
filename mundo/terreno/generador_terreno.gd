@@ -213,7 +213,7 @@ func _guiar_slam(melon: Melon, delta: float) -> MelonRodante:
 ## 0..1 según qué tan lejos está x. Cerca de la salida el camino es amable.
 func dificultad(x: float) -> float:
 	var m := x / Config.px_por_metro
-	return clampf(inverse_lerp(Config.dificultad_metros.x, Config.dificultad_metros.y, m), 0.0, 1.0)
+	return smoothstep(Config.dificultad_metros.x, Config.dificultad_metros.y, m)
 
 
 # --- Forma del suelo ---------------------------------------------------------
@@ -297,13 +297,16 @@ func _poner_melones(x: float) -> void:
 	var hasta := minf(x + Config.generar_adelante, Config.meta_m * Config.px_por_metro)
 	while _siguiente_melon_x < hasta:
 		_crear_melon_camino(_siguiente_melon_x)
-		if rng_melones.randf() < Config.prob_pareja_melones:
+		var pareja := lerpf(Config.prob_pareja_melones, minf(1.0, Config.prob_pareja_melones * 2.0), dificultad(_siguiente_melon_x))
+		if rng_melones.randf() < pareja:
 			_crear_melon_camino(_siguiente_melon_x + rng_melones.randf_range(
 				Config.separacion_pareja_melones.x, Config.separacion_pareja_melones.y))
 		_siguiente_melon_x += rng_melones.randf_range(Config.separacion_melones.x, Config.separacion_melones.y)
 
 
 func _crear_melon_camino(x: float) -> void:
+	if x >= Config.meta_m * Config.px_por_metro:
+		return
 	var tramo := tramo_en(x)
 	if tramo == null:
 		return
@@ -364,7 +367,7 @@ func _poner_casas(t: Tramo) -> void:
 func _poner_obstaculos(t: Tramo, inicio: float) -> void:
 	var x := inicio + _separacion_obstaculos(inicio)
 	while x < t.x1 - 150.0:
-		var tipo := _elegir_obstaculo()
+		var tipo := _elegir_obstaculo(dificultad(x))
 		var ob := _crear_obstaculo(tipo, Vector2(x, t.altura(x)))
 		if Config.obstaculos[tipo]["plano"]:
 			ob.rotation = t.pendiente(x)
@@ -379,14 +382,21 @@ func _separacion_obstaculos(x: float) -> float:
 	return rng.randf_range(Config.separacion_obstaculos.x, Config.separacion_obstaculos.y) * holgura
 
 
-## Tipo al azar según Config.pesos_obstaculos.
-func _elegir_obstaculo() -> String:
+## Al principio abundan los impulsores; los golpes ganan peso conforme avanzas.
+func _elegir_obstaculo(dif: float) -> String:
+	var pesos := {}
 	var total := 0.0
-	for p in Config.pesos_obstaculos.values():
-		total += float(p)
-	var r := rng.randf() * total
 	for id in Config.pesos_obstaculos:
-		r -= float(Config.pesos_obstaculos[id])
+		var peso: float = Config.pesos_obstaculos[id]
+		match id:
+			"rampa", "toldo": peso *= lerpf(1.0, 0.9, dif)
+			"poste", "banqueta": peso *= lerpf(0.4, 1.4, dif)
+			_: peso *= lerpf(1.0, 1.4, dif)
+		pesos[id] = peso
+		total += peso
+	var r := rng.randf() * total
+	for id in pesos:
+		r -= float(pesos[id])
 		if r <= 0.0:
 			return id
 	return "charco"
@@ -509,24 +519,34 @@ func _poner_pajaros(t: Tramo) -> void:
 	var meta := Config.meta_m * Config.px_por_metro
 	while _siguiente_pajaro_x < t.x1 and _siguiente_pajaro_x < meta:
 		var x := _siguiente_pajaro_x
-		var cantidad := 2 if rng_pajaros.randf() < Config.prob_bandada else 1
-		var alto := rng_pajaros.randf_range(Config.altura_pajaros.x, Config.altura_pajaros.y)
+		var dif := dificultad(x)
+		var cantidad := 2 if rng_pajaros.randf() < Config.prob_bandada * dif else 1
+		var alto_max := lerpf(Config.altura_pajaros.y, Config.altura_papalotes.y, dif)
+		var alto := rng_pajaros.randf_range(Config.altura_pajaros.x, alto_max)
 		for i in cantidad:
+			if x + i * 110.0 >= meta:
+				break
 			var pajaro := PajaroEscena.instantiate() as Pajaro
 			pajaro.name = "Pajaro"
 			pajaro.position = Vector2(x + i * 110.0, t.altura(x) - alto - i * 50.0)
 			pajaro.fase = rng_pajaros.randf() * TAU
 			pajaro.tocado.connect(pajaro_tocado.emit)
 			t.get_node("Aire").add_child(pajaro)
-		_siguiente_pajaro_x += rng_pajaros.randf_range(Config.separacion_pajaros.x, Config.separacion_pajaros.y)
+		_siguiente_pajaro_x += rng_pajaros.randf_range(Config.separacion_pajaros.x, Config.separacion_pajaros.y) * lerpf(1.8, 1.0, dif)
 
 
-## Letreros "N m" cada Config.marcador_cada_m, salvo donde ya hay una postal.
+## Distancias, lugares de la ruta y puerta de meta. No consumen azar del camino.
 func _poner_marcadores(t: Tramo) -> void:
 	var cada := Config.marcador_cada_m * Config.px_por_metro
 	var mx := ceilf(maxf(t.x0, 1.0) / cada) * cada
 	while mx < t.x1:
 		var m := int(round(mx / Config.px_por_metro))
-		if not Config.lugares.has(m):
+		if not Config.lugares.has(m) and m < Config.meta_m:
 			t.marcadores.append({"pos": Vector2(mx, t.altura(mx)), "texto": "%d m" % m})
 		mx += cada
+	for postal in Config.postales:
+		var x := maxf(float(postal["metros"]) * Config.px_por_metro, Config.calle_inicio_x)
+		if x >= t.x0 and x < t.x1:
+			t.agregar_postal({"pos": Vector2(x, t.altura(x)), "tipo": postal["id"]})
+			t.marcadores.append({"pos": Vector2(x, t.altura(x)), "id": postal["id"],
+				"texto": postal.get("nombre_corto", postal["nombre"]), "metros": postal["metros"]})

@@ -60,6 +60,8 @@ Las entradas con el enlace "Créditos" conservan la fuente aportada y no se pres
 
 Edita `fotografias` en `recursos/arte_xalapa.tres`. Cada clave coincide con el `id` del lugar en `Config.postales`. Actualiza `textura`, los créditos, `dato_curioso` y `fuente_dato` al sustituir contenido. El título mostrado toma el nombre de `Config.postales`. Las fuentes o licencias desconocidas pueden quedar vacías, y el juego omite esos enlaces.
 
-Si se quita una fotografía, los resultados ocultan esa postal y conservan el resumen del intento. El juego no sustituye la imagen por la de otro lugar. El pasaporte muestra los nombres y los sellos; las fotografías aparecen solo al terminar.
+Si se quita una fotografía de `fotografias`, los resultados ocultan esa postal y conservan el resumen del intento. El juego no sustituye la imagen por la de otro lugar. El pasaporte muestra los nombres y los sellos.
+
+El mapa reutiliza las 19 fotografías como imágenes provisionales, asignadas por `id` en `lugares_mapa` del mismo recurso. Para reemplazarlas por sprites, cambia esas texturas por sus PNG o `AtlasTexture`. Esta asignación es independiente de `fotografias`, así que los resultados conservan su foto, su dato y sus créditos. Quitar una entrada de `lugares_mapa` oculta solo la imagen de ese punto, sin quitar el letrero.
 
 Los archivos y créditos de los destinos anteriores se conservan entre los recursos, pero no forman parte de esta selección de 19 lugares. `paisaje` permanece vacío para que el recorrido use los fondos dibujados.

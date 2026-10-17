@@ -134,8 +134,16 @@ theme_override_constants/separation = 4
 [node name="Destino" type="Label" parent="Pantalla/Lugar/Caja"]
 unique_name_in_owner = true
 layout_mode = 2
+mouse_filter = 1
 theme_type_variation = &"DetalleHUD"
 text = "Meta CUCosta · faltan 2600 m"
+horizontal_alignment = 1
+
+[node name="Etapa" type="Label" parent="Pantalla/Lugar/Caja"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"DetalleHUD"
+text = "1/4 · Xalapa"
 horizontal_alignment = 1
 
 [node name="Fila" type="HBoxContainer" parent="Pantalla/Lugar/Caja"]
@@ -165,7 +173,7 @@ theme_type_variation = &"BarraRuta"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
-mouse_filter = 2
+mouse_filter = 1
 max_value = 1.0
 step = 0.0
 show_percentage = false
@@ -241,7 +249,7 @@ alignment = 2
 [node name="Altura" type="PanelContainer" parent="Pantalla/Vuelo"]
 unique_name_in_owner = true
 layout_mode = 2
-mouse_filter = 2
+mouse_filter = 1
 tooltip_text = "Altura sobre la calle"
 script = ExtResource("ficha")
 icono = ExtResource("ico_altura")
@@ -456,6 +464,83 @@ theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 6
 columns = 2
 
+[node name="Revivir" type="ColorRect" parent="Pantalla"]
+unique_name_in_owner = true
+visible = false
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.06, 0.13, 0.12, 0.8)
+
+[node name="Centro" type="CenterContainer" parent="Pantalla/Revivir"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelValentina" type="PanelContainer" parent="Pantalla/Revivir/Centro"]
+unique_name_in_owner = true
+layout_mode = 2
+
+[node name="Opciones" type="VBoxContainer" parent="Pantalla/Revivir/Centro/PanelValentina"]
+custom_minimum_size = Vector2(480, 0)
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="Icono" type="TextureRect" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones"]
+custom_minimum_size = Vector2(64, 64)
+layout_mode = 2
+size_flags_horizontal = 4
+texture = ExtResource("ico_valentina")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Titulo" type="Label" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones"]
+layout_mode = 2
+theme_type_variation = &"Subtitulo"
+text = "¿Usar Salsa Valentina?"
+horizontal_alignment = 1
+
+[node name="Descripcion" type="Label" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones"]
+layout_mode = 2
+text = "Recupera tu resistencia y tus saltos."
+horizontal_alignment = 1
+
+[node name="ExistenciasValentina" type="Label" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"Suave"
+text = "Salsas disponibles: 1 · Usas 1 al revivir"
+horizontal_alignment = 1
+
+[node name="CuentaValentina" type="Label" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"Subtitulo"
+text = "El intento termina en 5 s"
+horizontal_alignment = 1
+
+[node name="UsarValentina" type="Button" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 58)
+layout_mode = 2
+theme_type_variation = &"Continuar"
+text = "Usar salsa y revivir"
+
+[node name="TerminarIntento" type="Button" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 50)
+layout_mode = 2
+theme_type_variation = &"BotonVolver"
+text = "Terminar intento"
+
+[connection signal="pressed" from="Pantalla/Revivir/Centro/PanelValentina/Opciones/UsarValentina" to="." method="_elegir_valentina" binds= [true]]
+[connection signal="pressed" from="Pantalla/Revivir/Centro/PanelValentina/Opciones/TerminarIntento" to="." method="_elegir_valentina" binds= [false]]
 [connection signal="pressed" from="Pantalla/BotonPausa" to="." method="_alternar_pausa"]
 [connection signal="pressed" from="Pantalla/Pausa/Centro/Columna/Panel/Opciones/Continuar" to="." method="_alternar_pausa"]
 [connection signal="pressed" from="Pantalla/Pausa/Centro/Columna/Panel/Opciones/Volver" to="." method="_volver"]

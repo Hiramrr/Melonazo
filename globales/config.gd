@@ -111,7 +111,7 @@ var aleteo_melones := Vector2(0.45, 1.0)     # s entre impulsos
 var control_vuelo_melones := 700.0    # px/s² para igualar el avance del jugador
 var primer_melon_camino_x := 1000.0
 var separacion_melones := Vector2(1000, 1500)
-var prob_pareja_melones := 0.3        # a veces llegan dos juntos, para encadenar slams
+var prob_pareja_melones := 0.3        # se duplica gradualmente al final, para encadenar slams
 # Carácter de cada rival. peso: qué tan seguido sale (los tontos abundan al inicio y los
 # listos al final, ver GeneradorTerreno._elegir_tipo_melon). cara: índice en caras, solo
 # para los melones del camino. ritmo: multiplica su rapidez. pausa_saltos: multiplica la
@@ -132,9 +132,6 @@ var separacion_pareja_melones := Vector2(200, 300)
 
 # --- Aterrizaje --------------------------------------------------------------
 var aire_min_aterrizaje := 0.15      # s en el aire para contar como caída
-var lado_acc_freno := 0.72           # multiplica la velocidad al caer del lado del accesorio
-var lado_acc_giro := 6.0             # giro aleatorio extra (rad/s)
-var umbral_perder_acc := 520.0       # impacto que tira el accesorio
 var lado_redondo_conserva := 0.98    # fracción de velocidad conservada al caer redondo
 var caida_a_rodado := 0.2             # parte del impacto que se vuelve rodado hacia adelante
 var invulnerable_tras_golpe := 0.6
@@ -212,10 +209,9 @@ var calle_fin_x := 2800.0
 var calle_y := 260.0                 # el borde del trampolín está en y = 0
 var inicio_obstaculos_x := 900.0
 # Todo el camino después del lanzamiento es plano.
-# Dificultad del camino según la distancia: 0 al inicio, 1 desde dificultad_metros.y.
-# Los obstáculos se juntan conforme avanza la carrera.
-var dificultad_metros := Vector2(50.0, 800.0)
-var obstaculos_holgura := 1.6        # multiplica la separación de obstáculos con dificultad 0
+# Dificultad gradual durante el viaje. Los primeros 100 m sirven para aprender.
+var dificultad_metros := Vector2(100.0, 5200.0)
+var obstaculos_holgura := 1.8        # multiplica la separación de obstáculos con dificultad 0
 var prob_empedrado := 0.5
 var separacion_obstaculos := Vector2(280, 560)
 var separacion_publico := Vector2(380, 750)
@@ -228,13 +224,18 @@ var prob_casas := 0.6
 var marcador_cada_m := 50
 var lugares: Dictionary = {}          # metros -> nombre; se llena con las postales al iniciar
 
-# Ruta de fantasía, medida desde el borde del trampolín. Los huecos entre postales
-# de Xalapa se reservan para añadir lugares sin mover la meta ni los guardados.
-var salida_xalapa_m := 1200.0
-var costa_m := 2300.0
-var meta_m := 2600.0
+# Ruta de fantasía, medida desde el borde del trampolín.
+var salida_xalapa_m := 2400.0
+var costa_m := 4600.0
+var meta_m := 5200.0
 var nombre_meta := "Centro Universitario de la Costa"
 var institucion_meta := "Universidad de Guadalajara"
+var etapas_ruta: Array = [
+	{"nombre": "Xalapa", "metros": 0.0},
+	{"nombre": "Bosques y volcanes", "metros": salida_xalapa_m},
+	{"nombre": "Centro del país", "metros": 3600.0},
+	{"nombre": "Puerto Vallarta", "metros": costa_m},
+]
 
 # --- Fin del intento ---------------------------------------------------------
 var velocidad_min_avance := 25.0   # por debajo de 2.5 m/s ya casi no rueda
@@ -263,6 +264,7 @@ var poderes_tienda: Dictionary = {
 }
 var valentina_costo := 350
 var valentinas_max := 3
+var valentina_espera := 5.0          # s para decidir si se usa una salsa
 var valentina_invulnerable := 2.0    # s sin daño después de revivir
 var valentina_impulso := Vector2(750.0, -650.0)  # velocidad mínima al revivir
 
@@ -339,26 +341,26 @@ var bonus_postal := 60
 
 # --- Postales (pasaporte) -----------------------------------------------------
 # Ruta de fantasía. Las distancias son del juego, no distancias de la ciudad.
-# Las fotografías se asignan por id en recursos/arte_xalapa.tres y solo aparecen
-# al terminar el intento. Los lugares no generan edificios ni fotos en el camino.
+# recursos/arte_xalapa.tres asigna por id las fotos de resultados y las imágenes
+# provisionales del mapa. Estas últimas se pueden sustituir por sprites.
 var postales: Array = [
 	{"id": "xallitic", "nombre": "Xallitic", "metros": 0, "nota": "En 1778 se hicieron obras para conducir agua de este barrio hacia la Plaza del Rey."},
-	{"id": "juarez", "nombre": "Parque Juárez", "metros": 150, "nota": "El parque ocupa el lugar donde estuvo un convento franciscano del siglo XVI."},
-	{"id": "lagos", "nombre": "Paseo de los Lagos", "metros": 300, "nota": "En 1837 se solicitó construir un dique para aprovechar el agua del río Santiago en una fábrica textil."},
-	{"id": "aguila", "nombre": "El Águila", "metros": 450, "nota": "La escultura se colocó en 1926, antes de que existiera la Universidad Veracruzana. La UV celebró su centenario en 2026."},
-	{"id": "fei", "nombre": "Facultad de Estadística e Informática", "metros": 600, "nota": "La FEI inició en 1966 con Técnico en Estadística. Aquí estudian Ingeniería en Sistemas y Tecnologías de la Información los integrantes de ListiStar.", "nombre_corto": "FEI · UV"},
-	{"id": "macuiltepetl", "nombre": "Cerro de Macuiltépetl", "metros": 750, "nota": "Este cerro es un volcán monogenético, formado durante un solo episodio eruptivo.", "nombre_corto": "Macuiltépetl"},
-	{"id": "max", "nombre": "Museo de Antropología de Xalapa", "metros": 900, "nota": "El MAX tiene antecedentes desde 1937. Su edificio actual se construyó en los años ochenta y conserva esculturas olmecas.", "nombre_corto": "MAX"},
-	{"id": "experimental", "nombre": "Bachilleres Experimental", "metros": 1050, "nota": "Dos integrantes de ListiStar estudiaron en la Escuela de Bachilleres Experimental."},
+	{"id": "juarez", "nombre": "Parque Juárez", "metros": 300, "nota": "El parque ocupa el lugar donde estuvo un convento franciscano del siglo XVI."},
+	{"id": "lagos", "nombre": "Paseo de los Lagos", "metros": 600, "nota": "En 1837 se solicitó construir un dique para aprovechar el agua del río Santiago en una fábrica textil."},
+	{"id": "aguila", "nombre": "El Águila", "metros": 900, "nota": "La escultura se colocó en 1926, antes de que existiera la Universidad Veracruzana. La UV celebró su centenario en 2026."},
+	{"id": "fei", "nombre": "Facultad de Estadística e Informática", "metros": 1200, "nota": "La FEI inició en 1966 con Técnico en Estadística. Aquí estudian Ingeniería en Sistemas y Tecnologías de la Información los integrantes de ListiStar.", "nombre_corto": "FEI · UV"},
+	{"id": "macuiltepetl", "nombre": "Cerro de Macuiltépetl", "metros": 1500, "nota": "Este cerro es un volcán monogenético, formado durante un solo episodio eruptivo.", "nombre_corto": "Macuiltépetl"},
+	{"id": "max", "nombre": "Museo de Antropología de Xalapa", "metros": 1800, "nota": "El MAX tiene antecedentes desde 1937. Su edificio actual se construyó en los años ochenta y conserva esculturas olmecas.", "nombre_corto": "MAX"},
+	{"id": "experimental", "nombre": "Bachilleres Experimental", "metros": 2100, "nota": "Dos integrantes de ListiStar estudiaron en la Escuela de Bachilleres Experimental."},
 	{"id": "joya", "nombre": "La Joya", "metros": salida_xalapa_m, "nota": "Esta comunidad de Acajete es conocida por sus quesos artesanales. Elaborarlos y venderlos sostiene a muchas familias de la localidad."},
-	{"id": "bosques_perote", "nombre": "Bosques rumbo a Perote", "metros": 1350, "nota": "Los bosques de pinos y oyameles de esta región ayudan a captar y conservar el agua que abastece a poblaciones cercanas."},
-	{"id": "cofre_perote", "nombre": "Cofre de Perote", "metros": 1500, "nota": "También se llama Nauhcampatépetl, Cerro de los Cuatro Costados. Es parque nacional desde el 4 de mayo de 1937."},
-	{"id": "pico_orizaba", "nombre": "Pico de Orizaba", "metros": 1650, "nota": "Citlaltépetl significa Cerro de la Estrella. Es la montaña más alta de México y conserva una zona glaciar en su parte elevada."},
-	{"id": "estrella_puebla", "nombre": "Estrella de Puebla", "metros": 1800, "nota": "Esta rueda de observación alcanza 80 metros de altura y tiene 54 cabinas. Obtuvo un Récord Guinness por su estructura transportable."},
-	{"id": "escaleras_tlaxcala", "nombre": "Escaleras eléctricas de Tlaxcala", "metros": 1900, "nota": "La inauguración de estas escaleras en Apizaco, en abril de 2017, se volvió viral y provocó memes en todo México.", "nombre_corto": "Escaleras de Tlaxcala"},
-	{"id": "angel", "nombre": "Ángel de la Independencia", "metros": 2000, "nota": "La figura es la Victoria Alada, inspirada en Niké. La columna se inauguró en 1910 para celebrar el centenario de la Independencia."},
-	{"id": "teotihuacan", "nombre": "Teotihuacán", "metros": 2100, "nota": "La Pirámide del Sol mide unos 65 metros de altura. Los mexicas dieron su nombre actual a la ciudad siglos después de su construcción."},
-	{"id": "monarca", "nombre": "Santuario de la Mariposa Monarca", "metros": 2200, "nota": "Cada otoño, las monarca viajan hasta 4200 kilómetros para pasar el invierno en México. Su reserva es Patrimonio Mundial desde 2008.", "nombre_corto": "Mariposa Monarca"},
+	{"id": "bosques_perote", "nombre": "Bosques rumbo a Perote", "metros": 2700, "nota": "Los bosques de pinos y oyameles de esta región ayudan a captar y conservar el agua que abastece a poblaciones cercanas."},
+	{"id": "cofre_perote", "nombre": "Cofre de Perote", "metros": 3000, "nota": "También se llama Nauhcampatépetl, Cerro de los Cuatro Costados. Es parque nacional desde el 4 de mayo de 1937."},
+	{"id": "pico_orizaba", "nombre": "Pico de Orizaba", "metros": 3300, "nota": "Citlaltépetl significa Cerro de la Estrella. Es la montaña más alta de México y conserva una zona glaciar en su parte elevada."},
+	{"id": "estrella_puebla", "nombre": "Estrella de Puebla", "metros": 3600, "nota": "Esta rueda de observación alcanza 80 metros de altura y tiene 54 cabinas. Obtuvo un Récord Guinness por su estructura transportable."},
+	{"id": "escaleras_tlaxcala", "nombre": "Escaleras eléctricas de Tlaxcala", "metros": 3800, "nota": "La inauguración de estas escaleras en Apizaco, en abril de 2017, se volvió viral y provocó memes en todo México.", "nombre_corto": "Escaleras de Tlaxcala"},
+	{"id": "angel", "nombre": "Ángel de la Independencia", "metros": 4000, "nota": "La figura es la Victoria Alada, inspirada en Niké. La columna se inauguró en 1910 para celebrar el centenario de la Independencia."},
+	{"id": "teotihuacan", "nombre": "Teotihuacán", "metros": 4200, "nota": "La Pirámide del Sol mide unos 65 metros de altura. Los mexicas dieron su nombre actual a la ciudad siglos después de su construcción."},
+	{"id": "monarca", "nombre": "Santuario de la Mariposa Monarca", "metros": 4400, "nota": "Cada otoño, las monarca viajan hasta 4200 kilómetros para pasar el invierno en México. Su reserva es Patrimonio Mundial desde 2008.", "nombre_corto": "Mariposa Monarca"},
 	{"id": "costa", "nombre": "Puerto Vallarta", "metros": costa_m, "nota": "Antes se llamaba Las Peñas. En 1918 recibió el nombre de Puerto Vallarta al convertirse en municipio."},
 	{"id": "cucosta", "nombre": nombre_meta, "metros": meta_m, "nota": "El CUCosta nació en 1994. Sus primeras carreras fueron Turismo, Administración, Contaduría y Derecho.", "nombre_corto": "CUCosta · UdeG"}
 ]

@@ -134,7 +134,7 @@ Recorrido (recorrido.gd)           Reglas de la carrera y fases
 └─ Interfaz (HUD)                  Datos, equipo, indicaciones y pausa
 ```
 
-**Fases** de `Recorrido.Fase`. `FUERZA` → `BAJADA` → `RECORRIDO` → `FIN`. La salida muestra el medidor de potencia con el melón inmóvil y la barrera puesta. Espacio fija la potencia, retira la barrera y lanza cuesta abajo. Durante `BAJADA`, `_avanzar_bajada()` hace rodar al melón sobre la calle y acelera según la potencia elegida, más un embalaje por la caída (`BajadaXallitic.embalaje()`) que se pierde al subir el trampolín final. `Melon.freeze` es verdadero y `Melon.controlable` es falso. Así el largo de la bajada y las colisiones no borran la potencia de salida. Cuando el melón llega al borde del trampolín (`Config.bajada_fin`), comienza `RECORRIDO`, se activa la física del cuerpo con la velocidad elegida hacia adelante más parte del impulso hacia arriba del trampolín (`Config.bajada_salto`) y vuelven los controles habituales. Los accesorios conservan su dibujo y su equipo, pero sus formas de colisión se desactivan hasta salir para evitar atascos sin control del jugador. La distancia y los bonos de altura se cuentan en la ruta por Xalapa, después del trampolín. La carrera termina al llegar a `Config.meta_m`, si el melón se rompe o si avanza menos de `Config.velocidad_min_avance` durante `Config.tiempo_sin_avance` segundos.
+**Fases** de `Recorrido.Fase`. `FUERZA` → `BAJADA` → `RECORRIDO` → `FIN`. La salida muestra el medidor de potencia con el melón inmóvil y la barrera puesta. Espacio fija la potencia, retira la barrera y lanza cuesta abajo. Durante `BAJADA`, `_avanzar_bajada()` hace rodar al melón sobre la calle y acelera según la potencia elegida, más un embalaje por la caída (`BajadaXallitic.embalaje()`) que se pierde al subir el trampolín final. `Melon.freeze` es verdadero y `Melon.controlable` es falso. Así el largo de la bajada y las colisiones no borran la potencia de salida. Cuando el melón llega al borde del trampolín (`Config.bajada_fin`), comienza `RECORRIDO`, se activa la física del cuerpo con la velocidad elegida hacia adelante más parte del impulso hacia arriba del trampolín (`Config.bajada_salto`) y vuelven los controles habituales. Los accesorios conservan su dibujo y su equipo. La distancia y los bonos de altura se cuentan en la ruta por Xalapa, después del trampolín. La carrera termina al llegar a `Config.meta_m`, si el melón se rompe o si avanza menos de `Config.velocidad_min_avance` durante `Config.tiempo_sin_avance` segundos.
 
 **Cada paso de física**, `Recorrido._physics_process()`:
 
@@ -163,8 +163,7 @@ El **HUD** (`hud/hud.tscn`) es un `CanvasLayer` con `process_mode` *Always*, as�
 ```text
 Melon (RigidBody2D, melon.gd)
 ├─ Cuerpo          CircleShape2D; el radio depende del tamaño
-├─ Accesorio1..3   Una forma convexa por accesorio equipado, en su lado
-├─ Aspecto         Sprite2D con la textura de piel, cara, trazos y accesorios
+├─ Aspecto         Sprite2D con la textura de piel, cara, trazos y los PNG de los accesorios (sin colisión)
 ├─ Lienzo/Dibujo   SubViewport de 512 píxeles, dibuja el aspecto a doble resolución
 └─ Estela          Rastro decorativo (estela.gd, top_level)
 ```
@@ -196,11 +195,11 @@ Melon (RigidBody2D, melon.gd)
 
 La ruta aérea asciende desde `Config.altura_papalotes.x` hasta `Config.altura_papalotes.y`. Cada tercera ayuda activa `Papalote.corriente` y dibuja niebla con flechas de viento. Ambas variantes usan `impulsar()` con E y nunca recargan saltos. Los cafés cercanos a la primera ayuda y cada cuatro ayudas permiten saltar sin gastar cargas. `Recorrido.papalote_siguiente` y `EfectosRecorrido.objetivo_aereo` señalan el siguiente destino fuera de pantalla.
 
-`Recorrido` conserva `altura_max_m` aunque el melón descienda. Al finalizar la pasa como sexto argumento opcional a `Juego.registrar_intento()`, que calcula `por_altura` con `Config.aplausos_por_metro_altura`. Las entradas de `Config.zonas_cielo` cambian el objetivo del HUD y anuncian las alturas alcanzadas. La falta de avance horizontal solo termina la carrera cuando el melón está en el suelo.
+`Recorrido` conserva `altura_max_m` aunque el melón descienda. Al finalizar la pasa como sexto argumento opcional a `Juego.registrar_intento()`, que calcula `por_altura` con `Config.aplausos_por_metro_altura`. Las entradas de `Config.zonas_cielo` anuncian las alturas alcanzadas. El HUD conserva el lugar actual y el próximo destino al volar; la ficha de altura muestra el bono en su ayuda. La falta de avance horizontal solo termina la carrera cuando el melón está en el suelo.
 
 ## Resultados (`pantallas/resultados/`)
 
-`resultados.gd` rellena los textos con `Juego.ultimo` y los anima. `ultimo.llegada` indica si el melón cruzó la meta sin romperse. El panel `Postal` de `postal_resultados.gd` busca el lugar más lejano alcanzado en ese intento y muestra exclusivamente su fotografía. Si ese lugar no tiene imagen, oculta la postal. No usa imágenes de otros lugares ni dibujos como sustitutos. Las fotos no aparecen en el recorrido ni en el pasaporte.
+`resultados.gd` rellena los textos con `Juego.ultimo` y los anima. `ultimo.llegada` indica si el melón cruzó la meta sin romperse. El panel `Postal` de `postal_resultados.gd` busca el lugar más lejano alcanzado en ese intento y muestra exclusivamente su fotografía. Si ese lugar no tiene imagen, oculta la postal. No usa imágenes de otros lugares ni dibujos como sustitutos. El pasaporte conserva solo nombres y sellos. El recorrido asigna sus imágenes por separado en `ArteXalapa.lugares_mapa`.
 
 ## Cómo añadir cosas
 
@@ -209,10 +208,10 @@ La ruta aérea asciende desde `Config.altura_papalotes.x` hasta `Config.altura_p
 Cada accesorio es un archivo en `melon/accesorios/` que extiende `Accesorio`. `Config` carga todos los archivos de esa carpeta al iniciar, así que no hay listas que actualizar:
 
 1. Copia un accesorio parecido, por ejemplo `sombrero.gd`, con el nombre del nuevo id (`maraca.gd`).
-2. En `_init()` define `nombre`, `carisma`, `accion`, `costo`, `orden`, `color`, `forma` e `inicial`.
+2. En `_init()` define `nombre`, `carisma`, `accion`, `costo`, `orden`, `color` e `inicial`.
 3. En `usar(m)` combina los efectos de `Melon`: `planear`, `embestir`, `caida_lenta`, `rodar`, `proteger`, `reparar`, `atraer_aplausos`, `sumar_rebote`, `empujar` y `fijar_velocidad`.
 4. Si necesita física propia durante unos segundos, llama a `m.activar(self, segundos)` y escribe `fisica(m, v, dt)`. El HUD muestra su tiempo restante solo.
-5. Añade el sprite con su id a `recursos/sprites/accesorios.png` y su cuadro a `accesorios.json`. El lienzo mide 96 × 96 píxeles y representa un melón de radio 32, orientado hacia arriba. `Accesorio.dibujar()` aplica el ángulo y el tamaño del melón.
+5. Añade el sprite con su id a `recursos/sprites/accesorios.png` y su cuadro a `accesorios.json`. El lienzo mide 96 × 96 píxeles y representa un melón de radio 32, orientado hacia arriba. `Accesorio.dibujar()` aplica el ángulo y el tamaño del melón. Los accesorios son solo imagen: no tienen forma de colisión.
 
 ### Una opción de aspecto
 
@@ -230,13 +229,13 @@ Agrega su entrada en `Config.poderes` y su id en `Config.orden_poderes`, su efec
 
 ### Una postal
 
-Agrega el lugar en `Config.postales`, en orden de metros y con un `id` que no se repita. No requiere un dibujo ni una escena. Añade su fotografía con el mismo `id` en `fotografias` de `recursos/arte_xalapa.tres`. La imagen se muestra como postal únicamente al terminar un intento en ese lugar.
+Agrega el lugar en `Config.postales`, en orden de metros y con un `id` que no se repita. Añade su fotografía y dato curioso con el mismo `id` en `fotografias` de `recursos/arte_xalapa.tres` para los resultados. Asigna también una textura a ese `id` en `lugares_mapa`. El generador crea `postal.tscn` en la posición del lugar, detrás del suelo y sin colisión. `Postal` ajusta la imagen a un máximo de 520 × 280 píxeles sin deformarla, con su base en el suelo y a la derecha del letrero. Las fotos del mapa son provisionales. Para cambiarlas por sprites, sustituye cada textura de `lugares_mapa` por su PNG o `AtlasTexture`, sin modificar `fotografias`.
 
-La ruta sigue los 19 lugares elegidos por el equipo, en el orden del PDF. Los primeros 1200 metros corresponden a Xalapa; La Joya inicia el tramo de montaña. La meta está en `Config.meta_m`, a 2600 metros. `salida_xalapa_m` y `costa_m` delimitan los fondos del camino. `Recorrido._revisar_avance()` detecta la llegada, limita la distancia y congela el melón. El generador conserva terreno de margen tras la meta, pero deja de extenderlo. Los lugares conservados mantienen sus identificadores para conservar sus sellos del pasaporte. El cargador descarta los identificadores que ya no forman parte de la ruta, sin afectar al resto del progreso.
+La ruta sigue los 19 lugares elegidos por el equipo, en el orden del PDF. Los primeros 2400 metros corresponden a Xalapa; La Joya inicia el tramo de montaña. La meta está en `Config.meta_m`, a 5200 metros. `Config.etapas_ruta` define las cuatro etapas del HUD. Los fondos de Xalapa, bosques y volcanes, centro del país y costa se mezclan durante los 80 metros anteriores a cada cambio. `GeneradorTerreno._poner_marcadores()` crea una señal por lugar sin consumir azar; `Tramo._dibujar_lugar()` dibuja los nombres, la distancia restante y la puerta a cuadros del CUCosta con sprites. Los letreros de distancia terminan antes de la meta. `Recorrido._revisar_avance()` detecta la llegada, limita la distancia y congela el melón. El generador conserva terreno de margen tras la meta, pero deja de extenderlo. Los lugares conservados mantienen sus identificadores para conservar sus sellos del pasaporte. El cargador descarta los identificadores que ya no forman parte de la ruta, sin afectar al resto del progreso.
 
 ### Cambiar el terreno
 
-El generador mantiene todos los puntos del recorrido en `Config.calle_y`, incluida la primera calle. Solo `BajadaXallitic` tiene un perfil curvo para el lanzamiento. Ajusta `largo_tramo`, `calle_y`, `semilla_terreno`, `dificultad_metros` y las separaciones en `Config`. Las rampas y los toldos dan impulso una sola vez por carrera.
+El generador mantiene todos los puntos del recorrido en `Config.calle_y`, incluida la primera calle. Solo `BajadaXallitic` tiene un perfil curvo para el lanzamiento. Ajusta `largo_tramo`, `calle_y`, `semilla_terreno`, `dificultad_metros` y las separaciones en `Config`. Las rampas y los toldos dan impulso una sola vez por carrera. `dificultad(x)` usa una curva suave entre 100 y 5200 metros. La misma curva ajusta la separación y los pesos de obstáculos, la frecuencia y altura de pájaros, la probabilidad de bandadas y los tipos de rivales. Las parejas de melones aumentan del 30 al 60 % para sostener las oportunidades de slam al final. Ningún melón ni pájaro nuevo aparece más allá de la meta.
 
 ## Pruebas (`pruebas/`)
 

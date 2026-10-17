@@ -18,7 +18,10 @@ extends CanvasLayer
 ##   Ayuda         teclas del juego; disponibles después del trampolín
 ##   Pausa         menú de pausa con controles y créditos del fondo
 ##
-## No guarda estado de la carrera: Recorrido llama a actualizar(self) cada cuadro.
+## Recorrido llama a actualizar(self) cada cuadro. El HUD cuenta el tiempo de
+## la elección de Valentina mientras la carrera está en pausa.
+
+signal valentina_elegida(usar: bool)
 
 const ESCENA_TALLER := "res://pantallas/taller/taller.tscn"
 const ARTE: ArteXalapa = preload("res://recursos/arte_xalapa.tres")
@@ -42,6 +45,7 @@ const CONTROLES := [["A  D", "Mover y girar"], ["Espacio", "Saltar y rebotar"], 
 @onready var medidor: ProgressBar = %Fuerza
 @onready var ayuda: HBoxContainer = %Ayuda
 @onready var pausa: Control = %Pausa
+@onready var revivir: Control = %Revivir
 @onready var slots: Array[SlotAccesorio] = [%Slot1, %Slot2, %Slot3]
 
 var _slots_mostrados: Array = []       # copia de melon.slots para redibujar solo si cambia
@@ -50,6 +54,7 @@ var _relleno_resistencia: StyleBoxFlat
 var _resistencia_previa := -1.0        # se queda atrás tras un daño para marcar lo perdido
 var _ultimos := {}                     # valor mostrado por contador, para animar al cambiar
 var _postal_mostrada := ""
+var _t_valentina := 0.0
 
 
 func _ready() -> void:
@@ -85,11 +90,16 @@ func _agregar_ayuda(parte: Array) -> void:
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pausar") and not event.is_echo():
-		_alternar_pausa()
+		if revivir.visible:
+			_elegir_valentina(false)
+		else:
+			_alternar_pausa()
 		get_viewport().set_input_as_handled()
 
 
 func _alternar_pausa() -> void:
+	if revivir.visible:
+		return
 	get_tree().paused = not get_tree().paused
 	pausa.visible = get_tree().paused
 	if pausa.visible:
@@ -103,6 +113,33 @@ func _alternar_pausa() -> void:
 func _volver() -> void:
 	get_tree().paused = false
 	Animacion.cambiar_escena(ESCENA_TALLER)
+
+
+# --- Salsa Valentina ---------------------------------------------------------
+
+func preguntar_valentina() -> void:
+	_t_valentina = Config.valentina_espera
+	%ExistenciasValentina.text = "Salsas disponibles: %d · Usas 1 al revivir" % Juego.valentinas
+	revivir.show()
+	# Espacio también sirve para saltar; el foco evita gastar una salsa por accidente.
+	%TerminarIntento.grab_focus()
+	_process(0.0)
+
+
+func _process(delta: float) -> void:
+	if not revivir.visible:
+		return
+	_t_valentina = maxf(0.0, _t_valentina - delta)
+	%CuentaValentina.text = "El intento termina en %d s" % ceili(_t_valentina)
+	if _t_valentina <= 0.0:
+		_elegir_valentina(false)
+
+
+func _elegir_valentina(usar: bool) -> void:
+	if not revivir.visible:
+		return
+	revivir.hide()
+	valentina_elegida.emit(usar)
 
 
 # --- Actualización -----------------------------------------------------------
@@ -121,7 +158,7 @@ func actualizar(r: Recorrido) -> void:
 	_contador("poderes", ficha_poderes, r.poderes_recogidos)
 	_contador("valentinas", ficha_valentinas, Juego.valentinas)
 	_actualizar_equipo(melon)
-	_actualizar_lugar(metros, r.altura_m, r.altura_max_m)
+	_actualizar_lugar(metros)
 	_actualizar_efectos(melon)
 	lanzamiento.visible = r.fase == Recorrido.Fase.FUERZA
 	ayuda.visible = r.fase == Recorrido.Fase.RECORRIDO
@@ -130,6 +167,7 @@ func actualizar(r: Recorrido) -> void:
 	_relleno_fuerza.bg_color = medidor.get_theme_color("perfecta") if en_zona else medidor.get_theme_color("inicio").lerp(medidor.get_theme_color("fin"), r.fuerza)
 	vuelo.visible = r.fase >= Recorrido.Fase.RECORRIDO
 	%Altura.texto = "%d m" % int(r.altura_m)
+	%Altura.tooltip_text = "Altura máxima %d m · Bono +%d aplausos" % [int(r.altura_max_m), int(r.altura_max_m * Config.aplausos_por_metro_altura)]
 	_contador("papalotes", %Papalotes, r.papalotes_usados)
 	_actualizar_indicacion(r)
 
@@ -171,29 +209,29 @@ func _actualizar_equipo(melon: Melon) -> void:
 
 
 ## La barra siempre mide el viaje completo, incluso durante los objetivos de altura.
-func _actualizar_lugar(metros: float, altura: float, altura_max: float) -> void:
+func _actualizar_lugar(metros: float) -> void:
 	var actual := "Barrio de Xallitic"
 	var siguiente := "¡Llegaste a la meta!"
+	var visitados := 0
 	for postal in Config.postales:
 		if metros >= float(postal["metros"]):
 			actual = postal.get("nombre_corto", postal["nombre"])
+			visitados += 1
 		else:
 			var hasta := float(postal["metros"])
 			siguiente = "Siguiente: %s · %d m" % [postal.get("nombre_corto", postal["nombre"]), ceili(hasta - metros)]
 			break
-	if altura >= Config.zonas_cielo[0]["metros"] and metros < Config.salida_xalapa_m:
-		siguiente = "Altura máxima: %d m · Bono +%d" % [int(altura_max), int(altura_max * Config.aplausos_por_metro_altura)]
-		for zona in Config.zonas_cielo:
-			if altura >= zona["metros"]:
-				actual = zona["nombre"]
-			else:
-				siguiente = "Sube a %d m · %s" % [int(zona["metros"]), zona["nombre"]]
-				break
-	%Destino.text = "Meta CUCosta · faltan %d m" % ceili(maxf(0.0, Config.meta_m - metros))
+	var etapa := 0
+	for i in Config.etapas_ruta.size():
+		if metros >= float(Config.etapas_ruta[i]["metros"]):
+			etapa = i
+	%Etapa.text = "%d/%d · %s" % [etapa + 1, Config.etapas_ruta.size(), Config.etapas_ruta[etapa]["nombre"]]
+	%Destino.text = "¡Llegaste al CUCosta!" if metros >= Config.meta_m else "Meta CUCosta · faltan %d m" % ceili(maxf(0.0, Config.meta_m - metros))
 	%Destino.tooltip_text = "%s\n%s\nXalapa a Puerto Vallarta · %d m de juego" % [Config.nombre_meta, Config.institucion_meta, int(Config.meta_m)]
 	%LugarActual.text = actual
 	%Siguiente.text = siguiente
 	%Ruta.value = clampf(metros / Config.meta_m, 0.0, 1.0)
+	%Ruta.tooltip_text = "%d de %d lugares · %d%% del viaje" % [visitados, Config.postales.size(), int(%Ruta.value * 100.0)]
 	if actual != _postal_mostrada:
 		if _postal_mostrada != "":
 			Animacion.rebotar(lugar, 1.12)
@@ -232,6 +270,8 @@ func _actualizar_indicacion(r: Recorrido) -> void:
 		Recorrido.Fase.FIN:
 			_indicar("", r.texto_fin)
 			tecla.visible = false
+		Recorrido.Fase.REVIVIR:
+			aviso.visible = false
 		Recorrido.Fase.RECORRIDO:
 			if melon.slam_activo:
 				_indicar("", "¡Apunta a un melón! El suelo frena")

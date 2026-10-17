@@ -7,6 +7,7 @@ extends Resource
 ##   Paisaje            dibujar() pinta la foto panorámica como fondo del recorrido
 ##   HUD                crear_creditos_paisaje() agrega la atribución de esa foto
 ##   PostalResultados   fotografias, mostradas con FotoLugar solo al terminar
+##   Postal             lugares_mapa, imágenes provisionales del recorrido
 ##
 ## Vacía `paisaje` en el .tres para usar solamente los dibujos del juego.
 
@@ -18,6 +19,8 @@ extends Resource
 ## Las claves coinciden con los id de Config.postales.
 ## Vacía el diccionario para quitar las fotos.
 @export var fotografias: Dictionary = {}
+## id de lugar -> Texture2D. Sustituye cada foto por su sprite sin cambiar los resultados.
+@export var lugares_mapa: Dictionary = {}
 
 
 ## Dibuja `paisaje` en rect sobre ci, recortado al centro para llenar rect sin
