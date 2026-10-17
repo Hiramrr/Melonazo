@@ -273,7 +273,7 @@
 			},
 			"duration": 100
 		},
-		"cara_valiente": {
+		"cara_usagi": {
 			"frame": {
 				"x": 650,
 				"y": 0,
@@ -294,7 +294,7 @@
 			},
 			"duration": 100
 		},
-		"cara_dormido": {
+		"cara_kirby": {
 			"frame": {
 				"x": 700,
 				"y": 0,
@@ -315,7 +315,7 @@
 			},
 			"duration": 100
 		},
-		"cara_lentes": {
+		"cara_verity": {
 			"frame": {
 				"x": 750,
 				"y": 0,
@@ -336,7 +336,7 @@
 			},
 			"duration": 100
 		},
-		"cara_susto": {
+		"cara_man": {
 			"frame": {
 				"x": 800,
 				"y": 0,

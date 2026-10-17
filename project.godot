@@ -15,7 +15,7 @@ config/description="Viaja desde Xalapa hasta el Centro Universitario de la Costa
 run/main_scene="res://pantallas/menu/menu.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="RuedaMelon"
-config/features=PackedStringArray("4.6")
+config/features=PackedStringArray("4.7")
 config/icon="res://recursos/icono.png"
 
 [autoload]
