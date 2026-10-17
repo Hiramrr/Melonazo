@@ -15,7 +15,7 @@ extends CanvasLayer
 ##   Efectos       una ficha por efecto activo del melón, con sus segundos
 ##   Lanzamiento   barra de fuerza con la zona perfecta marcada
 ##   Aviso         tecla dibujada (%Tecla) y qué hace ahora (%Indicacion)
-##   Ayuda         teclas del juego; disponibles después del trampolín
+##   Ayuda         teclas del juego; solo en los primeros metros tras el trampolín
 ##   Pausa         menú de pausa con controles y créditos del fondo
 ##
 ## Recorrido llama a actualizar(self) cada cuadro. El HUD cuenta el tiempo de
@@ -49,8 +49,8 @@ const CONTROLES := [["A  D", "Mover y girar"], ["Espacio", "Saltar y rebotar"], 
 @onready var slots: Array[SlotAccesorio] = [%Slot1, %Slot2, %Slot3]
 
 var _slots_mostrados: Array = []       # copia de melon.slots para redibujar solo si cambia
-var _relleno_fuerza: StyleBoxFlat
-var _relleno_resistencia: StyleBoxFlat
+var _relleno_fuerza: StyleBoxTexture
+var _relleno_resistencia: StyleBoxTexture
 var _resistencia_previa := -1.0        # se queda atrás tras un daño para marcar lo perdido
 var _ultimos := {}                     # valor mostrado por contador, para animar al cambiar
 var _postal_mostrada := ""
@@ -60,10 +60,10 @@ var _t_valentina := 0.0
 func _ready() -> void:
 	%Volver.get_parent().add_child(ARTE.crear_creditos_paisaje())
 	medidor.draw.connect(_dibujar_zona_perfecta)
-	_relleno_fuerza = (medidor.get_theme_stylebox("fill") as StyleBoxFlat).duplicate()
+	_relleno_fuerza = (medidor.get_theme_stylebox("fill") as StyleBoxTexture).duplicate()
 	medidor.add_theme_stylebox_override("fill", _relleno_fuerza)
 	resistencia.draw.connect(_dibujar_resistencia)
-	_relleno_resistencia = (resistencia.get_theme_stylebox("fill") as StyleBoxFlat).duplicate()
+	_relleno_resistencia = (resistencia.get_theme_stylebox("fill") as StyleBoxTexture).duplicate()
 	resistencia.add_theme_stylebox_override("fill", _relleno_resistencia)
 	for parte in [["A", "D"], ["Mover"], ["Espacio"], ["Saltar"], ["S"], ["Slam"], ["E"], ["Papalote"], ["1", "2", "3"], ["Accesorios"]]:
 		_agregar_ayuda(parte)
@@ -167,15 +167,15 @@ func actualizar(r: Recorrido) -> void:
 	_actualizar_lugar(metros)
 	_actualizar_efectos(melon)
 	lanzamiento.visible = r.fase == Recorrido.Fase.FUERZA
-	ayuda.visible = r.fase == Recorrido.Fase.RECORRIDO
+	ayuda.visible = r.fase == Recorrido.Fase.RECORRIDO and metros < Config.ayuda_hasta_m
 	medidor.value = r.fuerza * 100.0
 	var en_zona := r.fuerza >= Config.zona_perfecta.x and r.fuerza <= Config.zona_perfecta.y
-	_relleno_fuerza.bg_color = medidor.get_theme_color("perfecta") if en_zona else medidor.get_theme_color("inicio").lerp(medidor.get_theme_color("fin"), r.fuerza)
+	_relleno_fuerza.modulate_color = medidor.get_theme_color("perfecta") if en_zona else medidor.get_theme_color("inicio").lerp(medidor.get_theme_color("fin"), r.fuerza)
 	vuelo.visible = r.fase >= Recorrido.Fase.RECORRIDO
 	%Altura.texto = "%d m" % int(r.altura_m)
 	%Altura.tooltip_text = "Altura máxima %d m · Bono +%d aplausos" % [int(r.altura_max_m), int(r.altura_max_m * Config.aplausos_por_metro_altura)]
 	_contador("papalotes", %Papalotes, r.papalotes_usados)
-	_actualizar_indicacion(r)
+	_actualizar_indicacion(r, metros)
 
 
 ## Pone el valor en un contador (Ficha o Pips) y le da un salto si cambió.
@@ -202,7 +202,7 @@ func _actualizar_resistencia(melon: Melon) -> void:
 	_resistencia_previa = move_toward(_resistencia_previa, valor, get_process_delta_time() * 1.5)
 	var fraccion := valor / maxf(0.01, melon.resistencia_max)
 	var media := resistencia.get_theme_color("media")
-	_relleno_resistencia.bg_color = resistencia.get_theme_color("baja").lerp(media, fraccion * 2.0) if fraccion < 0.5 else media.lerp(resistencia.get_theme_color("alta"), fraccion * 2.0 - 1.0)
+	_relleno_resistencia.modulate_color = resistencia.get_theme_color("baja").lerp(media, fraccion * 2.0) if fraccion < 0.5 else media.lerp(resistencia.get_theme_color("alta"), fraccion * 2.0 - 1.0)
 	resistencia.queue_redraw()
 
 
@@ -260,8 +260,9 @@ func _actualizar_efectos(melon: Melon) -> void:
 
 
 ## Tecla y texto de ayuda según la fase y lo que el melón puede hacer ahora.
-## El aviso late cuando hay que pulsar a tiempo (rebote o papalote).
-func _actualizar_indicacion(r: Recorrido) -> void:
+## El aviso late cuando hay que pulsar a tiempo (rebote o papalote). Saltar a secas
+## solo se recuerda en los primeros metros: después la parte baja queda despejada.
+func _actualizar_indicacion(r: Recorrido, metros := 0.0) -> void:
 	var melon := r.melon
 	var urgente := false
 	aviso.visible = true
@@ -299,8 +300,10 @@ func _actualizar_indicacion(r: Recorrido) -> void:
 			elif not melon.en_suelo and melon.t_impacto >= 0.0 and melon.t_impacto <= Config.tolerancia_rebote:
 				_indicar("Espacio", "¡Rebote con impulso!" if melon.t_impacto <= Config.ventana_rebote else "Prepara el rebote")
 				urgente = true
-			else:
+			elif metros < Config.ayuda_hasta_m:
 				_indicar("Espacio", "Saltar" if melon.en_suelo else "Salto aéreo")
+			else:
+				aviso.visible = false
 	aviso.pivot_offset = aviso.size * 0.5
 	var pulso := 1.0 + 0.06 * absf(sin(Time.get_ticks_msec() * 0.012)) if urgente else 1.0
 	aviso.scale = Vector2.ONE * pulso

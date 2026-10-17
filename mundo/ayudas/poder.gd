@@ -12,7 +12,8 @@ extends Area2D
 ## instancia uno cada tantos metros en el contenedor Coleccionables del tramo, le asigna
 ## `tipo` y reenvía `recogido` como su señal poder_recogido, que atiende
 ## Recorrido._al_recoger_poder(). Este nodo solo avisa y desaparece; el efecto lo aplica
-## Melon.recibir_poder().
+## Melon.recibir_poder(). Los rivales no tienen física: GeneradorTerreno.actualizar_melones()
+## mide la distancia y llama consumir(); entonces el jugador ya no puede recogerlo.
 ## Nombres y efectos de cada tipo: Config.poderes. Como es @tool, `tipo` también se
 ## puede cambiar desde el inspector para ver el dibujo en el editor.
 
@@ -59,6 +60,18 @@ func _recoger(cuerpo: Node2D) -> void:
 	consumido = true
 	recogido.emit(tipo)
 	queue_free()
+
+
+## Un rival se lo lleva: igual que _recoger() pero sin emitir `recogido`. Crece y se
+## desvanece antes de liberarse para que se note quién lo ganó.
+func consumir() -> void:
+	if consumido:
+		return
+	consumido = true
+	var efecto := create_tween().set_parallel()
+	efecto.tween_property(self, "scale", Vector2.ONE * 1.6, 0.25)
+	efecto.tween_property(self, "modulate:a", 0.0, 0.25)
+	efecto.chain().tween_callback(queue_free)
 
 
 # --- Dibujo ------------------------------------------------------------------

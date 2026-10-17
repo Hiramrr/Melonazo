@@ -16,6 +16,7 @@ Cada hoja tiene dos archivos con el mismo nombre. El PNG contiene los cuadros. E
 | `interfaz` | Fondos, rayos, papel picado y marco de la postal |
 | `efectos` | Estelas, aros, fragmentos, marcas, soplo y flechas |
 | `transiciones` | Dieciséis cuadros de la cortina circular entre pantallas |
+| `estilos` | Paneles, botones, pestañas, barras y casillas del Theme, en nueve partes |
 
 Los iconos existentes siguen en `recursos/iconos/`, los poderes en `recursos/poderes/` y el fondo del taller en `recursos/taller_xallitic.png`. Ya son PNG. Las fotografías conservan sus archivos y créditos.
 
@@ -25,6 +26,8 @@ Los iconos existentes siguen en `recursos/iconos/`, los poderes en `recursos/pod
 2. Conserva las dimensiones del PNG y la posición de cada cuadro. Guarda como PNG RGBA con transparencia. No hace falta modificar el JSON si solo cambias los píxeles.
 3. Guarda tu archivo de trabajo como `.ase` si necesitas conservar capas. Godot consume el PNG y el JSON, no el `.ase`.
 4. Para sustituir una hoja mediante Export Sprite Sheet, elige JSON Hash, conserva los nombres de los cuadros y desactiva el recorte y la rotación de cuadros. Los lienzos originales de cada cuadro deben conservar sus medidas. Puedes cambiar las posiciones en la hoja si actualizas su JSON junto con el PNG.
+
+Los cuadros de `estilos` llevan el nombre de su StyleBox en `interfaz/tema_xalapa.tres`. Godot conserva las esquinas y estira los lados y el centro. Por eso puedes redibujar bordes, sombras y esquinas sin tocar el centro del cuadro. Si cambias el grosor de una esquina, ajusta los márgenes de textura del StyleBox. Los rellenos de las barras de fuerza y resistencia y el relleno de las muestras de color son blancos porque el juego los tiñe.
 
 Las animaciones `aves_0` a `aves_7` y `papalote_0` a `papalote_7` toman la duración de cada cuadro del JSON. Los demás cuadros son variantes o capas independientes.
 
@@ -36,7 +39,7 @@ Las animaciones `aves_0` a `aves_7` y `papalote_0` a `papalote_7` toman la durac
 
 El melón combina capas teñidas para conservar colores propios, caras y patrones. Los accesorios son solo PNG, sin colisión; se dibujan en el ángulo de su espacio y a la escala del radio. El terreno coloca columnas de textura a la altura de la superficie física. Las coordenadas vectoriales que quedan en el juego describen movimiento y colisiones.
 
-El dibujo libre conserva sus puntos en el guardado. `Aspecto.dibujar_trazos()` los rasteriza al cambiar el trazo y reutiliza la textura al mover o girar el melón. Los textos y controles nativos de Godot conservan sus fuentes y su comportamiento.
+El dibujo libre conserva sus puntos en el guardado. `Aspecto.dibujar_trazos()` los rasteriza al cambiar el trazo y reutiliza la textura al mover o girar el melón. Los textos y controles nativos de Godot conservan sus fuentes y su comportamiento, con sus cajas dibujadas desde `estilos.png`.
 
 ## Verificar
 

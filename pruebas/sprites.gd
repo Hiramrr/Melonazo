@@ -59,7 +59,7 @@ func _revisar_codigo(carpeta: String) -> void:
 		if archivo.get_extension() not in ["gd", "tscn", "tres"]:
 			continue
 		var texto := FileAccess.get_file_as_string(carpeta.path_join(archivo))
-		for llamada in ["draw_circle(", "draw_arc(", "draw_line(", "draw_rect(", "draw_polygon(", "draw_colored_polygon(", "draw_polyline(", "draw_multiline(", 'type="Line2D"', 'type="Polygon2D"', ".svg"]:
+		for llamada in ["draw_circle(", "draw_arc(", "draw_line(", "draw_rect(", "draw_polygon(", "draw_colored_polygon(", "draw_polyline(", "draw_multiline(", 'type="Line2D"', 'type="Polygon2D"', "StyleBoxFlat", ".svg"]:
 			assert(not texto.contains(llamada), "Dibujo vectorial en " + carpeta.path_join(archivo) + ": " + llamada)
 	for subcarpeta in dir.get_directories():
 		_revisar_codigo(carpeta.path_join(subcarpeta))

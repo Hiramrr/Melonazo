@@ -50,6 +50,10 @@ func _ready() -> void:
 		b.tooltip_text = "#" + (c as Color).to_html(false)
 		b.focus_mode = Control.FOCUS_NONE
 		b.pressed.connect(_elegir_color.bind(c))
+		var borde := Panel.new()
+		borde.set_anchors_preset(Control.PRESET_FULL_RECT)
+		borde.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		b.add_child(borde)
 		fila_colores.add_child(b)
 		_muestras.append([b, c])
 	if not Config.colores_dibujo.is_empty():
@@ -66,6 +70,7 @@ func refrescar() -> void:
 		var elegido: bool = m[1] == color and not es_goma()
 		for estado in ["normal", "hover", "pressed", "focus"]:
 			b.add_theme_stylebox_override(estado, _estilo_muestra(m[1], elegido))
+		(b.get_child(0) as Panel).theme_type_variation = &"MuestraColorElegidaBorde" if elegido else &"MuestraColorBorde"
 	var n := Juego.dibujo.size()
 	btn_deshacer.disabled = n == 0
 	btn_borrar.disabled = n == 0
@@ -79,11 +84,12 @@ func refrescar() -> void:
 
 # --- Controles de la pestaña -------------------------------------------------
 
-## Solo el relleno depende del color elegido por el jugador.
-func _estilo_muestra(c: Color, elegido: bool) -> StyleBoxFlat:
+## Solo el relleno depende del color elegido por el jugador: el sprite blanco se
+## tiñe y el borde va encima, en un Panel con su propio sprite.
+func _estilo_muestra(c: Color, elegido: bool) -> StyleBoxTexture:
 	var tipo := &"MuestraColorElegida" if elegido else &"MuestraColor"
-	var s: StyleBoxFlat = get_theme_stylebox("normal", tipo).duplicate()
-	s.bg_color = c
+	var s: StyleBoxTexture = get_theme_stylebox("normal", tipo).duplicate()
+	s.modulate_color = c
 	return s
 
 

@@ -319,7 +319,8 @@ func _verificar() -> void:
 				comprobar(altura >= config.altura_poderes.x - 0.01, "Un poder exige elevarse sobre el suelo")
 				if ultimo_x >= 0:
 					var distancia: float = nodo.position.x - ultimo_x
-					comprobar(distancia >= config.separacion_poderes.x and distancia <= config.separacion_poderes.y, "Separación de poderes se respeta entre tramos")
+					var holgura: float = lerpf(1.0, config.escasez_poderes, recorrido.terreno.dificultad(ultimo_x))
+					comprobar(distancia >= config.separacion_poderes.x * holgura - 0.01 and distancia <= config.separacion_poderes.y * holgura + 0.01, "Separación de poderes se respeta entre tramos")
 				ultimo_x = nodo.position.x
 	# Reentrar en un área no debe generar impulso gratis otra vez.
 	recorrido.fase = 2

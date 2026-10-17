@@ -524,15 +524,12 @@ func _aterrizar(state: PhysicsDirectBodyState2D, nrm: Vector2, v: Vector2) -> Ve
 		return rebote
 
 	var mat_rebote: float = datos()["rebote"]
-	var nueva := tang * Config.lado_redondo_conserva + nrm * impacto * mat_rebote
-	if nrm.y < -0.5:
-		var adelante := Vector2(-nrm.y, nrm.x)
-		if adelante.x < 0.0:
-			adelante = -adelante
-		nueva += adelante * impacto * Config.caida_a_rodado
-	state.angular_velocity = tang.length() / radio * signf(tang.x)
-
 	var umbral: float = datos()["umbral_caida"]
+	# Los raspones frenan un poco; una caída fuerte sin rebote, mucho.
+	var dureza := smoothstep(umbral * Config.raspon_desde, umbral, impacto)
+	var conserva := lerpf(Config.lado_redondo_conserva, Config.caida_conserva, dureza)
+	var nueva := tang * conserva + nrm * impacto * mat_rebote
+	state.angular_velocity = tang.length() * conserva / radio * signf(tang.x)
 	if impacto > umbral:
 		if escudo:
 			escudo = false

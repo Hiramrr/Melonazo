@@ -44,14 +44,15 @@ func _verificar() -> void:
 	var pasiva: Dictionary = await carrera(1, 0, false, true)
 	var activa: Dictionary = await carrera(1, 0, true, true)
 	comprobar(pasiva["termino"] and activa["termino"], "Ambas carreras con equipo inicial deben terminar")
-	comprobar(activa["metros"] > pasiva["metros"] * 1.5, "Los rebotes, accesorios y empujones deben mejorar la distancia")
-	# Un lanzamiento al 70%, sin bonus ni mejoras, debe permitir avanzar 400 m.
+	# Las caídas fuertes frenan y no hay rescates: con el equipo inicial jugar ayuda menos que antes.
+	comprobar(activa["metros"] > pasiva["metros"] * 1.15, "Los rebotes, accesorios y empujones deben mejorar la distancia")
+	# Un lanzamiento al 70%, sin bonus ni mejoras, debe permitir avanzar 300 m.
 	var primeras: Array = []
 	for semilla in [1509, 42, 7301]:
 		config.semilla_terreno = semilla
 		var r: Dictionary = await carrera(1, 0, true, true, 0.7)
 		primeras.append(roundf(r["metros"]))
-		comprobar(r["termino"] and r["metros"] >= 400.0, "Un lanzamiento sin bonus debe rendir con equipo inicial: semilla %d, %.1f m" % [semilla, r["metros"]])
+		comprobar(r["termino"] and r["metros"] >= 300.0, "Un lanzamiento sin bonus debe rendir con equipo inicial: semilla %d, %.1f m" % [semilla, r["metros"]])
 	# Cambiar la fuerza cambia los aterrizajes; ambos niveles deben superar el inicio.
 	var medias: Array = []
 	for nivel in [0, 3, 6]:

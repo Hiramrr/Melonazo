@@ -63,14 +63,13 @@ func _verificar() -> void:
 	comprobar(tamanos[juego.tamano].get_theme_color("font_color") == prueba, "La selección conserva la herencia del botón")
 	tema.set_color("font_color", "Button", color)
 	var dibujo = taller.get_node("%Dibujo")
-	var muestra: StyleBoxFlat = tema.get_stylebox("normal", "MuestraColor")
-	var fondo := muestra.bg_color
-	var borde := muestra.border_color
-	muestra.border_color = prueba
-	var copia: StyleBoxFlat = dibujo._estilo_muestra(Color.RED, false)
-	comprobar(copia != muestra and copia.border_color == prueba and copia.bg_color == Color.RED, "La paleta copia el borde del Theme y aplica solo el color del jugador")
-	comprobar(muestra.bg_color == fondo, "La paleta no modifica el recurso compartido")
-	muestra.border_color = borde
+	var muestra: StyleBoxTexture = tema.get_stylebox("normal", "MuestraColor")
+	var fondo := muestra.modulate_color
+	var copia: StyleBoxTexture = dibujo._estilo_muestra(Color.RED, false)
+	comprobar(copia != muestra and copia.texture == muestra.texture and copia.modulate_color == Color.RED, "La paleta copia el sprite del Theme y aplica solo el color del jugador")
+	comprobar(muestra.modulate_color == fondo, "La paleta no modifica el recurso compartido")
+	var muestra_boton: Button = dibujo._muestras[0][0]
+	comprobar((muestra_boton.get_child(0) as Panel).theme_type_variation in [&"MuestraColorBorde", &"MuestraColorElegidaBorde"], "El borde de la muestra usa su sprite del Theme")
 	var pips = load("res://interfaz/pips.gd").new()
 	pips.total = 12
 	root.add_child(pips)
@@ -98,14 +97,14 @@ func _verificar() -> void:
 	await _abrir("res://pantallas/recorrido/recorrido.tscn")
 	var hud = current_scene.hud
 	comprobar(hud.impulsos.get_theme_font_size("font_size") == 20, "El texto de impulsos conserva sus 20 px")
-	var plantilla: StyleBoxFlat = tema.get_stylebox("fill", "BarraFuerza")
-	var relleno_original := plantilla.bg_color
+	var plantilla: StyleBoxTexture = tema.get_stylebox("fill", "BarraFuerza")
+	var relleno_original := plantilla.modulate_color
 	comprobar(hud._relleno_fuerza != plantilla, "La fuerza no modifica el StyleBox compartido")
 	tema.set_color("perfecta", "BarraFuerza", prueba)
 	current_scene.fuerza = 0.9
 	hud.actualizar(current_scene)
-	comprobar(hud._relleno_fuerza.bg_color == prueba, "La fuerza lee el color de zona perfecta del Theme")
-	comprobar(plantilla.bg_color == relleno_original, "La fuerza conserva el relleno original del Theme")
+	comprobar(hud._relleno_fuerza.modulate_color == prueba, "La fuerza lee el color de zona perfecta del Theme")
+	comprobar(plantilla.modulate_color == relleno_original, "La fuerza conserva el relleno original del Theme")
 	hud.slots[0].mostrar(null)
 	comprobar(hud.slots[0].modulate == tema.get_color("vacia", "CasillaAccesorio"), "La casilla vacía usa el color del Theme")
 

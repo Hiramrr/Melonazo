@@ -282,7 +282,9 @@ func probar_movimiento() -> void:
 	comprobar(en_aire > 60 and altura_max > 40.0, "El rival salta y pasa tiempo en el aire")
 	comprobar(minima > RAPIDEZ_RIVAL * 0.4, "El rival no se queda quieto en el suelo")
 	print("Rival: %.0f px en 6 s, %d pasos en el aire, %.0f px de altura máxima." % [otro.position.x - x, en_aire, altura_max])
+	# Van a su ritmo: ni esperan al jugador ni lo alcanzan si se quedan atrás.
 	var lejano = r.terreno.melones[1]
+	lejano.saltos = false
 	lejano.velocidad = Vector2(RAPIDEZ_RIVAL, 0)
 	for i in 120:
 		lejano.avanzar(r.terreno, 1.0 / 120.0, lejano.position - Vector2(3000, 0))
@@ -290,36 +292,27 @@ func probar_movimiento() -> void:
 	lejano.velocidad = Vector2(RAPIDEZ_RIVAL, 0)
 	for i in 120:
 		lejano.avanzar(r.terreno, 1.0 / 120.0, lejano.position + Vector2(3000, 0))
-	comprobar(adelantado < RAPIDEZ_RIVAL and lejano.velocidad.x > RAPIDEZ_RIVAL, "Los rivales esperan si van muy adelante y alcanzan si se quedan atrás")
-	# El jugador vuela a 1500 px sobre la calle: el rival lo sigue al aire, siempre por debajo.
+	comprobar(absf(adelantado - lejano.velocidad.x) < RAPIDEZ_RIVAL * 0.25, "Los rivales no ajustan su ritmo a la distancia del jugador")
+	# El jugador vuela alto: el rival se queda en la calle y no lo sigue.
 	var volador = r.terreno.melones[2]
-	volador.saltos = true
+	volador.saltos = false
 	volador.preparar_carrera(RAPIDEZ_RIVAL, 11)
 	var jugador := Vector2(volador.position.x + 200.0, volador.position.y - 1500.0)
-	var por_debajo := INF
-	var mas_alto := INF
-	for i in 8 * 120:
+	var mas_alto := 0.0
+	for i in 4 * 120:
 		jugador.x += 900.0 / 120.0
 		r.terreno.actualizar(jugador.x)
-		volador.avanzar(r.terreno, 1.0 / 120.0, jugador, Vector2(900, 0))
-		if i > 4 * 120:
-			por_debajo = minf(por_debajo, volador.position.y - jugador.y)
-			mas_alto = minf(mas_alto, volador.position.y)
-	comprobar(por_debajo > volador.radio * 2.0 and por_debajo < 800.0, "El rival vuela cerca y por debajo del jugador: %.0f px" % por_debajo)
-	comprobar(absf(volador.position.x - jugador.x) < config.alcance_vuelo_melones, "El rival sigue el avance del jugador en el aire")
-	print("Rival en vuelo: hasta %.0f px bajo el jugador, %.0f px sobre la calle." % [por_debajo, r.terreno.tramo_en(volador.position.x).altura(volador.position.x) - mas_alto])
-	for i in 6 * 120:
-		r.terreno.actualizar(jugador.x)
-		jugador = Vector2(jugador.x + 900.0 / 120.0, r.terreno.tramo_en(jugador.x).altura(jugador.x) - 20.0)
-		volador.avanzar(r.terreno, 1.0 / 120.0, jugador, Vector2(900, 0))
-	var sobre_calle: float = r.terreno.tramo_en(volador.position.x).altura(volador.position.x) - volador.radio - volador.position.y
+		volador.avanzar(r.terreno, 1.0 / 120.0, jugador)
+		var tramo = r.terreno.tramo_en(volador.position.x)
+		if tramo != null:
+			mas_alto = maxf(mas_alto, tramo.altura(volador.position.x) - volador.radio - volador.position.y)
+	comprobar(mas_alto < 320.0, "El rival no sigue al jugador por el aire: %.0f px" % mas_alto)
 	var picado = r.terreno.melones[3]
 	picado.position = Vector2(jugador.x + 100.0, r.terreno.tramo_en(jugador.x + 100.0).altura(jugador.x + 100.0) - picado.radio)
 	picado.en_suelo = true
 	for i in 60:
-		picado.avanzar(r.terreno, 1.0 / 120.0, picado.position + Vector2(0, -1000), Vector2(600, config.slam_caida))
+		picado.avanzar(r.terreno, 1.0 / 120.0, picado.position + Vector2(0, -1000))
 	comprobar(picado.en_suelo or picado.velocidad.y > -100.0, "El rival no sube al encuentro de un picado")
-	comprobar(sobre_calle < 320.0, "El rival baja cuando el jugador vuelve a la calle: %.0f px" % sobre_calle)
 
 
 ## Caída con un desvío que solo la corrección del picado puede cerrar.

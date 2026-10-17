@@ -62,3 +62,4 @@ unique_name_in_owner = true
 [connection signal="obstaculo_tocado" from="Mundo/Terreno" to="." method="_al_tocar_obstaculo"]
 [connection signal="poder_recogido" from="Mundo/Terreno" to="." method="_al_recoger_poder"]
 [connection signal="pajaro_tocado" from="Mundo/Terreno" to="." method="_al_tocar_pajaro"]
+[connection signal="rival_aviso" from="Mundo/Terreno" to="." method="_al_avisar_rival"]

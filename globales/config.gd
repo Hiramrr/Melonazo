@@ -78,54 +78,65 @@ var rebotes_base := 2
 # --- Slam --------------------------------------------------------------------
 var slam_caida := 1250.0             # velocidad mínima del picado
 var slam_impulso := Vector2(420, -850)
-var slam_conserva := 0.6             # velocidad que queda al fallar contra el suelo
+var slam_conserva := 0.4             # velocidad que queda al fallar contra el suelo
 var slam_recarga := 0.45
 var slam_margen := Vector2(16, 40)   # tolerancia lateral mínima y máxima, en píxeles
 var slam_tolerancia := 0.035         # margen según la velocidad relativa, en segundos
 var slam_alcance := 460.0            # altura máxima a la que el picado busca un melón debajo
 var slam_guiado := 1700.0            # px/s² de corrección horizontal hacia ese melón
 var slam_confianza_aviso := 0.5      # parte del margen y la corrección que cuenta el aviso de S
-var rivales_salida := 6
+var rivales_salida := 4
 var separacion_salida := 75.0
 var carriles_salida := Vector2(28, 76)
 var ritmo_rivales := Vector2(0.94, 1.16)
 var frenado_melones := 180.0          # px/s² al pasar de su ritmo en el suelo
 var aceleracion_melones := 320.0      # px/s² para recuperar su ritmo
 var velocidad_melones := Vector2(420, 620)   # ritmo de crucero de cada melón
-var ritmo_melones := Vector2(0.75, 1.35)     # ajuste del ritmo según su distancia al jugador
-var alcance_ritmo_melones := 4000.0   # px de distancia para llegar a ese ajuste
-var salto_melones := Vector2(340, 640)       # velocidad vertical de sus saltos
-var pausa_saltos_melones := Vector2(1.1, 2.8)
-var prob_rebote_melones := 0.35       # caídas que rebotan con impulso
+var salto_melones := Vector2(340, 640)       # velocidad vertical al despegar desde la calle
+var pausa_saltos_melones := Vector2(1.1, 2.8)  # s entre saltos aéreos (× pausa_saltos del tipo)
 var salida_min_melones := 90.0        # por debajo de este rebote se quedan rodando
+# Piloto de los rivales (MelonRodante): juegan como el jugador, a su ritmo y sin seguirlo.
+var cargas_rival := 2                 # saltos aéreos al empezar; un rebote o slam acertado recarga uno
+var cargas_max_rival := 3
+var salto_rival := Vector2(560, 820)  # px/s hacia arriba de un salto aéreo
+var altura_salto_rival := Vector2(90, 260)   # px sobre la calle por debajo de los que saltan al caer
+var techo_salto_rival := 620.0        # px sobre la calle: más arriba no saltan (ni con café)
+var control_rival := 260.0            # px/s² con que vuelven a su ritmo en el aire
+var despegue_rival := Vector2(0.55, 1.0)     # s rodando antes de intentar despegar otra vez
+var rodando_max_rival := 3.2          # s seguidos en la calle sin despegar: se rompe
+var impacto_rebote_rival := 150.0     # px/s de caída mínimos para intentar un rebote impulsado
+var prob_slam_rival := 0.6            # picados por segundo con otro rival a tiro (× agresividad)
+var slam_recarga_rival := 2.5         # s entre un picado y el siguiente
+var acierto_slam_rival := Vector2(0.5, 0.9)  # probabilidad de calcular bien un picado, según su puntería (0..1)
+var dano_slam_rival := 1.0            # resistencia que pierde el aplastado por otro rival
+var umbral_caida_rival := 0.55       # multiplica umbral_caida del tamaño: sus saltos son más bajos
+var dano_slam_fallado_rival := 0.25   # el picado que llega al suelo raspa al atacante
+var slam_conserva_rival := 0.6        # velocidad horizontal que queda tras un picado fallado (mín. medio ritmo)
+var explosion_rival := 0.55           # s de la explosión al romperse; después se libera
 var aplastado_melones := 0.4          # s achatado y lento tras recibir un slam
-# Vuelo: si el jugador está a más de vuelo_melones_desde px sobre el suelo y a menos de
-# alcance_vuelo_melones px de distancia, los rivales lo siguen al aire, por debajo de él.
-var vuelo_melones_desde := 650.0      # más que un salto normal
-var alcance_vuelo_melones := 1800.0
-# Más hondo que lo que devuelve un slam (slam_impulso.y ≈ 370 px): cada golpe en
-# lo alto cuesta algo de altura y no sostiene el vuelo por sí solo.
-var bajo_jugador_melones := Vector2(320, 540)  # px por debajo del jugador
-var impulso_vuelo_melones := 1500.0   # px/s de cada impulso en el aire, como máximo
-var margen_vuelo_melones := 40.0      # px extra que sube cada impulso
-var aleteo_melones := Vector2(0.45, 1.0)     # s entre impulsos
-var control_vuelo_melones := 700.0    # px/s² para igualar el avance del jugador
 var primer_melon_camino_x := 1000.0
-var separacion_melones := Vector2(1000, 1500)
-var prob_pareja_melones := 0.3        # se duplica gradualmente al final, para encadenar slams
+var separacion_melones := Vector2(1300, 1600)        # px entre rivales del camino al inicio
+var separacion_final_melones := Vector2(800, 1000)   # y cerca de la meta, según la dificultad
+var prob_pareja_melones := 0.12       # se duplica gradualmente al final
 # Carácter de cada rival. peso: qué tan seguido sale (los tontos abundan al inicio y los
 # listos al final, ver GeneradorTerreno._elegir_tipo_melon). cara: índice en caras, solo
 # para los melones del camino. ritmo: multiplica su rapidez. pausa_saltos: multiplica la
-# espera entre saltos. tropiezos: frenones por segundo. sigue_aire: sube tras el jugador.
+# espera entre saltos. tropiezos: frenones por segundo.
 # esquiva: probabilidad de apartarse la primera vez que un picado lo apunta.
 # margen_slam: multiplica la tolerancia del slam (más = más fácil de acertar).
+# acierto_rebote: probabilidad de impulsar bien un rebote (y de despegar al primer intento).
+# resistencia: multiplica la del tamaño. punteria: probabilidad de ir por un poder o
+# papalote y precisión al buscarlo. agresividad: multiplica prob_slam_rival.
 var tipos_melones: Dictionary = {
 	"tonto": {"peso": 3.0, "cara": 2, "ritmo": 0.85, "pausa_saltos": 0.6, "tropiezos": 0.35,
-		"sigue_aire": false, "esquiva": 0.0, "margen_slam": 1.5},
+		"esquiva": 0.0, "margen_slam": 1.5, "acierto_rebote": 0.68, "resistencia": 0.67,
+		"punteria": 0.3, "agresividad": 0.6},
 	"normal": {"peso": 4.0, "cara": 1, "ritmo": 1.0, "pausa_saltos": 1.0, "tropiezos": 0.0,
-		"sigue_aire": true, "esquiva": 0.0, "margen_slam": 1.0},
+		"esquiva": 0.0, "margen_slam": 1.0, "acierto_rebote": 0.82, "resistencia": 0.85,
+		"punteria": 0.6, "agresividad": 1.0},
 	"listo": {"peso": 2.0, "cara": 3, "ritmo": 1.12, "pausa_saltos": 1.6, "tropiezos": 0.0,
-		"sigue_aire": true, "esquiva": 0.5, "margen_slam": 0.85},
+		"esquiva": 0.5, "margen_slam": 0.85, "acierto_rebote": 0.93, "resistencia": 1.0,
+		"punteria": 0.85, "agresividad": 1.3},
 }
 var tropiezo_melones := 0.7           # s frenado en cada tropiezo de un tonto
 var esquiva_melones := Vector2(300, 380)  # px/s: empujón hacia un lado y saltito al esquivar
@@ -134,7 +145,7 @@ var separacion_pareja_melones := Vector2(200, 300)
 # --- Aterrizaje --------------------------------------------------------------
 var aire_min_aterrizaje := 0.15      # s en el aire para contar como caída
 var lado_redondo_conserva := 0.98    # fracción de velocidad conservada al caer redondo
-var caida_a_rodado := 0.2             # parte del impacto que se vuelve rodado hacia adelante
+var caida_conserva := 0.5            # velocidad horizontal que conserva una caída fuerte sin rebote
 var invulnerable_tras_golpe := 0.6
 # Raspón: una caída entre raspon_desde * umbral_caida y umbral_caida quita una
 # fracción de golpe que crece con el impacto, hasta raspon_max.
@@ -147,6 +158,7 @@ var empuje_base := 240.0
 var empuje_por_carisma := 0.08       # +8% de empuje por punto de carisma
 var empuje_dir := Vector2(1.0, -0.55)
 var empuje_cansancio := 0.75         # cada empujón de la misma carrera vale 75% del anterior
+var ayuda_hasta_m := 150.0          # metros con las teclas y el aviso de salto en pantalla
 var margen_ayuda := 0.18            # s que se conserva E si se pulsa justo antes de entrar en rango
 
 # --- Ruta aérea --------------------------------------------------------------
@@ -216,14 +228,14 @@ var dificultad_metros := Vector2(100.0, 5200.0)
 var obstaculos_holgura := Vector2(1.8, 1.2)  # separación multiplicada al inicio y al final
 var prob_empedrado := 0.5
 var separacion_obstaculos := Vector2(280, 560)
-var separacion_publico := Vector2(380, 750)
-var separacion_aplausos := Vector2(700, 1000)
+var separacion_publico := Vector2(650, 1050)
+var separacion_aplausos := Vector2(1100, 1500)
 var altura_aplausos := Vector2(55, 125)
 var prob_casas := 0.6
 
 # Letreros de distancia cada tantos metros. Donde hay una postal no se pone
 # letrero, porque la postal ya muestra el nombre del lugar.
-var marcador_cada_m := 50
+var marcador_cada_m := 100
 var lugares: Dictionary = {}          # metros -> nombre; se llena con las postales al iniciar
 
 # Ruta de fantasía, medida desde el borde del trampolín.
@@ -338,23 +350,16 @@ var max_puntos_dibujo := 6000
 var orden_poderes: Array = ["chile", "cafe", "pizza"]
 var poderes: Dictionary = {
 	"chile": {"nombre": "Chile jalapeño", "descripcion": "Explota y te lanza hacia adelante.", "color": Color("4f9a3a"), "duracion": 0.0, "impulso": Vector2(900, -320)},
-	"cafe": {"nombre": "Café de Coatepec", "descripcion": "Energía ilimitada: saltas todo lo que quieras sin gastar cargas durante 4 s.", "color": Color("a56d43"), "duracion": 4.0, "impulso": Vector2.ZERO},
+	"cafe": {"nombre": "Café de Coatepec", "descripcion": "Saltas sin gastar cargas durante 2 s.", "color": Color("a56d43"), "duracion": 2.0, "impulso": Vector2.ZERO},
 	"pizza": {"nombre": "Pizza con yogur", "descripcion": "Te subes a una pizza que avanza unos metros sin perder altura. Un frenón te tira.", "color": Color("f1ce67"), "duracion": 2.5, "impulso": Vector2.ZERO},
 }
 var chile_vel_min := 1100.0          # px/s hacia adelante tras la explosión, como mínimo
-var cafe_bloqueo := 0.18             # s entre saltos mientras dura el café
+var cafe_bloqueo := 0.28             # s entre saltos mientras dura el café
 var pizza_vel := 1000.0              # px/s hacia adelante sobre la pizza, como mínimo
 var primer_poder_x := 700.0
-var separacion_poderes := Vector2(950.0, 1400.0)
+var separacion_poderes := Vector2(1500.0, 2100.0)
 var escasez_poderes := 1.6            # con dificultad 1 los poderes quedan 60 % más separados
-var altura_poderes := Vector2(70.0, 150.0)   # los más bajos se tocan rodando
-# Rescates: si el melón va mal un rato (lento en el suelo o sin cargas de salto),
-# aparece por delante el poder que le hace falta, a ras de calle.
-var rescate_velocidad := 450.0       # px/s; por debajo, rodando, cuenta como lento
-var rescate_tras := 0.5              # s seguidos en apuros antes del rescate
-var rescate_espera := 12.0           # s mínimos entre rescates; el café dura 4 s, así no hay saltos sin fin
-var rescate_altura := 45.0           # px sobre el suelo; se alcanza sin saltar
-var rescate_distancia := Vector2(160.0, 1100.0)  # px por delante, según la velocidad
+var altura_poderes := Vector2(140.0, 220.0)   # hay que saltar para recogerlos
 var bonus_postal := 60
 
 # --- Postales (pasaporte) -----------------------------------------------------
@@ -409,3 +414,19 @@ func _cargar_accesorios() -> void:
 	orden_accesorios.sort_custom(func(a: String, b: String) -> bool:
 		return [accesorios[a].orden, a] < [accesorios[b].orden, b])
 	accesorios_iniciales = orden_accesorios.filter(func(id: String) -> bool: return accesorios[id].inicial)
+
+
+# --- Rivales en juego --------------------------------------------------------
+# Cómo usan los rivales la ruta (GeneradorTerreno.actualizar_melones): poderes,
+# papalotes, pájaros, obstáculos y slams entre ellos; y cómo se reponen al romperse.
+var rival_vista := 900.0               # px por delante en que un rival busca poderes y papalotes
+var papalote_recarga_rival := 4.0      # s hasta que un papalote usado por un rival vuelve a servir
+var rival_dano_golpe := 1.0            # resistencia que quita un poste o una banqueta (como al jugador)
+var rival_dano_puesto := 0.5           # al llevarse un puesto
+# Relevo: cuando un rival se rompe por delante del jugador aparece otro más adelante,
+# fuera de pantalla, para que siga habiendo melones para el slam hasta la meta.
+var relevo_rival_adelante := Vector2(1900, 2600)  # px por delante del jugador
+var relevo_rival_hueco := 450.0        # no aparece si otro rival vivo queda más cerca
+var max_rivales_vivos := 16            # los relevos no pasan de esta cantidad
+var rival_aviso_distancia := 1100.0    # solo se avisa lo que pasa a esta distancia del jugador
+var rival_aviso_pausa := 1.5           # s mínimos entre dos avisos iguales del mismo rival

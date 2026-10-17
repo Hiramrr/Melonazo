@@ -10,6 +10,8 @@ extends Area2D
 ## Quién lo usa: GeneradorTerreno._poner_pajaros() lo instancia en el contenedor Aire
 ## del tramo y reenvía `tocado` como su señal pajaro_tocado, que atiende
 ## Recorrido._al_tocar_pajaro(). Ese método llama a tocar(), que aplica el freno.
+## Los rivales no tienen física: GeneradorTerreno.actualizar_melones() mide la distancia
+## (radio_toque()), los frena y llama huir().
 ## Ajustes: Config, sección Pájaros.
 
 ## Se emite una sola vez, cuando el melón (controlable) lo toca.
@@ -50,14 +52,26 @@ func _al_entrar(cuerpo: Node2D) -> void:
 func tocar(melon: Melon) -> String:
 	if not activo:
 		return ""
-	activo = false
 	melon.frenar(Config.pajaro_freno)
+	huir()
+	return "¡Pájaro! Te frena"
+
+
+## Deja de estorbar y sale volando hacia arriba hasta desaparecer.
+func huir() -> void:
+	if not activo:
+		return
+	activo = false
 	var huida := create_tween().set_parallel()
 	huida.tween_property(self, "position", position + Vector2(-140, -260), 0.8).set_ease(Tween.EASE_OUT)
 	huida.tween_property(self, "rotation", -0.6, 0.8)
 	huida.tween_property(self, "modulate:a", 0.0, 0.8)
 	huida.chain().tween_callback(queue_free)
-	return "¡Pájaro! Te frena"
+
+
+## Radio de su zona de choque (CollisionShape2D "Zona" de la escena).
+func radio_toque() -> float:
+	return ($Zona.shape as CircleShape2D).radius
 
 
 func _draw() -> void:

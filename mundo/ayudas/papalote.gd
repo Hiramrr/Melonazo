@@ -11,14 +11,17 @@ extends Node2D
 ## Quién lo usa: GeneradorTerreno._poner_papalotes() lo instancia en el contenedor Aire
 ## del tramo (y lo anota en Tramo.papalotes). Recorrido._actualizar_interacciones()
 ## asigna `en_rango` cada cuadro y llama impulsar() con el más cercano al presionar E.
-## Ajustes: Config.papalote_rango, papalote_avance y papalote_elevacion.
+## GeneradorTerreno.actualizar_melones() llama impulsar_rival() cuando un rival pasa
+## cerca. Para que el jugador no se quede sin ruta aérea, el papalote que usa un rival
+## vuelve a servir tras Config.papalote_recarga_rival segundos; el del jugador no vuelve.
+## Ajustes: Config.papalote_rango, papalote_avance, papalote_elevacion y papalote_recarga_rival.
 
 const TINTA := Color("294b43")
 const CREMA := Color("fff4d6")
 
 @export var corriente := false
 
-## Ya se usó en esta carrera; se dibuja en gris.
+## Ya se usó en esta carrera (o un rival lo usó y se está recargando); se dibuja en gris.
 var usado := false
 ## El melón está lo bastante cerca para usarlo (muestra el aro y "E · Impulso").
 var en_rango := false:
@@ -43,6 +46,24 @@ func impulsar(melon: Melon) -> bool:
 	melon.proteger()
 	queue_redraw()
 	return true
+
+
+## Lo usa un rival que pasa a alcance. Devuelve true si hubo impulso. Queda gris
+## un rato y después se recarga para el jugador (la pausa también detiene la recarga).
+func impulsar_rival(rival: MelonRodante) -> bool:
+	if usado or global_position.distance_to(rival.global_position) > Config.papalote_rango:
+		return false
+	usado = true
+	en_rango = false
+	rival.impulsar_papalote(Vector2(Config.papalote_avance, -Config.papalote_elevacion))
+	queue_redraw()
+	create_tween().tween_callback(_recargar).set_delay(Config.papalote_recarga_rival)
+	return true
+
+
+func _recargar() -> void:
+	usado = false
+	queue_redraw()
 
 
 # --- Dibujo ------------------------------------------------------------------

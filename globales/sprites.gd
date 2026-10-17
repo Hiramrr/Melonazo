@@ -14,6 +14,7 @@ const HOJAS := {
 	"paisaje": {"datos": preload("res://recursos/sprites/paisaje.json"), "textura": preload("res://recursos/sprites/paisaje.png")},
 	"interfaz": {"datos": preload("res://recursos/sprites/interfaz.json"), "textura": preload("res://recursos/sprites/interfaz.png")},
 	"efectos": {"datos": preload("res://recursos/sprites/efectos.json"), "textura": preload("res://recursos/sprites/efectos.png")},
+	"estilos": {"datos": preload("res://recursos/sprites/estilos.json"), "textura": preload("res://recursos/sprites/estilos.png")},
 }
 static var _texturas: Dictionary = {}
 static var _mallas: Dictionary = {}

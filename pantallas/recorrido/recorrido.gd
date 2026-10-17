@@ -18,7 +18,8 @@ extends Node2D
 ## REVIVIR pausa el recorrido hasta aceptar o rechazar la Salsa Valentina.
 ## Este script aplica las reglas de la carrera: lanzamiento, cuándo termina,
 ## efectos de obstáculos, pájaros, empujones del público, papalotes, poderes,
-## la Salsa Valentina y postales.
+## la Salsa Valentina y postales. Lo que tocan los rivales lo resuelve GeneradorTerreno;
+## aquí solo se muestran sus avisos (_al_avisar_rival).
 ## Al terminar registra el resultado en Juego y pasa a Resultados.
 
 enum Fase { FUERZA, BAJADA, RECORRIDO, FIN, REVIVIR }
@@ -287,6 +288,17 @@ func _al_tocar_pajaro(pajaro: Pajaro) -> void:
 	var texto := pajaro.tocar(melon)
 	if not texto.is_empty():
 		efectos.avisar(texto, melon.global_position + Vector2(0, -50))
+
+
+## Conectada a Terreno.rival_aviso: lo que hace un rival (romperse, slam, poderes).
+## El generador ya filtra por distancia y repetición; aquí solo se muestran los que
+## quedan dentro de la vista de la cámara.
+func _al_avisar_rival(texto: String, posicion: Vector2) -> void:
+	if fase != Fase.RECORRIDO:
+		return
+	var vista := get_viewport_rect().size / camara.zoom
+	if Rect2(camara.get_screen_center_position() - vista / 2.0, vista).has_point(posicion):
+		efectos.avisar(texto, posicion)
 
 
 ## Conectada a Terreno.poder_recogido.

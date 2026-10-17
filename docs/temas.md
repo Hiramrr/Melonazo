@@ -6,7 +6,7 @@ El recurso `interfaz/tema_xalapa.tres` contiene los estilos del menú, taller, a
 
 1. Abre `interfaz/tema_xalapa.tres` desde el panel FileSystem.
 2. Selecciona el tipo o la variación en el editor de temas del panel inferior.
-3. Edita Colors, Constants, Font Sizes, Fonts o Styles según lo que quieras cambiar. Al abrir un StyleBox puedes ajustar su relleno, borde, radios y márgenes interiores.
+3. Edita Colors, Constants, Font Sizes, Fonts o Styles según lo que quieras cambiar. Al abrir un StyleBox puedes ajustar sus márgenes interiores y de textura. Su forma, relleno, borde y sombra están en `recursos/sprites/estilos.png`.
 4. Guarda el recurso y ejecuta la pantalla. El logo y los controles nativos también actualizan su vista en el editor. Reinicia la partida para ver cambios en los rellenos de las barras, que cada HUD copia al crearse.
 
 Para cambiar todos los botones corrientes, edita `Button`. Para cambiar la acción principal, edita `Principal`. `Jugar`, `Rodar` y `Continuar` heredan de `Principal` y tienen sus propios tamaños de letra.
@@ -55,7 +55,9 @@ Estas propiedades también viven en el Theme, aunque las dibuje un script.
 | `Postal` | `cinta` |
 | `AvisoFlotante` | `color_0`, `color_1`, `color_2`, `color_3`, `font_outline_color` |
 
-Los rellenos de `BarraFuerza` y `BarraResistencia` y los estilos de `MuestraColor` y `MuestraColorElegida` usan StyleBoxFlat. Conserva ese tipo. El código duplica la plantilla antes de aplicar la potencia, el daño o el color elegido para pintar. No cambia el recurso compartido. En las muestras, `bg_color` representa el color del jugador y el Theme controla el borde y la forma.
+Todos los StyleBox del Theme son StyleBoxTexture de nueve partes. Cada uno recorta una región de `recursos/sprites/estilos.png`, cuyo cuadro tiene el mismo nombre que el StyleBox en `estilos.json`. Las esquinas quedan fijas y los lados y el centro se estiran. Los márgenes de textura marcan dónde termina cada esquina, y los de expansión dejan espacio a la sombra y al suavizado del borde.
+
+Los rellenos de `BarraFuerza` y `BarraResistencia` son sprites blancos. El código duplica la plantilla y cambia `modulate_color` según la potencia o el daño, sin tocar el recurso compartido. Las muestras de color tienen dos capas: el botón usa `MuestraColor` o `MuestraColorElegida`, un relleno blanco teñido con el color del jugador, y encima va un Panel con `MuestraColorBorde` o `MuestraColorElegidaBorde`, que contiene solo el borde.
 
 La postal usa StyleBoxTexture con regiones de `recursos/sprites/interfaz.png`. Puedes cambiar sus texturas desde Styles en `Postal`.
 

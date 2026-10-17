@@ -4,7 +4,7 @@ extends Node2D
 ##
 ## Dibuja en coordenadas del mundo, por encima del terreno:
 ##   - la flecha de puntería antes del lanzamiento (Recorrido la configura)
-##   - los avisos flotantes ("¡Rampa!", "+5"...) que aparecen con un salto,
+##   - los avisos flotantes ("¡Rampa!", "+5", "¡Se rompió!" de un rival...) que aparecen con un salto,
 ##     suben y se desvanecen; usan la letra gruesa del tema con contorno
 ## Las consultas directas a Theme no heredan. AvisoFlotante y ObjetivoAereo
 ## deben conservar todas sus propiedades explícitas en el recurso.

@@ -10,8 +10,12 @@ extends Node2D
 ##   actualizar(x)      cada paso de física: crea tramos por delante del melón y
 ##                      borra los que quedaron muy atrás
 ##   tramo_en(x)        el tramo que contiene esa x (para medir la altura)
+##   actualizar_melones(melon, delta)  mueve a los rivales y resuelve lo que tocan
 ##
 ## Las señales avisan cuando el melón toca algo; Recorrido decide qué pasa.
+## Los rivales (MelonRodante) no tienen física, así que lo que tocan se mide aquí por
+## distancia: poderes, papalotes, pájaros, obstáculos y slams entre ellos (sección
+## Rivales). MelonRodante también consulta objetivos_rival() para elegir a dónde ir.
 ## Todos los valores (largos, separaciones, pesos) están en Config, sección Terreno.
 ##
 ## Importante: la ruta depende del orden exacto de las llamadas a rng. Si cambias
@@ -20,6 +24,8 @@ extends Node2D
 signal obstaculo_tocado(cuerpo: Node2D, obstaculo: Obstaculo)  ## incluye aplausos sueltos
 signal poder_recogido(tipo: String)
 signal pajaro_tocado(pajaro: Pajaro)
+## Algo que hizo un rival cerca del jugador ("¡Se rompió!", "¡Slam!"...); Recorrido lo muestra.
+signal rival_aviso(texto: String, posicion: Vector2)
 
 const TramoEscena := preload("res://mundo/terreno/tramo.tscn")
 const PersonaEscena := preload("res://mundo/ayudas/persona.tscn")
@@ -37,6 +43,11 @@ const OBSTACULOS := {
 	"toldo": preload("res://mundo/obstaculos/toldo.tscn"),
 	"aplauso": preload("res://mundo/obstaculos/aplauso.tscn"),
 }
+# Avisos de los rivales. Solo "papalote" llega por MelonRodante.maniobra; los demás tipos
+# de maniobra no se anuncian (rebotes y saltos serían spam; "slam" sale al empezar el
+# picado y el aviso se da al acertar; "poder" no dice cuál, se avisa en _tocar_poder).
+const AVISOS_RIVAL := {"slam": "¡Slam!", "chile": "¡Chile!", "cafe": "¡Café!", "pizza": "¡Pizza!",
+	"papalote": "¡Al cielo!"}
 const COLORES_CASAS: Array = [
 	Color("e3b96f"), Color("ce8879"), Color("9fbab4"), Color("e9dfbf"),
 	Color("b5bf96"), Color("c7a2aa"), Color("d59c69"),
@@ -53,8 +64,11 @@ var rng_premios := RandomNumberGenerator.new()  # puntos y poderes en altura
 var rng_melones := RandomNumberGenerator.new()
 var rng_pajaros := RandomNumberGenerator.new()   # pájaros; no cambian la ruta del suelo
 var rng_aspecto := RandomNumberGenerator.new()   # diseños de los rivales sin ficha guardada
+var rng_relevos := RandomNumberGenerator.new()   # relevos de rivales rotos; no cambian la ruta
 var melones: Array[MelonRodante] = []
 var _siguiente_melon_x := 0.0
+var _pos_jugador := Vector2(NAN, NAN)  # para filtrar avisos y colocar relevos
+var _avisos_rival := {}                # "id:texto" -> segundos desde el arranque del último aviso
 
 var _fin := Vector2.ZERO               # último punto del último tramo
 var _n_tramos := 0
@@ -64,8 +78,6 @@ var _siguiente_pajaro_x := 0.0
 var _papalotes_generados := 0
 var _siguiente_papalote_x := 0.0
 var _altura_papalote := 0.0
-var _t_apuro := 0.0                    # s seguidos que el jugador lleva en apuros
-var _t_rescate := 0.0                  # s que faltan para permitir otro rescate
 var _siguientes_premios: Array[float] = []
 var _grupos_premios: Array[int] = []
 var _patrones_premios: Array[int] = []
@@ -87,6 +99,7 @@ func iniciar() -> void:
 	rng_melones.seed = rng.seed + 2633
 	rng_pajaros.seed = rng.seed + 3511
 	rng_aspecto.seed = rng.seed + 4153
+	rng_relevos.seed = rng.seed + 5297
 	for i in Config.franjas_premios_aire.size():
 		_siguientes_premios.append(900.0 + i * 320.0 + rng_premios.randf_range(0.0, 400.0))
 		_grupos_premios.append(0)
@@ -113,18 +126,28 @@ func tramo_en(x: float) -> Tramo:
 	return null
 
 
-## Viven fuera de los tramos porque avanzan de uno a otro.
+## Viven fuera de los tramos porque avanzan de uno a otro. Se liberan al quedar muy
+## atrás o al terminar la animación de romperse.
 func actualizar_melones(melon: Melon, delta: float) -> void:
 	var x := melon.global_position.x
+	_pos_jugador = melon.global_position
 	for i in range(melones.size() - 1, -1, -1):
 		var otro := melones[i]
 		if otro.global_position.x >= x - Config.borrar_atras:
-			otro.avanzar(self, delta, melon.global_position, melon.linear_velocity)
+			var picando := otro.slam_activo
+			otro.avanzar(self, delta, melon.global_position)
 			otro.en_mira = false
-			otro.recibir_slam(melon)
-		if otro.global_position.x < x - Config.borrar_atras:
+			# Casi todos los picados los resuelve el rival en su paso; si terminó en el
+			# aire, sin romperse, fue porque acertó (acertar_slam_rival lo lanza arriba).
+			if picando and not otro.slam_activo and not otro.en_suelo and not otro.roto:
+				_avisar_rival(otro, AVISOS_RIVAL["slam"])
+			if not otro.roto:
+				otro.recibir_slam(melon)
+				_interactuar_rival(otro)
+		if otro.global_position.x < x - Config.borrar_atras or (otro.roto and otro.terminado()):
 			melones.remove_at(i)
 			otro.queue_free()
+	_slams_entre_rivales(x)
 	melon.origen_slam = melon.global_position
 	var marcado: MelonRodante = null
 	var marca := MelonRodante.Marca.NINGUNA
@@ -136,49 +159,6 @@ func actualizar_melones(melon: Melon, delta: float) -> void:
 		marca = MelonRodante.Marca.ACERTABLE
 	for otro in melones:
 		otro.marcar(marca if otro == marcado else MelonRodante.Marca.NINGUNA)
-	_revisar_rescate(melon, delta)
-
-
-# --- Rescates ----------------------------------------------------------------
-
-## Si el jugador lleva un rato en apuros, pone por delante, a ras de calle, el
-## poder que le hace falta. No usa rng: la ruta de cada semilla no cambia.
-func _revisar_rescate(melon: Melon, delta: float) -> void:
-	_t_rescate = maxf(0.0, _t_rescate - delta)
-	var tipo := _poder_de_rescate(melon)
-	if tipo == "":
-		_t_apuro = 0.0
-		return
-	_t_apuro += delta
-	if _t_apuro < Config.rescate_tras or _t_rescate > 0.0:
-		return
-	# Delante, pero antes de donde se detendría rodando.
-	var vx := maxf(melon.linear_velocity.x, 0.0)
-	var friccion: float = Config.tamanos[melon.tamano]["friccion_rodado"]
-	var adelante := clampf(vx * vx / (2.0 * friccion) * 0.6, Config.rescate_distancia.x, Config.rescate_distancia.y)
-	var x := melon.global_position.x + adelante
-	var tramo := tramo_en(x)
-	if tramo == null or x > Config.meta_m * Config.px_por_metro:
-		return
-	var poder := _crear_poder(tipo, Vector2(x, tramo.altura(x) - Config.rescate_altura))
-	poder.name = "Rescate" + poder.name
-	poder.scale = Vector2.ZERO
-	tramo.get_node("Coleccionables").add_child(poder)
-	poder.create_tween().tween_property(poder, "scale", Vector2.ONE, 0.25) \
-		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-	_t_apuro = 0.0
-	_t_rescate = Config.rescate_espera
-
-
-## El poder que más ayuda ahora, o "" si el jugador va bien.
-func _poder_de_rescate(melon: Melon) -> String:
-	if not melon.controlable or melon.roto:
-		return ""
-	# Solo el café: un chile de rescate empujaría solo al melón aunque nadie juegue.
-	var lento := melon.en_suelo and melon.linear_velocity.x < Config.rescate_velocidad
-	if not melon.puede_saltar() and lento:
-		return "cafe"
-	return ""
 
 
 ## Melón que el picado alcanza: el de menor desvío entre los que caben en
@@ -187,6 +167,8 @@ func objetivo_slam(melon: Melon, confianza := 1.0) -> MelonRodante:
 	var mejor: MelonRodante = null
 	var mejor_desvio := INF
 	for otro in melones:
+		if otro.roto:
+			continue
 		var prevision := otro.prevision_slam(melon)
 		if prevision.x < 0.0 or absf(prevision.y) > otro.alcance_slam(melon, prevision.x, confianza):
 			continue
@@ -208,6 +190,121 @@ func _guiar_slam(melon: Melon, delta: float) -> MelonRodante:
 	var limite := Config.slam_guiado * delta
 	melon.empujar(Vector2(clampf(correccion, -limite, limite), 0.0))
 	return otro
+
+
+# --- Rivales -----------------------------------------------------------------
+
+## Poderes sin consumir y papalotes sin usar delante del rival (hasta Config.rival_vista).
+## MelonRodante los usa para decidir hacia dónde saltar o volar.
+func objetivos_rival(rival: MelonRodante) -> Array[Node2D]:
+	var objetivos: Array[Node2D] = []
+	var desde := rival.global_position.x
+	var hasta := desde + Config.rival_vista
+	for t in tramos:
+		if t.x1 < desde or t.x0 > hasta:
+			continue
+		for contenedor in ["Coleccionables", "Aire"]:
+			for nodo in t.get_node(contenedor).get_children():
+				if nodo is Poder and not nodo.consumido and nodo.global_position.x >= desde and nodo.global_position.x <= hasta:
+					objetivos.append(nodo)
+		for p in t.papalotes:
+			if not p.usado and p.global_position.x >= desde and p.global_position.x <= hasta:
+				objetivos.append(p)
+	return objetivos
+
+
+## Lo que toca un rival vivo en este paso, por distancia (no tiene física):
+## poderes (compite con el jugador), papalotes (se recargan, ver Papalote.impulsar_rival),
+## pájaros (lo frenan y huyen) y obstáculos (Obstaculo.tocar_rival).
+func _interactuar_rival(rival: MelonRodante) -> void:
+	if rival.en_bajada:
+		return
+	var pos := rival.global_position
+	for t in tramos:
+		# Los papalotes y pájaros caben en un tramo vecino; basta con un margen generoso.
+		if t.x1 < pos.x - Config.papalote_rango or t.x0 > pos.x + Config.papalote_rango:
+			continue
+		for nodo in t.get_node("Coleccionables").get_children():
+			if nodo is Poder:
+				_tocar_poder(rival, nodo)
+		for nodo in t.get_node("Aire").get_children():
+			if nodo is Poder:
+				_tocar_poder(rival, nodo)
+			elif nodo is Pajaro and nodo.activo and nodo.global_position.distance_to(pos) <= rival.radio + nodo.radio_toque():
+				rival.frenar(Config.pajaro_freno)
+				nodo.huir()
+		for p in t.papalotes:
+			if not p.usado and p.global_position.distance_to(pos) <= Config.papalote_rango:
+				p.impulsar_rival(rival)          # el aviso llega por la maniobra "papalote"
+		for ob in t.get_node("Obstaculos").get_children():
+			if ob is Obstaculo and ob.activo and absf(ob.global_position.x - pos.x) < 150.0 and ob.toca_circulo(pos, rival.radio):
+				ob.tocar_rival(rival)
+		if rival.roto:
+			return                       # un golpe lo rompió: ya no toca nada más
+
+
+func _tocar_poder(rival: MelonRodante, poder: Poder) -> void:
+	if poder.consumido or poder.global_position.distance_to(rival.global_position) > rival.radio + Poder.RADIO_INSIGNIA:
+		return
+	poder.consumir()
+	rival.recibir_poder(poder.tipo)
+	_avisar_rival(rival, AVISOS_RIVAL.get(poder.tipo, ""))
+
+
+## Un rival en picado aplasta a otro que queda debajo (MelonRodante.recibir_slam_rival).
+func _slams_entre_rivales(x: float) -> void:
+	for a in melones:
+		if not a.slam_activo or a.roto or a.global_position.x < x - Config.borrar_atras:
+			continue
+		for b in melones:
+			if b != a and not b.roto and not b.en_bajada and b.recibir_slam_rival(a):
+				_avisar_rival(a, AVISOS_RIVAL["slam"])
+				break
+
+
+## Conecta las señales del rival recién creado.
+func _conectar_rival(rival: MelonRodante) -> void:
+	rival.se_rompio.connect(_al_romperse_rival)
+	rival.maniobra.connect(func(r: MelonRodante, tipo: String) -> void:
+		_avisar_rival(r, AVISOS_RIVAL.get(tipo, "")))
+
+
+## Avisa y, si iba por delante del jugador, pide un relevo más adelante.
+func _al_romperse_rival(rival: MelonRodante) -> void:
+	_avisar_rival(rival, "¡Se rompió!")
+	if not is_nan(_pos_jugador.x) and rival.global_position.x > _pos_jugador.x:
+		_crear_relevo()
+
+
+## Reenvía un aviso como rival_aviso solo si pasa cerca del jugador y sin repetir
+## el mismo texto del mismo rival antes de Config.rival_aviso_pausa.
+func _avisar_rival(rival: MelonRodante, texto: String) -> void:
+	if texto.is_empty() or is_nan(_pos_jugador.x) or rival.global_position.distance_to(_pos_jugador) > Config.rival_aviso_distancia:
+		return
+	var clave := "%d:%s" % [rival.get_instance_id(), texto]
+	var ahora := Time.get_ticks_msec() / 1000.0
+	if ahora - float(_avisos_rival.get(clave, -INF)) < Config.rival_aviso_pausa:
+		return
+	_avisos_rival[clave] = ahora
+	if _avisos_rival.size() > 64:
+		_avisos_rival.clear()            # las claves viejas ya no importan
+	rival_aviso.emit(texto, rival.global_position + Vector2(0, -rival.radio - 40.0))
+
+
+## Un rival nuevo fuera de pantalla, por delante del jugador, para reponer al que se
+## rompió. No aparece si ya hay otro cerca de ese punto, después de la meta o con
+## demasiados rivales vivos: los relevos nunca amontonan melones junto al jugador.
+func _crear_relevo() -> void:
+	var x := _pos_jugador.x + rng_relevos.randf_range(Config.relevo_rival_adelante.x, Config.relevo_rival_adelante.y)
+	var vivos := 0
+	for otro in melones:
+		if otro.roto:
+			continue
+		vivos += 1
+		if absf(otro.global_position.x - x) < Config.relevo_rival_hueco:
+			return
+	if vivos < Config.max_rivales_vivos:
+		_crear_melon_camino(x, rng_relevos)
 
 
 ## 0..1 según qué tan lejos está x. Cerca de la salida el camino es amable.
@@ -289,6 +386,7 @@ func preparar_corredores(bajada: BajadaXallitic) -> void:
 		var carril := Config.carriles_salida.x if i % 2 == 0 else Config.carriles_salida.y
 		var ritmo := lerpf(Config.ritmo_rivales.x, Config.ritmo_rivales.y, float(i) / maxf(1.0, Config.rivales_salida - 1))
 		otro.preparar_salida(bajada, x, carril, ritmo)
+		_conectar_rival(otro)
 		melones.append(otro)
 
 
@@ -301,33 +399,38 @@ func _poner_melones(x: float) -> void:
 		if rng_melones.randf() < pareja:
 			_crear_melon_camino(_siguiente_melon_x + rng_melones.randf_range(
 				Config.separacion_pareja_melones.x, Config.separacion_pareja_melones.y))
-		_siguiente_melon_x += rng_melones.randf_range(Config.separacion_melones.x, Config.separacion_melones.y)
+		# Hacia la meta se acercan: hay más velocidad que reponer y más obstáculos.
+		var separacion := Config.separacion_melones.lerp(Config.separacion_final_melones, dificultad(_siguiente_melon_x))
+		_siguiente_melon_x += rng_melones.randf_range(separacion.x, separacion.y)
 
 
-func _crear_melon_camino(x: float) -> void:
+## azar: rng_melones para la ruta fija; rng_relevos para los relevos, que así no
+## cambian los rivales que salen después.
+func _crear_melon_camino(x: float, azar := rng_melones) -> void:
 	if x >= Config.meta_m * Config.px_por_metro:
 		return
 	var tramo := tramo_en(x)
 	if tramo == null:
 		return
-	var tipo := _elegir_tipo_melon(dificultad(x))
+	var tipo := _elegir_tipo_melon(dificultad(x), azar)
 	var otro := MelonRodanteEscena.instantiate() as MelonRodante
-	otro.configurar({"tamano": rng_melones.randi_range(1, 2),
-		"piel": rng_melones.randi_range(0, Config.pieles.size() - 1),
-		"patron": rng_melones.randi_range(0, Config.patrones.size() - 1),
+	otro.configurar({"tamano": azar.randi_range(1, 2),
+		"piel": azar.randi_range(0, Config.pieles.size() - 1),
+		"patron": azar.randi_range(0, Config.patrones.size() - 1),
 		"cara": Config.tipos_melones[tipo]["cara"], "tipo": tipo,
 		"detalle": 0, "dibujo": [], "cuerpo_propio": "", "rayas_propio": ""})
 	otro.position = Vector2(x, tramo.altura(x) - otro.radio)
-	otro.preparar_carrera(rng_melones.randf_range(Config.velocidad_melones.x, Config.velocidad_melones.y), rng_melones.randi())
+	otro.preparar_carrera(azar.randf_range(Config.velocidad_melones.x, Config.velocidad_melones.y), azar.randi())
 	otro.velocidad = Vector2(otro.rapidez, 0.0)
 	otro.en_suelo = true
 	add_child(otro)
+	_conectar_rival(otro)
 	melones.append(otro)
 
 
 ## Carácter al azar según Config.tipos_melones. Con la dificultad hay menos
 ## tontos y más listos.
-func _elegir_tipo_melon(dif: float) -> String:
+func _elegir_tipo_melon(dif: float, azar := rng_melones) -> String:
 	var pesos := {}
 	var total := 0.0
 	for id in Config.tipos_melones:
@@ -337,7 +440,7 @@ func _elegir_tipo_melon(dif: float) -> String:
 			"listo": peso *= lerpf(0.4, 1.5, dif)
 		pesos[id] = peso
 		total += peso
-	var r := rng_melones.randf() * total
+	var r := azar.randf() * total
 	for id in pesos:
 		r -= pesos[id]
 		if r <= 0.0:

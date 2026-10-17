@@ -33,7 +33,7 @@ La barra del HUD muestra el recorrido total, la etapa y los metros que faltan. E
 
 Todo el terreno después del lanzamiento es plano, desde la primera calle hasta la meta. Solo la bajada y el trampolín de salida conservan su curva. Las rampas siguen siendo obstáculos de impulso sobre ese suelo.
 
-La dificultad aumenta de forma gradual entre los 100 metros y la meta. Los obstáculos se acercan, los postes y banquetas ganan peso, y aparecen más bandadas y rivales que esquivan. Al final también hay más parejas de melones para encadenar slams. Los poderes, papalotes y rescates siguen repartidos durante todo el viaje. Los intentos cortos permiten ganar aplausos y comprar mejoras para llegar más lejos. Los sellos y récords anteriores se conservan, sin multiplicar sus metros.
+La dificultad aumenta de forma gradual entre los 100 metros y la meta. Los obstáculos se acercan, los postes y banquetas ganan peso, y aparecen más bandadas y rivales que esquivan. Al final también hay más parejas de melones para encadenar slams. Los poderes y papalotes siguen repartidos durante todo el viaje, más espaciados hacia la meta, y no aparecen ayudas de rescate: caer y frenarse cuesta. Los intentos cortos permiten ganar aplausos y comprar mejoras para llegar más lejos. Los sellos y récords anteriores se conservan, sin multiplicar sus metros.
 
 La ruta sigue los 19 lugares del PDF elegido por ListiStar, en ese orden. Incluye El Águila, la FEI, el MAX, Bachilleres Experimental, La Joya, los bosques y volcanes rumbo a Perote, Puebla, Tlaxcala, el centro del país y la llegada al CUCosta. La lista y sus distancias de juego están en `Config.postales`. Las fotografías y sus datos curiosos se asignan por el mismo `id` en `recursos/arte_xalapa.tres`.
 
@@ -53,7 +53,7 @@ Cada punto de interés muestra una imagen provisional de su lugar en el mapa, ju
 | Esc o P | Pausar y continuar |
 | Tab, flechas y Enter | Recorrer y activar los controles del taller |
 
-En la salida esperan seis rivales junto a tu melón. Cada intento toma al azar hasta seis diseños del almanaque sin repetir fichas. Si faltan, completa el grupo con otros melones. Conservan su tamaño, colores, patrón, cara, dibujo y accesorios. La carrera usa copias y no cambia tus fichas guardadas.
+En la salida esperan cuatro rivales junto a tu melón. Cada intento toma al azar hasta cuatro diseños del almanaque sin repetir fichas. Si faltan, completa el grupo con otros melones. Conservan su tamaño, colores, patrón, cara, dibujo y accesorios. La carrera usa copias y no cambia tus fichas guardadas.
 
 El medidor de potencia aparece en la salida de la bajada. Espacio fija el valor, retira la barrera y suelta a todos los melones. Los rivales bajan por dos filas, saltan del trampolín y continúan por el camino con ritmos distintos. Después aparecen más melones durante el viaje. La zona perfecta está entre 80 % y 100 %. Más potencia da más velocidad al llegar a Xalapa. Durante la bajada no puedes saltar, girar, usar accesorios ni pedir empujones. La pausa sigue disponible. Al salir del trampolín recuperas todos los controles de carrera.
 
@@ -71,9 +71,9 @@ E conserva una pulsación hasta 0.18 segundos antes de entrar en el alcance de u
 
 Además de los seis rivales de la salida, aparecen grupos de melones medianos y grandes desde los 100 metros, separados entre 100 y 150 metros. Algunos llevan una pareja entre 20 y 30 metros detrás. La probabilidad de pareja aumenta del 30 % al inicio al 60 % cerca de la meta. Se generan por delante del jugador y dejan de ocupar memoria al quedar lejos. Cada melón permite un único slam.
 
-Los rivales corren como tu melón: aceleran en las bajadas, frenan en las subidas, despegan en las crestas, rebotan al caer y saltan cada uno o tres segundos. Cada uno tiene su ritmo de crucero, entre 420 y 620 px/s. Si se quedan muy atrás apuran el paso, y si te sacan mucha ventaja lo aflojan, así siguen cerca durante el viaje. Cuando vuelas a más de 65 metros sobre la calle, los rivales cercanos te siguen al aire con impulsos, entre 32 y 54 metros por debajo de ti, y ajustan su avance al tuyo. Cada impulso deja un soplo blanco bajo el melón. No suben mientras caes en picado, y el que ya recibió un slam se queda abajo. Como vuelan más hondo de lo que devuelve un slam, golpearlos en lo alto cuesta algo de altura.
+Los rivales corren como tu melón: aceleran en las bajadas, frenan en las subidas, despegan en las crestas, rebotan al caer y saltan cada uno o tres segundos. Cada uno tiene su ritmo de crucero, entre 420 y 620 px/s, y lo mantiene: no te esperan si te quedas atrás ni te siguen al aire. Si caes, los pierdes de vista y tendrás que alcanzar al siguiente. En el camino aparece uno cada 130 a 160 metros al inicio, y cada 80 a 100 metros cerca de la meta; a veces llega otro justo detrás.
 
-Pulsa S o flecha abajo en el aire para caer en picado. Golpear uno desde arriba te impulsa hacia arriba y añade velocidad hacia delante. El rival queda achatado un momento, frena y sigue corriendo, pero ya no sirve para otro slam. Si caes al suelo sin acertar, conservas el 60 % de tu velocidad horizontal. El slam no consume saltos, tiene una recarga de 0.45 segundos tras resolverse y bloquea el salto y los papalotes mientras caes.
+Pulsa S o flecha abajo en el aire para caer en picado. Golpear uno desde arriba te impulsa hacia arriba y añade velocidad hacia delante. El rival queda achatado un momento, frena y sigue corriendo, pero ya no sirve para otro slam. Si caes al suelo sin acertar, conservas el 40 % de tu velocidad horizontal. El slam no consume saltos, tiene una recarga de 0.45 segundos tras resolverse y bloquea el salto y los papalotes mientras caes.
 
 Los slams y los rebotes impulsados recuperan velocidad hasta el ritmo de crucero del melón. Las mejoras de fuerza aumentan ese ritmo. Si otro impulso ya lo hizo ir más rápido, conservan esa velocidad sin añadir más. Acertar un slam tampoco borra un frenón recibido en el mismo paso de física.
 
@@ -98,10 +98,10 @@ Se activan al recogerlos y tienen siluetas diferentes. El primero aparece a los 
 | Poder | Efecto |
 | --- | --- |
 | Chile jalapeño | Explota y lanza al melón hacia adelante, como mínimo a 110 m/s, y un poco hacia arriba |
-| Café de Coatepec | Energía ilimitada durante 4 segundos: saltas y rebotas todo lo que quieras sin gastar cargas |
+| Café de Coatepec | Durante 2 segundos saltas y rebotas sin gastar cargas, con al menos 0.28 s entre saltos |
 | Pizza con yogur | El melón se sube a una pizza que avanza 2.5 segundos sin perder altura. Saltar, hacer slam o chocar con algo que frene lo baja |
 
-Si el melón va lento en el suelo y sin cargas de salto, aparece por delante, a ras de calle, un café. Hay como mucho un rescate cada 12 segundos.
+Los poderes flotan entre 14 y 22 metros sobre la calle: hay que saltar para recogerlos. Si te quedas lento y sin cargas, nada aparece a salvarte.
 
 ## Salsa Valentina
 
@@ -187,6 +187,7 @@ Si un archivo no se puede leer, el juego lo respalda con sufijo `.danado` antes 
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/lugares.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/almanaque.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/slam.gd
+/Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/rivales.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/lanzamiento.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/balance.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/penalizaciones.gd
@@ -212,7 +213,7 @@ La segunda orden comprueba entradas, compras, desbloqueos, premios sin duplicado
 
 `lanzamiento.gd` comprueba la parrilla con el almanaque vacío y con fichas guardadas, la salida conjunta, las copias independientes, la pausa y la continuidad de los rivales al saltar del trampolín. También compara fuerza mínima y máxima con los tres tamaños. Comprueba que más fuerza conserve más velocidad al salir del trampolín y aumente el alcance. Repite la bajada con todas las teclas de carrera pulsadas y verifica que no cambien la trayectoria ni consuman saltos o equipo. También comprueba la pausa y que los controles y los accesorios vuelvan después del trampolín. Usa un guardado de prueba separado.
 
-`balance.gd` comprueba 54 carreras sin input después del lanzamiento, con tres tamaños, tres fuerzas, tres semillas y mejoras iniciales o al máximo. Todas deben terminar en menos de 30 segundos y recoger como máximo tres chiles. Sin mejoras deben terminar antes de la mitad de Xalapa; con mejoras tampoco deben salir de la ciudad. También compara una carrera sin controles con otra que usa rebotes, accesorios y empujones. Comprueba que un lanzamiento al 70 %, con equipo inicial y controles, avance al menos 400 metros sin mejoras. Por último, mide la progresión media con tres semillas. Sin mejoras, las carreras con controles básicos deben promediar menos de novecientos metros. Las mejoras deben superar el alcance inicial y, al máximo, permitir un promedio de al menos mil metros. Las carreras activas pueden durar hasta 120 segundos. Una prueba adicional exige llegar al CUCosta con equipo, mejoras y slams. Utiliza su propio archivo de prueba.
+`balance.gd` comprueba 54 carreras sin input después del lanzamiento, con tres tamaños, tres fuerzas, tres semillas y mejoras iniciales o al máximo. Todas deben terminar en menos de 30 segundos y recoger como máximo tres chiles. Sin mejoras deben terminar antes de la mitad de Xalapa; con mejoras tampoco deben salir de la ciudad. También compara una carrera sin controles con otra que usa rebotes, accesorios y empujones. Comprueba que un lanzamiento al 70 %, con equipo inicial y controles, avance al menos 300 metros sin mejoras. Por último, mide la progresión media con tres semillas. Sin mejoras, las carreras con controles básicos deben promediar menos de novecientos metros. Las mejoras deben superar el alcance inicial y, al máximo, permitir un promedio de al menos mil metros. Las carreras activas pueden durar hasta 120 segundos. Una prueba adicional exige llegar al CUCosta con equipo, mejoras y slams. Utiliza su propio archivo de prueba.
 
 `impulsos.gd` revisa que todo el terreno sea plano, la separación de los melones, el límite de generación y la retirada de los que quedan atrás. Compara 18 carreras con las ayudas adicionales activas o desactivadas, con las mismas semillas y controles. Comprueba que apuntar los slams permita llegar con menos mejoras. Otras tres carreras verifican que pulsar slam sin apuntar siga fallando y termine mucho antes de la meta. Usa un archivo de prueba separado.
 
