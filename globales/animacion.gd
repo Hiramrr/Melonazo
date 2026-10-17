@@ -17,7 +17,13 @@ extends CanvasLayer
 const DURACION_CORTINA := 0.55
 const ESCALA_RATON := 1.05
 const ESCALA_PULSADO := 0.94
+const SONIDO_HOVER := preload("res://recursos/sonidos/boton_hover.wav")
+const SONIDO_CLICK := preload("res://recursos/sonidos/boton_click.wav")
 var _cortina: TextureRect
+var _audio_hover: AudioStreamPlayer
+var _audio_click: AudioStreamPlayer
+var _ultimo_hover := -1000
+var _ultimo_click := -1000
 
 
 func _ready() -> void:
@@ -26,6 +32,8 @@ func _ready() -> void:
 		ThemeDB.fallback_font = tema.get_font("font", "Titulo")
 	layer = 100
 	process_mode = Node.PROCESS_MODE_ALWAYS
+	_audio_hover = _crear_audio_boton(SONIDO_HOVER, -19.0)
+	_audio_click = _crear_audio_boton(SONIDO_CLICK, -15.0)
 	_cortina = TextureRect.new()
 	_cortina.texture = Sprites.textura("transiciones/cortina_0")
 	_cortina.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
@@ -55,14 +63,74 @@ func cambiar_escena(ruta: String) -> void:
 # --- Botones -----------------------------------------------------------------
 
 func _al_agregar_nodo(nodo: Node) -> void:
-	if not nodo is BaseButton or nodo is LinkButton:
+	if not nodo is BaseButton:
 		return
 	var b := nodo as BaseButton
+	# También cubre botones creados al cambiar pestañas o abrir ventanas.
+	var hover := _sonar_hover.bind(b)
+	if not b.mouse_entered.is_connected(hover):
+		b.mouse_entered.connect(hover)
+		b.button_down.connect(_sonar_click.bind(b))
+	if nodo is LinkButton or b.resized.is_connected(_centrar_pivote.bind(b)):
+		return
 	b.resized.connect(_centrar_pivote.bind(b))
 	b.mouse_entered.connect(_escalar.bind(b, ESCALA_RATON))
 	b.mouse_exited.connect(_escalar.bind(b, 1.0))
 	b.button_down.connect(_escalar.bind(b, ESCALA_PULSADO))
 	b.button_up.connect(func() -> void: _escalar(b, ESCALA_RATON if b.is_hovered() else 1.0))
+
+
+func _crear_audio_boton(sonido: AudioStream, volumen: float) -> AudioStreamPlayer:
+	var audio := AudioStreamPlayer.new()
+	audio.stream = sonido
+	audio.volume_db = volumen
+	audio.add_to_group("audio_interfaz")
+	add_child(audio)
+	return audio
+
+
+func _boton_audible(b: Control) -> bool:
+	return is_instance_valid(b) and b.is_visible_in_tree() and b.can_process() and (not b is BaseButton or not b.disabled)
+
+
+func _sonar_hover(b: Control) -> void:
+	if not _boton_audible(b):
+		return
+	var ahora := Time.get_ticks_msec()
+	if ahora - _ultimo_hover < 75 or ahora - _ultimo_click < 120:
+		return
+	_ultimo_hover = ahora
+	_audio_hover.play()
+
+
+func _sonar_click(b: Control) -> void:
+	if not _boton_audible(b):
+		return
+	# TabBar puede emitir selección y clic para una misma pulsación.
+	if Time.get_ticks_msec() - _ultimo_click < 40:
+		return
+	_ultimo_click = Time.get_ticks_msec()
+	_audio_hover.stop()
+	_audio_click.play()
+
+
+func conectar_pestanas(contenedor: TabContainer) -> void:
+	var barra := contenedor.get_tab_bar()
+	var hover := _sonar_pestana.bind(barra, false)
+	if barra.tab_hovered.is_connected(hover):
+		return
+	barra.tab_hovered.connect(hover)
+	barra.tab_selected.connect(_sonar_pestana.bind(barra, true))
+	barra.tab_clicked.connect(_sonar_pestana.bind(barra, true))
+
+
+func _sonar_pestana(indice: int, barra: TabBar, clic: bool) -> void:
+	if indice < 0 or indice >= barra.tab_count or barra.is_tab_disabled(indice) or barra.is_tab_hidden(indice):
+		return
+	if clic:
+		_sonar_click(barra)
+	else:
+		_sonar_hover(barra)
 
 
 func _centrar_pivote(c: Control) -> void:

@@ -174,6 +174,7 @@ func _verificar() -> void:
 	comprobar(not melon.saltar(), "Sin café ni cargas no se puede saltar")
 	melon._dv = Vector2.ZERO
 	melon.recibir_poder("chile")
+	melon.get_child(melon.get_child_count() - 1)._physics_process(1.0)
 	var tras_chile: Vector2 = melon.linear_velocity + melon._dv
 	comprobar(tras_chile.x >= config.chile_vel_min and tras_chile.y < 0 and melon.t_explosion > 0, "Chile explota y lanza hacia adelante")
 	melon._dv = Vector2.ZERO
@@ -359,6 +360,8 @@ func _verificar() -> void:
 	recorrido.melon.controlable = false
 	recorrido.fuerza = 0.91
 	recorrido._lanzar()
+	while recorrido.fase == recorrido.Fase.CUENTA:
+		await physics_frame
 	comprobar(recorrido.melon.freeze and not recorrido.melon.controlable and recorrido.fase == 1, "Lanzamiento inicia el rodado automático sin controles en la bajada")
 	for i in 1200:
 		await physics_frame

@@ -27,12 +27,12 @@ func _abrir(pantalla: String) -> Node:
 	await process_frame
 	current_scene.set_process(false)
 	current_scene.set_physics_process(false)
-	await create_timer(0.6).timeout
+	await create_timer(1.7).timeout
 	return current_scene
 
 
 func _revisar_mezcla() -> void:
-	_comprobar(root.find_children("*", "AudioStreamPlayer", true, false) == [musica], "Solo existe un reproductor de música")
+	_comprobar(root.find_children("*", "AudioStreamPlayer", true, false).filter(func(n: Node) -> bool: return not n.is_in_group("audio_interfaz") and not n.is_in_group("audio_monedas")).size() == 2, "Solo existen dos reproductores para el fundido cruzado")
 	var buffer := captura.get_buffer(captura.get_frames_available())
 	muestras += buffer.size()
 	for frame in buffer:
@@ -80,7 +80,7 @@ func _verificar() -> void:
 	for pista in [musica.MENU, musica.TIENDITA, musica.LENTA, musica.MEDIA, musica.RAPIDA]:
 		_comprobar(pista is AudioStreamOggVorbis and pista.loop and pista.get_length() > 30.0)
 		musica.tocar(pista)
-		await create_timer(0.6).timeout
+		await create_timer(1.7).timeout
 		musica.seek(pista.get_length() - 0.1)
 		await create_timer(0.3).timeout
 		_comprobar(musica.playing and musica.get_playback_position() < 1.0, "Cada pista musical completa su bucle")
@@ -91,7 +91,7 @@ func _verificar() -> void:
 	musica.tocar(musica.TIENDITA)
 	await create_timer(0.05).timeout
 	musica.tocar(musica.MENU)
-	await create_timer(0.6).timeout
+	await create_timer(1.7).timeout
 	_comprobar(musica.get_stream_playback() == original, "Cancelar un cambio conserva la posición de la pista actual")
 	_comprobar(is_equal_approx(musica.volume_db, musica.VOLUMEN_DB), "Cancelar el cambio recupera el volumen")
 	original = null
@@ -105,15 +105,46 @@ func _verificar() -> void:
 	_comprobar(musica.stream == musica.LENTA and musica.playing, "La salida comienza con Base Lenta")
 	r.fase = r.Fase.RECORRIDO
 	r.melon.en_suelo = false
-	for caso in [[0.5 - 0.001, musica.LENTA], [0.5, musica.MEDIA], [0.8 - 0.001, musica.MEDIA], [0.8, musica.RAPIDA]]:
-		r._revisar_avance(config.meta_m * caso[0] * config.px_por_metro, 1.0 / 120.0)
-		await create_timer(0.6).timeout
-		_comprobar(musica.stream == caso[1] and musica.playing, "La pista cambia en el límite de distancia")
+	# Los picos cortos y las oscilaciones no interrumpen la pista actual.
+	var estable = musica.get_stream_playback()
+	for i in 1200:
+		musica.actualizar_recorrido(130.0 if i % 120 < 60 else 30.0, 1.0 / 120.0)
+	_comprobar(musica.get_stream_playback() == estable, "Los picos breves no cambian la música")
+	for i in 250:
+		musica.actualizar_recorrido(130.0, 1.0 / 120.0)
+	_comprobar(musica.stream == musica.RAPIDA and musica._saliente.playing, "Una aceleración sostenida mezcla ambas pistas")
+	await create_timer(0.5).timeout
+	_comprobar(musica.volume_linear > 0.0 and musica._saliente.volume_linear > 0.0, "Ambas pistas se oyen durante el cruce")
+	for i in 360:
+		musica.actualizar_recorrido(0.0, 1.0 / 120.0)
+	_comprobar(musica.stream == musica.RAPIDA, "La permanencia mínima impide otro cambio inmediato")
+	await create_timer(1.2).timeout
+	for i in 400:
+		musica.actualizar_recorrido(0.0, 1.0 / 120.0)
+	_comprobar(musica.stream == musica.LENTA and musica.get_playback_position() > 0.5, "Volver a una pista conserva su avance")
+	await create_timer(1.7).timeout
+	# Mismo lugar, velocidades distintas: incluye frenadas y margen entre pistas.
+	for caso in [[59.9, musica.LENTA], [60.0, musica.MEDIA], [59.0, musica.MEDIA], [119.9, musica.MEDIA], [120.0, musica.RAPIDA], [116.0, musica.RAPIDA], [114.9, musica.MEDIA], [55.0, musica.MEDIA], [54.9, musica.LENTA], [-125.0, musica.RAPIDA], [0.0, musica.LENTA]]:
+		r.melon.linear_velocity = Vector2(caso[0] * config.px_por_metro, 2000.0)
+		for i in 780:
+			r._revisar_avance(100.0, 1.0 / 120.0)
+		await create_timer(1.7).timeout
+		_comprobar(musica.stream == caso[1] and musica.playing, "La pista sigue la velocidad horizontal, con margen al frenar")
 	reproduccion = musica.get_stream_playback()
 	for i in 10:
 		r._revisar_avance(config.meta_m * 0.6 * config.px_por_metro, 1.0 / 120.0)
 		await process_frame
-	_comprobar(musica.get_stream_playback() == reproduccion, "Retroceder o actualizar cada cuadro no reinicia ni baja la intensidad")
+	_comprobar(musica.get_stream_playback() == reproduccion, "Avanzar en distancia sin acelerar no cambia ni reinicia la música")
+	# La bajada mueve el melón manualmente y debe usar su propia velocidad.
+	r.fase = r.Fase.BAJADA
+	r._velocidad_salida = 1400.0
+	r._avanzar_bajada(1.0 / 120.0)
+	for i in 780:
+		r._revisar_avance(100.0, 1.0 / 120.0)
+	await create_timer(1.7).timeout
+	_comprobar(musica.stream == musica.MEDIA, "La bajada aporta velocidad aunque el cuerpo esté congelado")
+	r.fase = r.Fase.RECORRIDO
+	reproduccion = musica.get_stream_playback()
 	r.hud._alternar_pausa()
 	await process_frame
 	_comprobar(paused and musica.stream_paused, "La pausa detiene la música")
@@ -123,10 +154,10 @@ func _verificar() -> void:
 	# Una nueva petición durante un fundido debe sustituir la anterior.
 	musica.tocar(musica.MEDIA)
 	musica.tocar(musica.LENTA)
-	await create_timer(0.6).timeout
+	await create_timer(1.7).timeout
 	_comprobar(musica.stream == musica.LENTA)
 	r._fin("¡Se detuvo!")
-	await create_timer(0.6).timeout
+	await create_timer(1.7).timeout
 	_comprobar(musica.stream == musica.DERROTA and musica.playing)
 	reproduccion = musica.get_stream_playback()
 	r._t_fin = 0.0
@@ -144,18 +175,18 @@ func _verificar() -> void:
 	_comprobar(musica.stream == musica.LENTA and musica.playing, "Un intento nuevo reinicia Base Lenta")
 	r.melon.roto = true
 	r._on_melon_roto()
-	await create_timer(0.6).timeout
+	await create_timer(1.7).timeout
 	_comprobar(musica.stream == musica.DERROTA, "Romper el melón también toca Derrota")
 	r.hud._alternar_pausa()
 	r.hud._volver()
 	await process_frame
 	await process_frame
-	await create_timer(0.6).timeout
+	await create_timer(1.7).timeout
 	_comprobar(not paused and musica.stream == musica.TIENDITA and musica.playing, "Abandonar vuelve a la música del taller")
 	r = await _abrir("recorrido")
 	r.fase = r.Fase.RECORRIDO
 	r._revisar_avance(config.meta_m * config.px_por_metro, 1.0 / 120.0)
-	await create_timer(0.6).timeout
+	await create_timer(1.7).timeout
 	_comprobar(musica.stream == musica.MENU and musica.playing, "Llegar a la meta toca Menú")
 	reproduccion = musica.get_stream_playback()
 	r._t_fin = 0.0
@@ -172,5 +203,5 @@ func _verificar() -> void:
 	await create_timer(0.1).timeout
 	DirAccess.remove_absolute(juego.archivo_guardado)
 	if fallos == 0:
-		print("OK: seis pistas, un reproductor, fundidos sin reinicios, pausa, derrota única, reintento, llegada y efectos limitados. Pico de mezcla: %.3f." % pico_mezcla)
+		print("OK: seis pistas, fundido cruzado, fundidos sin reinicios, pausa, derrota única, reintento, llegada y efectos limitados. Pico de mezcla: %.3f." % pico_mezcla)
 	quit(1 if fallos > 0 else 0)

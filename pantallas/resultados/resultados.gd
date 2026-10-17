@@ -78,7 +78,11 @@ func _animar(metros: int, total: int, record_nuevo: bool) -> void:
 		Animacion.aparecer(fila, retraso, 0.7)
 		retraso += PASO_FILA
 	Animacion.aparecer(%FilaTotal, retraso, 0.4)
-	Animacion.contar(lbl_total, total, "+%d", 0.7, retraso + 0.1)
+	Animacion.contar(lbl_total, total, "+%d", 5.0, retraso + 0.1)
+	if total > 0:
+		var sonido := create_tween()
+		sonido.tween_interval(retraso + 0.1)
+		sonido.tween_callback(func() -> void: Sonidos.monedas(self, 5.0))
 	Animacion.aparecer(btn_volver, retraso + 0.5, 0.6).finished.connect(Animacion.latir.bind(btn_volver))
 
 

@@ -60,6 +60,7 @@ func _ready() -> void:
 	pestanas.set_tab_title(pestanas.get_tab_idx_from_control(pestana_melon), "Tu melón")
 	pestanas.set_tab_title(pestanas.get_tab_idx_from_control(pestana_mejoras), "Tiendita")
 	pestanas.tab_changed.connect(_al_cambiar_pestana)
+	Animacion.conectar_pestanas(pestanas)
 	vista.pestana_dibujo = pestana_dibujo
 	for pestana in [pestana_melon, pestana_accesorios, pestana_mejoras]:
 		pestana.cambio.connect(_refrescar)

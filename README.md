@@ -41,6 +41,16 @@ Cada punto de interés muestra una imagen provisional de su lugar en el mapa, ju
 
 ## Controles
 
+Recoger monedas reproduce `monedas.wav` durante 0,3 segundos. Cada moneda nueva prolonga el sonido sin reiniciarlo ni sumar voces; termina con un fundido breve cuando dejas de recoger. En resultados acompaña los 5 segundos del conteo del total, salvo si el total es cero. Se pausa con el juego y se detiene al salir de la pantalla.
+
+Después de fijar la potencia aparece una breve cinemática con acercamiento de cámara y el audio `countdown.wav`. El jugador y los rivales esperan tras la barrera y arrancan juntos al segundo 3; el último segundo del audio continúa durante la bajada. La pausa detiene también la cuenta y su sonido.
+
+Al arrancar suena Base Rápida desde el principio durante cinco segundos de juego. Después se selecciona la música según la velocidad actual y se retoman los cambios suaves habituales. La pausa detiene ese plazo; terminar o abandonar la carrera lo cancela.
+
+Los botones de la interfaz reproducen `boton_hover.wav` al pasar el ratón y `boton_click.wav` al pulsarlos (también con teclado). Son efectos breves, generados para el juego, que funcionan en el taller, almanaque y menús de pausa. Los botones ocultos o deshabilitados permanecen silenciosos; el clic continúa al cambiar de pantalla.
+
+La música de carrera sigue la velocidad horizontal del melón, también durante la bajada: Base Lenta por debajo de 60 m/s, Base Media desde 60 m/s y Base Rápida desde 120 m/s. Al frenar, la rápida baja a media por debajo de 115 m/s y la media a lenta por debajo de 55 m/s; este margen evita cambios constantes cerca de los límites. La distancia recorrida no cambia la música. La velocidad debe mantenerse en la nueva franja durante 2 segundos y cada pista permanece al menos 6 segundos. Las pistas se superponen en un fundido de 1,5 segundos, sin dejar un hueco de silencio, y conservan su posición al volver a ellas durante el mismo intento.
+
 | Entrada | Acción |
 | --- | --- |
 | Espacio antes de salir | Fijar la potencia y soltar el melón cuesta abajo |
@@ -97,7 +107,7 @@ Se activan al recogerlos y tienen siluetas diferentes. El primero aparece a los 
 
 | Poder | Efecto |
 | --- | --- |
-| Chile jalapeño | Explota y lanza al melón hacia adelante, como mínimo a 110 m/s, y un poco hacia arriba |
+| Chile jalapeño | Parpadea durante 1 segundo; después explota con audio y partículas, lanza al melón hacia adelante (mínimo 110 m/s) y hacia arriba, y deja fuego rojo durante 2,5 segundos |
 | Café de Coatepec | Durante 2 segundos saltas y rebotas sin gastar cargas, con al menos 0.28 s entre saltos |
 | Pizza con yogur | El melón se sube a una pizza que avanza 2.5 segundos sin perder altura. Saltar, hacer slam o chocar con algo que frene lo baja |
 

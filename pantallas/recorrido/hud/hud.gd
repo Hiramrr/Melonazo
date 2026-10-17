@@ -171,7 +171,7 @@ func actualizar(r: Recorrido) -> void:
 	medidor.value = r.fuerza * 100.0
 	var en_zona := r.fuerza >= Config.zona_perfecta.x and r.fuerza <= Config.zona_perfecta.y
 	_relleno_fuerza.modulate_color = medidor.get_theme_color("perfecta") if en_zona else medidor.get_theme_color("inicio").lerp(medidor.get_theme_color("fin"), r.fuerza)
-	vuelo.visible = r.fase >= Recorrido.Fase.RECORRIDO
+	vuelo.visible = r.fase in [Recorrido.Fase.RECORRIDO, Recorrido.Fase.FIN, Recorrido.Fase.REVIVIR]
 	%Altura.texto = "%d m" % int(r.altura_m)
 	%Altura.tooltip_text = "Altura máxima %d m · Bono +%d aplausos" % [int(r.altura_max_m), int(r.altura_max_m * Config.aplausos_por_metro_altura)]
 	_contador("papalotes", %Papalotes, r.papalotes_usados)
@@ -273,6 +273,9 @@ func _actualizar_indicacion(r: Recorrido, metros := 0.0) -> void:
 			urgente = r.fuerza >= Config.zona_perfecta.x
 		Recorrido.Fase.BAJADA:
 			_indicar("", "Bajando Xallitic · Controles después del trampolín")
+			tecla.visible = false
+		Recorrido.Fase.CUENTA:
+			aviso.visible = false
 			tecla.visible = false
 		Recorrido.Fase.FIN:
 			_indicar("", r.texto_fin)

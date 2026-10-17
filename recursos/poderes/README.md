@@ -22,12 +22,12 @@ La pizza del poder y la del melón usan el mismo archivo. Si quieren un dibujo d
 
 ## Origen
 
-`chile.png`, `cafe.png`, `pajaro.png` y la base de `pizza.png` son imágenes 3D de [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji), revisión `1ffb34c752ecf5d402f04cfb4b392c77f57c54bc`. Copyright Microsoft Corporation. Licencia MIT, incluida completa en [LICENSE.txt](LICENSE.txt).
+`cafe.png`, `pajaro.png` y la base de `pizza.png` son imágenes 3D de [Microsoft Fluent Emoji](https://github.com/microsoft/fluentui-emoji), revisión `1ffb34c752ecf5d402f04cfb4b392c77f57c54bc`. Copyright Microsoft Corporation. Licencia MIT, incluida completa en [LICENSE.txt](LICENSE.txt).
 
 | Archivo | Imagen original |
 | --- | --- |
 | `cafe.png` | [Hot beverage](https://github.com/microsoft/fluentui-emoji/blob/1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/Hot%20beverage/3D/hot_beverage_3d.png), sin cambios |
-| `chile.png` | [Hot pepper](https://github.com/microsoft/fluentui-emoji/blob/1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/Hot%20pepper/3D/hot_pepper_3d.png), sin cambios |
+| `chile.png` | Imagen de jalapeño proporcionada por el usuario el 17 de octubre de 2026; reemplaza el recurso provisional anterior |
 | `pajaro.png` | [Bird](https://github.com/microsoft/fluentui-emoji/blob/1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/Bird/3D/bird_3d.png), sin cambios |
 | `pizza.png` | [Pizza](https://github.com/microsoft/fluentui-emoji/blob/1ffb34c752ecf5d402f04cfb4b392c77f57c54bc/assets/Pizza/3D/pizza_3d.png), con un chorro de yogur dibujado encima |
 

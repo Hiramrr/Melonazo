@@ -12,6 +12,18 @@ const MUERTE: Array[AudioStream] = [
 const GRUPO := &"efectos_sonido"
 const MAX_SIMULTANEOS := 2
 const VOLUMEN_DB := -12.0
+const AUDIO_MONEDAS := preload("res://globales/audio_monedas.gd")
+
+
+static func monedas(escena: Node, duracion := 0.3) -> void:
+	if not escena.is_inside_tree() or escena.get_tree().paused:
+		return
+	var audio = escena.get_node_or_null("AudioMonedas")
+	if audio == null:
+		audio = AUDIO_MONEDAS.new()
+		audio.name = "AudioMonedas"
+		escena.add_child(audio)
+	audio.sonar(duracion)
 
 
 ## Uno de los sonidos de MUERTE al azar, con un poco de variación de tono.

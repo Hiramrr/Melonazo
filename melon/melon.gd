@@ -323,15 +323,8 @@ func recibir_poder(id: String) -> void:
 	var duracion: float = Config.poderes[id]["duracion"]
 	match id:
 		"chile":
-			# Explota: el empujón se suma a la velocidad y nunca queda por debajo del mínimo.
-			var impulso: Vector2 = Config.poderes[id]["impulso"]
-			var v := linear_velocity + _dv
-			var destino := Vector2(maxf(v.x + impulso.x, Config.chile_vel_min), minf(v.y, 0.0) + impulso.y)
-			empujar(destino - v)
-			slam_activo = false
-			t_pizza = 0.0
-			t_explosion = DURACION_EXPLOSION
-			t_embestida = maxf(t_embestida, 0.6)
+			var chile = load("res://melon/chile_encendido.gd").new()
+			add_child(chile)
 		"cafe":
 			t_cafe = duracion
 		"pizza":
@@ -342,6 +335,18 @@ func recibir_poder(id: String) -> void:
 			t_paraguas = 0.0
 	aviso.emit("¡%s!" % Config.poderes[id]["nombre"])
 
+
+func explotar_chile() -> void:
+	if roto or not controlable:
+		return
+	var impulso: Vector2 = Config.poderes["chile"]["impulso"]
+	var v := linear_velocity + _dv
+	var destino := Vector2(maxf(v.x + impulso.x, Config.chile_vel_min), minf(v.y, 0.0) + impulso.y)
+	empujar(destino - v)
+	slam_activo = false
+	t_pizza = 0.0
+	t_explosion = DURACION_EXPLOSION
+	t_embestida = maxf(t_embestida, 0.6)
 
 ## Salsa Valentina: vuelve a la carrera con toda la resistencia y sus cargas,
 ## un rato invulnerable y con impulso para seguir.

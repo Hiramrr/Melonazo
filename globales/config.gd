@@ -349,7 +349,7 @@ var max_puntos_dibujo := 6000
 # Melon.recibir_poder(). Los accesorios, en cambio, se usan con 1, 2 y 3.
 var orden_poderes: Array = ["chile", "cafe", "pizza"]
 var poderes: Dictionary = {
-	"chile": {"nombre": "Chile jalapeño", "descripcion": "Explota y te lanza hacia adelante.", "color": Color("4f9a3a"), "duracion": 0.0, "impulso": Vector2(900, -320)},
+	"chile": {"nombre": "Chile jalapeño", "descripcion": "Parpadea 1 s, explota y te lanza con una estela de fuego.", "color": Color("4f9a3a"), "duracion": 0.0, "impulso": Vector2(900, -320)},
 	"cafe": {"nombre": "Café de Coatepec", "descripcion": "Saltas sin gastar cargas durante 2 s.", "color": Color("a56d43"), "duracion": 2.0, "impulso": Vector2.ZERO},
 	"pizza": {"nombre": "Pizza con yogur", "descripcion": "Te subes a una pizza que avanza unos metros sin perder altura. Un frenón te tira.", "color": Color("f1ce67"), "duracion": 2.5, "impulso": Vector2.ZERO},
 }

@@ -68,7 +68,10 @@ func carrera(tamano: int, fuerza: float, pulsar := false) -> Dictionary:
 	espacio.action = "rebote"
 	espacio.pressed = true
 	r._unhandled_input(espacio)
-	comprobar(not r.bajada.barrera.visible, "Elegir la potencia retira la barrera y suelta al melón")
+	comprobar(r.fase == r.Fase.CUENTA and r.bajada.barrera.visible, "Elegir potencia inicia la cinematica con barrera")
+	while r.fase == r.Fase.CUENTA:
+		await physics_frame
+	comprobar(not r.bajada.barrera.visible, "La cuenta retira la barrera y suelta al melón")
 	comprobar(r.fase == 1 and r.melon.freeze and not r.melon.controlable, "Durante la bajada el melón rueda sin controles")
 	comprobar(not r.melon.saltar(), "No se puede saltar en la bajada")
 	comprobar(not r.melon.iniciar_slam(), "No se puede hacer slam en la bajada")
@@ -157,6 +160,8 @@ func probar_parrilla() -> void:
 	var rivales: Array = r.terreno.melones.duplicate()
 	r.fuerza = 0.7
 	r._lanzar()
+	while r.fase == r.Fase.CUENTA:
+		await physics_frame
 	for i in 20:
 		await physics_frame
 	for i in r.terreno.melones.size():

@@ -14,7 +14,7 @@ extends Node2D
 ##   Efectos                  EfectosRecorrido: flecha de puntería y avisos
 ##   Interfaz                 HUD (hud/hud.tscn): datos, lanzamiento y pausa
 ##
-## Fases: FUERZA → BAJADA sin controles → RECORRIDO al salir del trampolín → FIN.
+## Fases: FUERZA → CUENTA (3 s) → BAJADA sin controles → RECORRIDO → FIN.
 ## REVIVIR pausa el recorrido hasta aceptar o rechazar la Salsa Valentina.
 ## Este script aplica las reglas de la carrera: lanzamiento, cuándo termina,
 ## efectos de obstáculos, pájaros, empujones del público, papalotes, poderes,
@@ -22,7 +22,10 @@ extends Node2D
 ## aquí solo se muestran sus avisos (_al_avisar_rival).
 ## Al terminar registra el resultado en Juego y pasa a Resultados.
 
-enum Fase { FUERZA, BAJADA, RECORRIDO, FIN, REVIVIR }
+enum Fase { FUERZA, BAJADA, RECORRIDO, FIN, REVIVIR, CUENTA }
+
+const CUENTA_SALIDA := preload("res://pantallas/recorrido/cuenta_salida.gd")
+var cuenta_salida: CanvasLayer
 
 const ESCENA_RESULTADOS := "res://pantallas/resultados/resultados.tscn"
 const RADIO_IMAN := 240.0              # la flor atrae aplausos a esta distancia
@@ -41,6 +44,7 @@ var fuerza := 0.0                      # 0..1, elegida en la fase FUERZA
 var _t_oscilacion := 0.0               # reloj de la barra de fuerza
 var _velocidad_salida := 0.0
 var _x_bajada := 0.0
+var _velocidad_bajada := 0.0 # velocidad horizontal mientras el cuerpo está congelado
 
 # Marcador de la carrera
 var mejor_x := 0.0                     # punto más lejano alcanzado (px)
@@ -104,10 +108,22 @@ func _lanzar() -> void:
 	if perfecto:
 		vel *= Config.bonus_perfecto
 		efectos.avisar("¡Lanzamiento perfecto!", melon.global_position + Vector2(0, -60))
-	bajada.abrir_salida()
 	_velocidad_salida = vel
+	melon.controlable = false
+	fase = Fase.CUENTA
+	cuenta_salida = CUENTA_SALIDA.new()
+	cuenta_salida.salida.connect(_soltar_corredores)
+	add_child(cuenta_salida)
+	hud.actualizar(self)
+
+
+func _soltar_corredores() -> void:
+	if fase != Fase.CUENTA:
+		return
+	Musica.iniciar_salida()
+	bajada.abrir_salida()
 	for rival in terreno.melones:
-		rival.soltar(vel)
+		rival.soltar(_velocidad_salida)
 	melon.en_suelo = true
 	melon.controlable = false
 	fase = Fase.BAJADA
@@ -131,11 +147,15 @@ func _process(delta: float) -> void:
 	efectos.origen_flecha = melon.global_position
 	efectos.direccion_flecha = Vector2.from_angle(bajada.pendiente(Config.bajada_inicio.x))
 	efectos.objetivo_aereo = papalote_siguiente if fase == Fase.RECORRIDO else null
-	camara.actualizar(melon, not apuntando, delta)
+	camara.actualizar(melon, not apuntando and fase != Fase.CUENTA, delta)
+	if fase == Fase.CUENTA:
+		camara.zoom = camara.zoom.lerp(Vector2.ONE * 1.12, clampf(delta * 3.0, 0.0, 1.0))
 	hud.actualizar(self)
 
 
 func _physics_process(delta: float) -> void:
+	if is_instance_valid(cuenta_salida):
+		cuenta_salida.avanzar(delta)
 	if fase != Fase.BAJADA and fase != Fase.RECORRIDO:
 		return
 	if fase == Fase.BAJADA:
@@ -187,6 +207,7 @@ func _avanzar_bajada(delta: float) -> void:
 	var progreso := clampf(inverse_lerp(Config.bajada_inicio.x, Config.bajada_fin.x, _x_bajada), 0.0, 1.0)
 	var rapidez := _velocidad_salida * lerpf(0.65, 1.0, progreso) + bajada.embalaje(_x_bajada)
 	var pendiente := bajada.inclinacion(_x_bajada)
+	_velocidad_bajada = rapidez * cos(pendiente)
 	_x_bajada = minf(_x_bajada + rapidez * cos(pendiente) * delta, Config.bajada_fin.x)
 	pendiente = bajada.inclinacion(_x_bajada)
 	melon.position = Vector2(_x_bajada, bajada.altura(_x_bajada)) + Vector2(sin(pendiente), -cos(pendiente)) * melon.radio
@@ -197,7 +218,9 @@ func _avanzar_bajada(delta: float) -> void:
 func _revisar_avance(x: float, delta: float) -> void:
 	var avance := x - mejor_x
 	mejor_x = minf(maxf(mejor_x, x), Config.meta_m * Config.px_por_metro)
-	Musica.actualizar_recorrido(mejor_x / Config.px_por_metro)
+	if fase == Fase.BAJADA or fase == Fase.RECORRIDO:
+		var velocidad := _velocidad_bajada if fase == Fase.BAJADA else melon.linear_velocity.x
+		Musica.actualizar_recorrido(velocidad / Config.px_por_metro, delta)
 	if not melon.roto and x >= Config.meta_m * Config.px_por_metro:
 		_revisar_postales()
 		melon.freeze = true
@@ -276,6 +299,7 @@ func _al_tocar_obstaculo(cuerpo: Node2D, ob: Obstaculo) -> void:
 		return
 	if ob.tipo == "aplauso":
 		recolectados += 1
+		Sonidos.monedas(self)
 	var texto := ob.tocar(melon)
 	if not texto.is_empty():
 		efectos.avisar(texto, melon.global_position + Vector2(0, -50))

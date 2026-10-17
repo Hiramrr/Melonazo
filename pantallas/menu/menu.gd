@@ -36,6 +36,9 @@ var _bajada: Tween
 
 func _ready() -> void:
 	Musica.tocar(Musica.MENU)
+	Animacion._al_agregar_nodo(btn_jugar)
+	# Aquí el clic se reproduce al activar Jugar, incluido su atajo Enter.
+	btn_jugar.button_down.disconnect(Animacion._sonar_click.bind(btn_jugar))
 	$Paisaje.configurar(camara)
 	%BajadaXallitic.abrir_salida()
 	melones.calle = %BajadaXallitic
@@ -112,5 +115,6 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## Conectado a BtnJugar.pressed en la escena.
 func _jugar() -> void:
+	Animacion._sonar_click(btn_jugar)
 	btn_jugar.disabled = true
 	Animacion.cambiar_escena(TALLER)
