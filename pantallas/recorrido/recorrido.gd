@@ -15,6 +15,7 @@ extends Node2D
 ##   Interfaz                 HUD (hud/hud.tscn): datos, lanzamiento y pausa
 ##
 ## Fases: FUERZA → BAJADA sin controles → RECORRIDO al salir del trampolín → FIN.
+## REVIVIR pausa el recorrido hasta aceptar o rechazar la Salsa Valentina.
 ## Este script aplica las reglas de la carrera: lanzamiento, cuándo termina,
 ## efectos de obstáculos, pájaros, empujones del público, papalotes, poderes,
 ## la Salsa Valentina y postales.
@@ -51,11 +52,15 @@ var empujones := 0                     # cada empujón vale menos que el anterio
 var papalotes_usados := 0
 var postales_intento: Array = []       # ids de postales alcanzadas en esta carrera
 var papalote_cercano: Papalote         # el que se activaría al pulsar E
+var persona_cercana: Persona
 var papalote_siguiente: Papalote       # orienta el vuelo aunque quede fuera de pantalla
 var texto_fin := ""
 
 var _t_sin_avance := 0.0
 var _t_fin := 0.0                      # espera antes de pasar a Resultados
+var _t_ayuda := 0.0
+var maniobras := {"rebotes": 0, "slams": 0}
+var _reto_anunciado := false
 
 
 func _ready() -> void:
@@ -64,7 +69,8 @@ func _ready() -> void:
 	PhysicsServer2D.area_set_param(get_world_2d().space, PhysicsServer2D.AREA_PARAM_GRAVITY, Config.gravedad)
 	terreno.iniciar()
 	terreno.preparar_corredores(bajada)
-	melon.configurar(Juego.tamano, Juego.accesorios, Juego.resistencia_max(), Juego.rebotes_max())
+	melon.configurar(Juego.tamano, Juego.accesorios, Juego.resistencia_max(), Juego.rebotes_max(), Juego.velocidad_crucero())
+	melon.maniobra.connect(_al_hacer_maniobra)
 	var pendiente := bajada.pendiente(Config.bajada_inicio.x)
 	var normal := Vector2(sin(pendiente), -cos(pendiente))
 	_x_bajada = Config.bajada_inicio.x
@@ -117,7 +123,7 @@ func _process(delta: float) -> void:
 			_t_fin -= delta
 			if _t_fin <= 0.0:
 				_t_fin = INF
-				Juego.registrar_intento(maxf(0.0, mejor_x) / Config.px_por_metro, melon.carisma(), recolectados, melon.roto, poderes_recogidos, altura_max_m, valentinas_usadas)
+				Juego.registrar_intento(maxf(0.0, mejor_x) / Config.px_por_metro, melon.carisma(), recolectados, melon.roto, poderes_recogidos, altura_max_m, valentinas_usadas, estadisticas())
 				Animacion.cambiar_escena(ESCENA_RESULTADOS)
 	var apuntando := fase == Fase.FUERZA
 	efectos.mostrar_flecha = apuntando
@@ -155,9 +161,24 @@ func _physics_process(delta: float) -> void:
 				if altura_max_m < zona["metros"] and altura_m >= zona["metros"]:
 					efectos.avisar(zona["nombre"], melon.global_position + Vector2(0, -100))
 			altura_max_m = altura_m
-	_actualizar_interacciones()
+	_actualizar_interacciones(delta)
 	_atraer_aplausos(delta)
 	_revisar_postales()
+	var reto := Juego.reto_actual()
+	if not _reto_anunciado and not reto.is_empty() and Juego.progreso_reto(estadisticas()) >= int(reto["meta"]):
+		_reto_anunciado = true
+		efectos.avisar("¡Reto cumplido! +%d aplausos al terminar" % reto["premio"], melon.global_position + Vector2(0, -140))
+
+
+func estadisticas() -> Dictionary:
+	return {"distancia": maxf(0.0, mejor_x) / Config.px_por_metro, "altura": altura_max_m,
+		"monedas": recolectados, "papalotes": papalotes_usados,
+		"rebotes": maniobras["rebotes"], "slams": maniobras["slams"],
+		"llegada": int(mejor_x >= Config.meta_m * Config.px_por_metro and not melon.roto)}
+
+
+func _al_hacer_maniobra(tipo: String) -> void:
+	maniobras[tipo] += 1
 
 
 ## Durante la bajada el rodado sigue la calle y conserva la potencia elegida.
@@ -280,9 +301,9 @@ func _al_recoger_poder(tipo: String) -> void:
 
 ## Marca qué persona y qué papalote están al alcance y atiende la tecla E.
 ## Si ambos están cerca, E usa el papalote.
-func _actualizar_interacciones() -> void:
+func _actualizar_interacciones(delta: float) -> void:
 	var pos := melon.global_position
-	var cercana: Persona = null
+	persona_cercana = null
 	var mejor_d := Config.publico_rango
 	papalote_cercano = null
 	papalote_siguiente = null
@@ -293,7 +314,7 @@ func _actualizar_interacciones() -> void:
 				var d: float = (p.global_position + Vector2(0, -40)).distance_to(pos)
 				p.en_rango = not p.usado and d < Config.publico_rango
 				if p.en_rango and d < mejor_d:
-					cercana = p
+					persona_cercana = p
 					mejor_d = d
 		for p in t.papalotes:
 			if not p.usado and p.global_position.x >= pos.x - Config.papalote_rango:
@@ -304,13 +325,19 @@ func _actualizar_interacciones() -> void:
 			if p.en_rango and d <= distancia_aire:
 				papalote_cercano = p
 				distancia_aire = d
-	if not melon.controlable or melon.slam_activo or not Input.is_action_just_pressed("empujon"):
+	if not melon.controlable or melon.roto or melon.slam_activo:
+		_t_ayuda = 0.0
+		return
+	_t_ayuda = Config.margen_ayuda if Input.is_action_just_pressed("empujon") else maxf(0.0, _t_ayuda - delta)
+	if _t_ayuda <= 0.0:
 		return
 	if papalote_cercano != null and papalote_cercano.impulsar(melon):
+		_t_ayuda = 0.0
 		papalotes_usados += 1
 		efectos.avisar("¡Viento de Xalapa!" if papalote_cercano.corriente else "¡Al cielo!", melon.global_position + Vector2(0, -100))
-	elif cercana != null:
-		_empujar_con(cercana)
+	elif persona_cercana != null:
+		_t_ayuda = 0.0
+		_empujar_con(persona_cercana)
 
 
 ## La persona empuja al melón. Más carisma = más fuerza; cada empujón cansa.

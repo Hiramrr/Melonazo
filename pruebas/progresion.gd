@@ -41,5 +41,26 @@ func _verificar() -> void:
 	assert(golpes[0] < golpes[1] and golpes[1] < golpes[2], "Los obstáculos dañinos aumentan durante todo el viaje")
 	assert(listos[0] < listos[1] and listos[1] < listos[2], "Hay más rivales que esquivan conforme avanza el viaje")
 	terreno.free()
+	var pajaros_bajos := [0, 0]
+	config.generar_adelante = config.meta_m * config.px_por_metro
+	for semilla in [1509, 42, 7301, 7, 99, 2026]:
+		config.semilla_terreno = semilla
+		var ruta = load("res://mundo/terreno/generador_terreno.gd").new()
+		root.add_child(ruta)
+		ruta.iniciar()
+		for tramo in ruta.tramos:
+			for pajaro in tramo.get_node("Aire").get_children():
+				if not pajaro.scene_file_path.ends_with("/pajaro.tscn"):
+					continue
+				assert(pajaro.position.x < config.meta_m * config.px_por_metro, "Las bandadas terminan antes de la meta")
+				if tramo.altura(pajaro.position.x) - pajaro.position.y > config.altura_pajaros.y + 0.01:
+					continue
+				if pajaro.position.x < 1000.0 * config.px_por_metro:
+					pajaros_bajos[0] += 1
+				elif pajaro.position.x >= (config.meta_m - 1000.0) * config.px_por_metro:
+					pajaros_bajos[1] += 1
+		ruta.free()
+	assert(pajaros_bajos[1] > pajaros_bajos[0], "La densidad de pájaros bajos aumenta al final aunque también haya enemigos en altura")
+	print("Pájaros bajos en 1000 m de inicio/final, seis semillas: %s." % [pajaros_bajos])
 	print("OK: ruta de 5200 m, dificultad creciente, separación media %.0f/%.0f/%.0f px, obstáculos dañinos %s y rivales listos %s en 3000 sorteos por etapa." % [separaciones[0], separaciones[1], separaciones[2], golpes, listos])
 	quit()

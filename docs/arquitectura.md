@@ -149,14 +149,14 @@ Recorrido (recorrido.gd)           Reglas de la carrera y fases
 | Señal | Receptor | Para qué |
 | --- | --- | --- |
 | `Melon.aviso(texto)` | `_on_melon_aviso` | Texto flotante sobre el melón |
-| `Melon.se_rompio` | `_on_melon_roto` | Termina la carrera |
+| `Melon.se_rompio` | `_on_melon_roto` | Ofrece revivir con Valentina o termina la carrera |
 | `Terreno.obstaculo_tocado(cuerpo, ob)` | `_al_tocar_obstaculo` | Llama a `ob.tocar(melon)` y muestra el aviso |
 | `Terreno.poder_recogido(tipo)` | `_al_recoger_poder` | `melon.recibir_poder(tipo)` |
 | `Terreno.pajaro_tocado(pajaro)` | `_al_tocar_pajaro` | Llama a `pajaro.tocar(melon)`, que frena al melón |
 
-**Salsa Valentina.** `_on_melon_roto()` y la falta de avance llaman a `_usar_valentina()`. Si `Juego.usar_valentina()` encuentra una, `Melon.revivir()` devuelve resistencia, cargas e impulso y la carrera sigue; si no, termina. Se compra con `Juego.comprar_valentina()` y se guarda como `valentinas` en el JSON.
+**Salsa Valentina.** `_on_melon_roto()` y la falta de avance llaman a `_ofrecer_valentina()`. Si queda salsa, entra en `REVIVIR`, pausa el árbol y abre la elección del HUD durante `Config.valentina_espera`, cinco segundos. El HUD funciona en pausa y emite `valentina_elegida(usar)`. Solo al aceptar, `Juego.usar_valentina()` consume una y `Melon.revivir()` devuelve resistencia, cargas e impulso. Rechazar, pulsar Esc o agotar el tiempo lleva a `FIN` sin consumir. Sin existencias, la carrera termina directamente. Se compra con `Juego.comprar_valentina()` y se guarda como `valentinas` en el JSON.
 
-El **HUD** (`hud/hud.tscn`) es un `CanvasLayer` con `process_mode` *Always*, así funciona en pausa. No guarda estado: el Recorrido llama a `hud.actualizar(self)` cada cuadro. Las tres casillas de accesorios son instancias de `hud/slot_accesorio.tscn`.
+El **HUD** (`hud/hud.tscn`) es un `CanvasLayer` con `process_mode` *Always*, así funciona en pausa. El Recorrido llama a `hud.actualizar(self)` cada cuadro; el HUD lleva la cuenta regresiva de Valentina durante la elección. Las tres casillas de accesorios son instancias de `hud/slot_accesorio.tscn`.
 
 ## El melón (`melon/`)
 

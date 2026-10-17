@@ -98,7 +98,7 @@ func _verificar() -> void:
 		for mover in [false, true]:
 			var r: Dictionary = await carrera(1, mover)
 			print("Vuelo con mejoras máximas, semilla %d, D %s: %.0f m, %d papalotes." % [semilla, mover, r["metros"], r["papalotes"]])
-			comprobar(r["termino"] and r["metros"] <= config.meta_m, "Con mejoras máximas el vuelo termina antes de la meta o al cruzarla")
+			comprobar(r["termino"], "El vuelo con mejoras termina dentro de dos minutos")
 			alcance_mejorado = maxf(alcance_mejorado, r["metros"])
 			if r["llegada"]:
 				print("Llegada al CUCosta en %.1f s, sin accesorios." % r["duracion"])

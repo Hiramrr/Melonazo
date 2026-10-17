@@ -20,9 +20,13 @@ const VALENTINA := "valentina"           # clave de la tarjeta de la salsa en fi
 @onready var lista: VBoxContainer = %ListaMejoras
 
 var filas := {}                         # id -> {nombre, niveles, texto, boton}
+var texto_reto: Label
 
 
 func _ready() -> void:
+	texto_reto = ComunTaller.etiqueta("", &"TextoBreve")
+	texto_reto.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	lista.add_child(texto_reto)
 	for id in Config.orden_mejoras:
 		_crear_tarjeta(id, ICONOS.get(id, Iconos.PODER), CUADRO_NIVEL)
 	_crear_tarjeta(VALENTINA, Poder.TEXTURAS[VALENTINA], Poder.TEXTURAS[VALENTINA])
@@ -63,6 +67,8 @@ func _crear_tarjeta(id: String, icono: Texture2D, cuadro: Texture2D) -> void:
 
 ## Pone al día niveles, efectos y precios con Juego.
 func refrescar() -> void:
+	var reto := Juego.reto_actual()
+	texto_reto.text = "Todos los retos completados" if reto.is_empty() else "Reto %d de %d · %s en un intento. Premio: %d aplausos." % [Juego.retos_completados + 1, Config.retos.size(), reto["texto"], reto["premio"]]
 	for id in Config.orden_mejoras:
 		var m: Dictionary = Config.mejoras[id]
 		var f: Dictionary = filas[id]
@@ -78,6 +84,8 @@ func refrescar() -> void:
 			b.disabled = true
 			b.theme_type_variation = &"BotonMediano"
 		else:
+			if Juego.aplausos < Juego.costo_mejora(id):
+				f["texto"].text += "\nFaltan %d aplausos" % (Juego.costo_mejora(id) - Juego.aplausos)
 			b.text = str(Juego.costo_mejora(id))
 			b.icon = Iconos.APLAUSO
 			b.disabled = Juego.aplausos < Juego.costo_mejora(id)
@@ -102,13 +110,21 @@ func _refrescar_valentina() -> void:
 
 ## Qué da el nivel actual de la mejora, en palabras ("" si no hay descripción).
 func _efecto(id: String) -> String:
+	if Juego.mejora_al_max(id):
+		match id:
+			"fuerza":
+				return "Salida x%.2f · Ritmo %d m/s" % [Juego.mult_fuerza(), Juego.velocidad_crucero() / Config.px_por_metro]
+			"resistencia":
+				return "%d golpes con este tamaño" % Juego.resistencia_max()
+			"rebotes":
+				return "%d impulsos por intento" % Juego.rebotes_max()
 	match id:
 		"fuerza":
-			return "salida x%.2f" % Juego.mult_fuerza()
+			return "Salida x%.2f → x%.2f\nRitmo %d → %d m/s" % [Juego.mult_fuerza(), Juego.mult_fuerza() + Config.fuerza_por_nivel, Juego.velocidad_crucero() / Config.px_por_metro, (Juego.velocidad_crucero() + Config.crucero_por_nivel) / Config.px_por_metro]
 		"resistencia":
-			return "%d golpes con este tamaño" % Juego.resistencia_max()
+			return "%d → %d golpes con este tamaño" % [Juego.resistencia_max(), Juego.resistencia_max() + Config.resistencia_por_nivel]
 		"rebotes":
-			return "%d por intento" % Juego.rebotes_max()
+			return "%d → %d impulsos por intento" % [Juego.rebotes_max(), Juego.rebotes_max() + Config.rebotes_por_nivel]
 	return ""
 
 

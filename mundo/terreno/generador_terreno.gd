@@ -378,7 +378,7 @@ func _poner_obstaculos(t: Tramo, inicio: float) -> void:
 
 ## Separación hasta el siguiente obstáculo; más holgada cerca del inicio.
 func _separacion_obstaculos(x: float) -> float:
-	var holgura := lerpf(Config.obstaculos_holgura, 1.0, dificultad(x))
+	var holgura := lerpf(Config.obstaculos_holgura.x, Config.obstaculos_holgura.y, dificultad(x))
 	return rng.randf_range(Config.separacion_obstaculos.x, Config.separacion_obstaculos.y) * holgura
 
 
@@ -449,7 +449,8 @@ func _poner_poderes(t: Tramo) -> void:
 		var poder := _crear_poder(tipo, Vector2(x, t.altura(x) - rng.randf_range(Config.altura_poderes.x, Config.altura_poderes.y)))
 		t.get_node("Coleccionables").add_child(poder)
 		_poderes_generados += 1
-		_siguiente_poder_x += rng.randf_range(Config.separacion_poderes.x, Config.separacion_poderes.y)
+		_siguiente_poder_x += rng.randf_range(Config.separacion_poderes.x, Config.separacion_poderes.y) \
+			* lerpf(1.0, Config.escasez_poderes, dificultad(x))
 
 
 func _crear_poder(tipo: String, posicion: Vector2) -> Poder:
@@ -522,7 +523,9 @@ func _poner_pajaros(t: Tramo) -> void:
 		var dif := dificultad(x)
 		var cantidad := 2 if rng_pajaros.randf() < Config.prob_bandada * dif else 1
 		var alto_max := lerpf(Config.altura_pajaros.y, Config.altura_papalotes.y, dif)
-		var alto := rng_pajaros.randf_range(Config.altura_pajaros.x, alto_max)
+		var franja := rng_pajaros.randf()
+		# El 70 % permanece cerca de la calle; los de altura no sustituyen esos riesgos.
+		var alto := lerpf(Config.altura_pajaros.x, Config.altura_pajaros.y, franja / 0.7) if franja < 0.7 else lerpf(Config.altura_pajaros.y, alto_max, (franja - 0.7) / 0.3)
 		for i in cantidad:
 			if x + i * 110.0 >= meta:
 				break

@@ -23,6 +23,7 @@ func _verificar() -> void:
 	juego.archivo_guardado = "user://prueba_lanzamiento_%d.json" % OS.get_process_id()
 	juego.niveles = {"fuerza": 0, "resistencia": 0, "rebotes": 0}
 	juego.accesorios = []
+	juego.valentinas = 0
 	config.semilla_terreno = 42
 	await probar_parrilla()
 	for tamano in 3:
@@ -53,6 +54,13 @@ func carrera(tamano: int, fuerza: float, pulsar := false) -> Dictionary:
 	await process_frame
 	await process_frame
 	var r = current_scene
+	# Medimos la fuerza de salida sin que recoger un poder o tocar una rampa cambie el alcance.
+	r.terreno.obstaculo_tocado.disconnect(r._al_tocar_obstaculo)
+	r.terreno.poder_recogido.disconnect(r._al_recoger_poder)
+	r.terreno.pajaro_tocado.disconnect(r._al_tocar_pajaro)
+	for tramo in r.terreno.tramos:
+		for obstaculo in tramo.get_node("Obstaculos").get_children():
+			obstaculo.free()
 	comprobar(r.fase == 0 and r.melon.freeze and r.hud.lanzamiento.visible and r.bajada.barrera.visible, "La salida espera con la barrera puesta mientras eliges potencia")
 	comprobar(r.melon.position.x < config.bajada_fin.x and r.melon.position.y < 0.0, "El melón sale desde arriba de Xallitic")
 	r.fuerza = fuerza
@@ -136,7 +144,10 @@ func probar_parrilla() -> void:
 	r.set_process(false)
 	comprobar(r.terreno.melones.size() == config.rivales_salida, "Las fichas guardadas y los diseños extra completan la parrilla")
 	for ficha in fichas:
-		var coincidencias: Array = r.terreno.melones.filter(func(m: Node2D) -> bool: return m.aspecto == ficha)
+		var coincidencias: Array = r.terreno.melones.filter(func(m: Node2D) -> bool:
+			var aspecto: Dictionary = m.aspecto.duplicate()
+			aspecto.erase("tipo")
+			return aspecto == ficha)
 		comprobar(coincidencias.size() == 1, "Cada melón del almanaque participa una vez con su apariencia completa")
 		if not coincidencias.is_empty():
 			comprobar(coincidencias[0].radio == config.tamanos[ficha["tamano"]]["radio"], "El rival conserva el tamaño guardado")

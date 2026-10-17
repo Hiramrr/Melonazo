@@ -26,6 +26,7 @@ var desbloqueados: Array = []           # ids de accesorios comprados
 var visitados: Array = []               # ids de postales del pasaporte
 var valentinas := 0                     # Salsas Valentina compradas: cada una revive una vez
 var intentos := 0
+var retos_completados := 0
 var ultimo: Dictionary = {}             # desglose de la última carrera (pantalla Resultados)
 
 # --- Melón elegido en el taller ----------------------------------------------
@@ -183,6 +184,10 @@ func mult_fuerza() -> float:
 	return 1.0 + niveles["fuerza"] * Config.fuerza_por_nivel
 
 
+func velocidad_crucero() -> float:
+	return Config.vel_crucero + niveles["fuerza"] * Config.crucero_por_nivel
+
+
 ## Golpes que aguanta el melón con el tamaño elegido.
 func resistencia_max() -> float:
 	return float(Config.tamanos[tamano]["resistencia"]) + niveles["resistencia"] * Config.resistencia_por_nivel
@@ -195,9 +200,18 @@ func rebotes_max() -> int:
 
 # --- Fin de carrera ----------------------------------------------------------
 
+func reto_actual() -> Dictionary:
+	return Config.retos[retos_completados] if retos_completados < Config.retos.size() else {}
+
+
+func progreso_reto(estadisticas: Dictionary) -> int:
+	var reto := reto_actual()
+	return clampi(int(estadisticas.get(reto["dato"], 0)), 0, reto["meta"]) if not reto.is_empty() else 0
+
+
 ## Calcula y cobra los aplausos de una carrera, marca las postales nuevas,
 ## actualiza el récord y guarda. El desglose queda en "ultimo".
-func registrar_intento(distancia_m: float, carisma: int, recolectados: int, roto: bool, poderes := 0, altura_m := 0.0, valentinas_usadas := 0) -> void:
+func registrar_intento(distancia_m: float, carisma: int, recolectados: int, roto: bool, poderes := 0, altura_m := 0.0, valentinas_usadas := 0, maniobras: Dictionary = {}) -> void:
 	distancia_m = clampf(distancia_m, 0.0, Config.meta_m)
 	altura_m = maxf(0.0, altura_m)
 	var por_distancia := int(distancia_m * Config.aplausos_por_metro)
@@ -210,7 +224,16 @@ func registrar_intento(distancia_m: float, carisma: int, recolectados: int, roto
 			visitados.append(postal["id"])
 			nuevas.append(postal["nombre"])
 	var por_visitas: int = nuevas.size() * Config.bonus_postal
-	var total := por_distancia + por_altura + por_carisma + por_recolectados + por_visitas
+	var estadisticas := maniobras.duplicate()
+	estadisticas.merge({"distancia": distancia_m, "altura": altura_m, "monedas": recolectados,
+		"llegada": int(distancia_m >= Config.meta_m and not roto)}, true)
+	var reto := reto_actual()
+	var avance_reto := progreso_reto(estadisticas)
+	var por_reto := 0
+	if not reto.is_empty() and avance_reto >= int(reto["meta"]):
+		por_reto = reto["premio"]
+		retos_completados += 1
+	var total := por_distancia + por_altura + por_carisma + por_recolectados + por_visitas + por_reto
 	var nuevo := distancia_m > record_m
 	if nuevo:
 		record_m = distancia_m
@@ -222,6 +245,7 @@ func registrar_intento(distancia_m: float, carisma: int, recolectados: int, roto
 		"por_carisma": por_carisma, "por_recolectados": por_recolectados, "total": total,
 		"por_visitas": por_visitas, "visitas_nuevas": nuevas, "poderes": poderes,
 		"altura": altura_m, "por_altura": por_altura, "valentinas": valentinas_usadas,
+		"reto": reto.duplicate(), "avance_reto": avance_reto, "por_reto": por_reto,
 		"llegada": distancia_m >= Config.meta_m and not roto,
 	}
 	guardar()
@@ -238,6 +262,7 @@ func reiniciar_progreso() -> void:
 	visitados = []
 	valentinas = 0
 	intentos = 0
+	retos_completados = 0
 	ultimo = {}
 	nombre_melon = "Melón"
 	tamano = 1
@@ -265,7 +290,8 @@ func guardar() -> void:
 	var datos := _melon_a_json(datos_melon())
 	datos.merge({"version": 2, "aplausos": aplausos, "record_m": record_m,
 		"niveles": niveles, "desbloqueados": desbloqueados, "visitados": visitados,
-		"valentinas": valentinas, "intentos": intentos, "melones_guardados": melones_guardados.map(_melon_a_json)})
+		"valentinas": valentinas, "intentos": intentos, "retos_completados": retos_completados,
+		"melones_guardados": melones_guardados.map(_melon_a_json)})
 	var temporal := archivo_guardado + ".tmp"
 	var archivo := FileAccess.open(temporal, FileAccess.WRITE)
 	if archivo == null:
@@ -301,6 +327,7 @@ func cargar() -> void:
 	if datos.get("record_m") is float or datos.get("record_m") is int:
 		record_m = clampf(float(datos["record_m"]), 0.0, 10000000.0)
 	intentos = _entero(datos, "intentos", 0, 0, 10000000)
+	retos_completados = _entero(datos, "retos_completados", 0, 0, Config.retos.size())
 	valentinas = _entero(datos, "valentinas", 0, 0, Config.valentinas_max)
 	var guardados = datos.get("niveles", {})
 	if guardados is Dictionary:

@@ -44,6 +44,7 @@ func _verificar() -> void:
 	juego.aplausos = 1000
 	juego.record_m = 0.0
 	juego.intentos = 0
+	juego.retos_completados = 0
 	juego.visitados = []
 	juego.niveles = {"fuerza": 0, "resistencia": 0, "rebotes": 0}
 	juego.desbloqueados = config.accesorios_iniciales.duplicate()
@@ -69,7 +70,7 @@ func _verificar() -> void:
 	juego.registrar_intento(distancia_tres, 3, 2, false, 2)
 	comprobar(juego.visitados.size() == 3, "Pasaporte registra los tres primeros sitios")
 	var esperado: int = int(distancia_tres * config.aplausos_por_metro) + 3 * config.aplausos_por_carisma \
-		+ 2 * config.valor_aplauso_suelto + 3 * config.bonus_postal
+		+ 2 * config.valor_aplauso_suelto + 3 * config.bonus_postal + int(config.retos[0]["premio"])
 	comprobar(juego.ultimo["por_visitas"] == 3 * config.bonus_postal and juego.ultimo["total"] == esperado, "Desglose de premios")
 	comprobar(juego.ultimo["por_altura"] == 0 and juego.ultimo["altura"] == 0.0, "Registrar sin altura conserva las recompensas anteriores")
 	var saldo_antes_altura: int = juego.aplausos

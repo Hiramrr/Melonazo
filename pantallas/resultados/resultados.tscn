@@ -124,10 +124,16 @@ text = "Faltan 2600 m para llegar al CUCosta"
 horizontal_alignment = 1
 autowrap_mode = 3
 
-[node name="ListaAplausos" type="VBoxContainer" parent="Margen/Columnas/Derecha/Tarjeta/Caja"]
-unique_name_in_owner = true
+[node name="Desglose" type="ScrollContainer" parent="Margen/Columnas/Derecha/Tarjeta/Caja"]
 layout_mode = 2
 size_flags_vertical = 3
+focus_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="ListaAplausos" type="VBoxContainer" parent="Margen/Columnas/Derecha/Tarjeta/Caja/Desglose"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
 theme_override_constants/separation = 5
 
 [node name="FilaTotal" type="HBoxContainer" parent="Margen/Columnas/Derecha/Tarjeta/Caja"]

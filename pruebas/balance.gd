@@ -70,6 +70,7 @@ func _verificar() -> void:
 		var r: Dictionary = await carrera(1, 6, true, true, 0.91, true)
 		if r["llegada"]:
 			llegadas += 1
+			comprobar(r["segundos"] >= 30.0, "El viaje completo requiere al menos medio minuto con controles")
 		print("Ruta completa, semilla %d: %.0f m, %.1f s, %d slams, llegada %s." % [semilla, r["metros"], r["segundos"], r["slams"], r["llegada"]])
 	comprobar(llegadas > 0, "Las mejoras, accesorios y slams permiten completar los 5200 metros con física real")
 	DirAccess.remove_absolute(juego.archivo_guardado)
@@ -88,7 +89,7 @@ func aislar_progreso() -> void:
 func carrera(tamano: int, nivel: int, activa: bool, equipo := false, fuerza := 0.91, con_slam := false, apuntar_slam := true) -> Dictionary:
 	seed(config.semilla_terreno)
 	juego.tamano = tamano
-	juego.accesorios = ["llantitas", "rebozo"] if equipo else []
+	juego.accesorios = (["llantitas", "rebozo", "jarana"] if con_slam else ["llantitas", "rebozo"]) if equipo else []
 	juego.valentinas = 0
 	juego.niveles = {"fuerza": nivel, "resistencia": mini(nivel, 5), "rebotes": mini(nivel, 5)}
 	change_scene_to_file("res://pantallas/recorrido/recorrido.tscn")
@@ -109,9 +110,10 @@ func carrera(tamano: int, nivel: int, activa: bool, equipo := false, fuerza := 0
 	var poderes := 0
 	var papalotes := 0
 	var llegada := false
-	while is_instance_valid(recorrido) and current_scene == recorrido and cuadros < (120 if activa else 30) * 120:
+	var motivo := ""
+	while is_instance_valid(recorrido) and current_scene == recorrido and cuadros < (120 if con_slam else (60 if activa else 30)) * 120:
 		await physics_frame
-		for accion in ["rebote", "empujon", "acc_1", "acc_2", "slam"]:
+		for accion in ["rebote", "empujon", "acc_1", "acc_2", "acc_3", "slam"]:
 			Input.action_release(accion)
 		cuadros += 1
 		if not is_instance_valid(recorrido):
@@ -120,9 +122,12 @@ func carrera(tamano: int, nivel: int, activa: bool, equipo := false, fuerza := 0
 		poderes = recorrido.poderes_recogidos
 		papalotes = recorrido.papalotes_usados
 		llegada = recorrido.fase == 3 and metros >= config.meta_m and not recorrido.melon.roto
+		motivo = recorrido.texto_fin
 		if activa and recorrido.fase == 2 and cuadros % 2 == 0:
 			var melon = recorrido.melon
-			if con_slam and melon.t_slam <= 0.0 and (not apuntar_slam or recorrido.hud._hay_melon_debajo(recorrido)):
+			if con_slam and is_instance_valid(recorrido.papalote_cercano) and not melon.slam_activo:
+				Input.action_press("empujon")
+			elif con_slam and melon.t_slam <= 0.0 and (not apuntar_slam or recorrido.hud._hay_melon_debajo(recorrido)):
 				Input.action_press("slam")
 			elif melon.rebotes > 0 and melon.t_bloqueo <= 0 and melon.t_impacto >= 0 and melon.t_impacto < config.ventana_rebote * 0.75:
 				Input.action_press("rebote")
@@ -130,10 +135,12 @@ func carrera(tamano: int, nivel: int, activa: bool, equipo := false, fuerza := 0
 				Input.action_press("acc_1")
 			if not melon.en_suelo and melon.linear_velocity.y > 150 and melon.position.x > 900 and melon.slots[1] != null:
 				Input.action_press("acc_2")
+			if con_slam and melon.rebotes == 0 and melon.slots[2] != null:
+				Input.action_press("acc_3")
 			for tramo in recorrido.terreno.tramos:
 				for persona in tramo.personas:
 					if persona.en_rango and not persona.usado:
 						Input.action_press("empujon")
-	for accion in ["rebote", "empujon", "acc_1", "acc_2", "slam"]:
+	for accion in ["rebote", "empujon", "acc_1", "acc_2", "acc_3", "slam"]:
 		Input.action_release(accion)
-	return {"metros": metros, "segundos": cuadros / 120.0, "poderes": poderes, "impulsos_poderes": conteo_poderes["impulsos"], "papalotes": papalotes, "slams": conteo_poderes["slams"], "llegada": llegada, "termino": current_scene != recorrido}
+	return {"metros": metros, "segundos": cuadros / 120.0, "poderes": poderes, "impulsos_poderes": conteo_poderes["impulsos"], "papalotes": papalotes, "slams": conteo_poderes["slams"], "llegada": llegada, "motivo": motivo, "termino": current_scene != recorrido}

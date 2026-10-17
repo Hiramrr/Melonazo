@@ -91,7 +91,8 @@ func _agregar_ayuda(parte: Array) -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("pausar") and not event.is_echo():
 		if revivir.visible:
-			_elegir_valentina(false)
+			if event.is_action_pressed("ui_cancel"):
+				_elegir_valentina(false)
 		else:
 			_alternar_pausa()
 		get_viewport().set_input_as_handled()
@@ -149,6 +150,11 @@ func actualizar(r: Recorrido) -> void:
 	var melon := r.melon
 	var metros := maxf(0.0, r.mejor_x) / Config.px_por_metro
 	distancia.text = "%d m" % int(metros)
+	%Velocidad.text = "%d m/s" % int(maxf(0.0, melon.linear_velocity.x) / Config.px_por_metro)
+	var reto := Juego.reto_actual()
+	%Reto.visible = not reto.is_empty()
+	if not reto.is_empty():
+		%Reto.text = "Reto %d/%d · %s\n%d/%d · +%d aplausos" % [Juego.retos_completados + 1, Config.retos.size(), reto["texto"], Juego.progreso_reto(r.estadisticas()), reto["meta"], reto["premio"]]
 	%Nombre.text = "%s · Récord %d m" % [Juego.nombre_melon, int(Juego.record_m)]
 	_actualizar_resistencia(melon)
 	impulsos.total = maxi(melon.rebotes, Juego.rebotes_max())
@@ -282,12 +288,16 @@ func _actualizar_indicacion(r: Recorrido) -> void:
 			elif is_instance_valid(r.papalote_cercano) and not r.papalote_cercano.usado:
 				_indicar("E", "%s: impulso y escudo" % r.papalote_cercano.nombre())
 				urgente = true
+			elif is_instance_valid(r.persona_cercana) and not r.persona_cercana.usado:
+				_indicar("E", "¡Pide un empujón!")
+				urgente = true
 			elif not melon.puede_saltar():
-				_indicar("E", "Busca papalotes, corrientes o café")
+				_indicar("", "Busca papalotes, corrientes o café")
+				tecla.visible = false
 			elif melon.t_bloqueo > 0.0:
 				aviso.visible = false
-			elif not melon.en_suelo and melon.t_impacto >= 0.0 and melon.t_impacto <= Config.ventana_rebote:
-				_indicar("Espacio", "¡Rebote con impulso!")
+			elif not melon.en_suelo and melon.t_impacto >= 0.0 and melon.t_impacto <= Config.tolerancia_rebote:
+				_indicar("Espacio", "¡Rebote con impulso!" if melon.t_impacto <= Config.ventana_rebote else "Prepara el rebote")
 				urgente = true
 			else:
 				_indicar("Espacio", "Saltar" if melon.en_suelo else "Salto aéreo")

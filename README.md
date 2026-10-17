@@ -57,15 +57,25 @@ En la salida esperan seis rivales junto a tu melón. Cada intento toma al azar h
 
 El medidor de potencia aparece en la salida de la bajada. Espacio fija el valor, retira la barrera y suelta a todos los melones. Los rivales bajan por dos filas, saltan del trampolín y continúan por el camino con ritmos distintos. Después aparecen más melones durante el viaje. La zona perfecta está entre 80 % y 100 %. Más potencia da más velocidad al llegar a Xalapa. Durante la bajada no puedes saltar, girar, usar accesorios ni pedir empujones. La pausa sigue disponible. Al salir del trampolín recuperas todos los controles de carrera.
 
-Empiezas con dos rebotes impulsados y puedes pulsar Espacio hasta 0.26 segundos antes de tocar suelo. Caer sobre el lado redondo conserva velocidad. Los accesorios son solo imagen: no tienen colisión ni cambian el aterrizaje. Usarlos consume su carisma durante esa carrera. Vuelven a estar equipados en el siguiente intento.
+Empiezas con dos rebotes impulsados y puedes pulsar Espacio hasta 0.40 segundos antes de tocar suelo. Caer sobre el lado redondo conserva velocidad. Los accesorios son solo imagen: no tienen colisión ni cambian el aterrizaje. Usarlos consume su carisma durante esa carrera. Vuelven a estar equipados en el siguiente intento.
+
+## Retos y mejoras
+
+Hay diez retos, uno activo por intento. Empiezan con avanzar 300 metros y piden después rebotes impulsados, ayudas aéreas, monedas, altura y slams. El HUD muestra el objetivo, su avance y el premio. Completarlo da entre 80 y 800 aplausos al terminar la carrera y desbloquea el siguiente para el próximo intento. Cada premio se cobra una sola vez. Las maniobras deben hacerse en una misma carrera; el reto desbloqueado se guarda entre sesiones. Abandonar desde la pausa no cobra el premio.
+
+La Tiendita muestra cuánto cambia cada compra y los aplausos que faltan. Cada nivel de Fuerza aumenta la velocidad de salida y añade 12 m/s al ritmo que pueden sostener los rebotes y los slams. El HUD muestra la velocidad horizontal. Los resultados indican la siguiente parada cercana y permiten desplazar el desglose si hay muchas recompensas.
+
+E conserva una pulsación hasta 0.18 segundos antes de entrar en el alcance de una ayuda. El aviso ofrece esa tecla cuando hay un papalote o una persona disponible. Espacio permite preparar el rebote hasta 0.40 segundos antes del suelo; dentro de los últimos 0.26 segundos el aro se vuelve verde.
 
 ## Slam y melones rodantes
 
-Además de los seis rivales de la salida, aparecen melones medianos y grandes desde los 100 metros, separados entre 170 y 230 metros. Se generan por delante del jugador hasta la meta y dejan de ocupar memoria al quedar lejos. Cada uno permite un único slam, así hay más oportunidades de recuperar velocidad sin repetir el mismo apoyo.
+Además de los seis rivales de la salida, aparecen grupos de melones medianos y grandes desde los 100 metros, separados entre 100 y 150 metros. Algunos llevan una pareja entre 20 y 30 metros detrás. La probabilidad de pareja aumenta del 30 % al inicio al 60 % cerca de la meta. Se generan por delante del jugador y dejan de ocupar memoria al quedar lejos. Cada melón permite un único slam.
 
 Los rivales corren como tu melón: aceleran en las bajadas, frenan en las subidas, despegan en las crestas, rebotan al caer y saltan cada uno o tres segundos. Cada uno tiene su ritmo de crucero, entre 420 y 620 px/s. Si se quedan muy atrás apuran el paso, y si te sacan mucha ventaja lo aflojan, así siguen cerca durante el viaje. Cuando vuelas a más de 65 metros sobre la calle, los rivales cercanos te siguen al aire con impulsos, entre 32 y 54 metros por debajo de ti, y ajustan su avance al tuyo. Cada impulso deja un soplo blanco bajo el melón. No suben mientras caes en picado, y el que ya recibió un slam se queda abajo. Como vuelan más hondo de lo que devuelve un slam, golpearlos en lo alto cuesta algo de altura.
 
 Pulsa S o flecha abajo en el aire para caer en picado. Golpear uno desde arriba te impulsa hacia arriba y añade velocidad hacia delante. El rival queda achatado un momento, frena y sigue corriendo, pero ya no sirve para otro slam. Si caes al suelo sin acertar, conservas el 60 % de tu velocidad horizontal. El slam no consume saltos, tiene una recarga de 0.45 segundos tras resolverse y bloquea el salto y los papalotes mientras caes.
+
+Los slams y los rebotes impulsados recuperan velocidad hasta el ritmo de crucero del melón. Las mejoras de fuerza aumentan ese ritmo. Si otro impulso ya lo hizo ir más rápido, conservan esa velocidad sin añadir más. Acertar un slam tampoco borra un frenón recibido en el mismo paso de física.
 
 Durante el picado tu melón corrige un poco su avance hacia el rival que tiene debajo, hasta 1700 px/s². Picar desde más alto da más tiempo para corregir. Picar encima del rival apenas cambia nada. Un mal cálculo sigue fallando. El rival que apuntas deja de saltar mientras caes, aunque sigue rebotando si venía en el aire. El golpe admite entre 16 y 40 píxeles de margen lateral según la velocidad relativa. Los golpes laterales y desde abajo no cuentan. El HUD solo muestra el aviso de S cuando la caída sale con la mitad de esa corrección, y tiene en cuenta el arco del rival si está en el aire. En ese momento el rival lleva una mira amarilla con una flecha hacia abajo: si pulsas S, aciertas. Durante el picado, la mira se vuelve coral sobre el rival hacia el que se corrige la caída.
 
@@ -83,23 +93,23 @@ Subir tiene sus propios objetivos. A 60 metros llegas a los Tejados de Xallitic,
 
 ## Poderes del camino
 
-Se activan al recogerlos y tienen siluetas diferentes. El primero aparece a los 70 metros. Después aparecen cada 110 a 160 metros, alternados y por encima del camino. Hay que aprovechar un salto, un rebote o un accesorio para alcanzarlos.
+Se activan al recogerlos y tienen siluetas diferentes. El primero aparece a los 70 metros. Después alternan cada 95 a 140 metros al inicio. La separación aumenta durante el viaje hasta 152 a 224 metros cerca de la meta. Aparecen por encima del camino; los más bajos se alcanzan rodando y los demás requieren saltar.
 
 | Poder | Efecto |
 | --- | --- |
 | Chile jalapeño | Explota y lanza al melón hacia adelante, como mínimo a 110 m/s, y un poco hacia arriba |
 | Café de Coatepec | Energía ilimitada durante 4 segundos: saltas y rebotas todo lo que quieras sin gastar cargas |
-| Pizza con yogur | El melón se sube a una pizza que avanza 2.5 segundos sin perder altura. Saltar o hacer slam lo baja |
+| Pizza con yogur | El melón se sube a una pizza que avanza 2.5 segundos sin perder altura. Saltar, hacer slam o chocar con algo que frene lo baja |
 
-Si el melón va lento en el suelo y sin cargas de salto, aparece por delante, a ras de calle, un café. Hay como mucho un rescate cada 7 segundos.
+Si el melón va lento en el suelo y sin cargas de salto, aparece por delante, a ras de calle, un café. Hay como mucho un rescate cada 12 segundos.
 
 ## Salsa Valentina
 
-Se compra en la Tiendita del taller por 350 aplausos; puedes tener hasta tres. Si el melón se rompe o se detiene, se usa sola una salsa: el melón vuelve con toda su resistencia y sus cargas, dos segundos invulnerable y con impulso para seguir. El HUD muestra cuántas te quedan.
+Se compra en la Tiendita del taller por 350 aplausos; puedes tener hasta tres. Si el melón se rompe o se detiene y tienes salsa, la carrera se pausa y tienes cinco segundos para elegir "Usar salsa y revivir" o "Terminar intento". Al aceptar, gastas una salsa y el melón vuelve con toda su resistencia y sus cargas, dos segundos invulnerable y con impulso para seguir. Si rechazas, pulsas Esc o se acaba el tiempo, conservas la salsa y termina el intento. El HUD muestra cuántas te quedan.
 
 ## Pájaros
 
-Desde los 180 metros vuelan pájaros contra el melón, a veces en pareja, entre 11 y 75 metros sobre la calle. Chocar con uno le quita casi la mitad de la velocidad. Cada pájaro estorba una sola vez.
+Desde los 180 metros vuelan pájaros contra el melón. El 70 % de los grupos se mantiene entre 11 y 75 metros sobre la calle. Los demás llegan cada vez más alto durante el viaje, hasta los 330 metros. Hacia la meta hay más pájaros y más parejas. Chocar con uno quita entre el 25 % y el 45 % de la velocidad según el tamaño del melón y lo baja de la pizza. Cada pájaro estorba una sola vez.
 
 Los melones rivales tienen carácter: los tontos (cara de sueño) van lentos, tropiezan y son fáciles de aplastar; los listos (con lentes) van más rápido y a veces esquivan el primer slam. Al principio abundan los tontos y hacia el final, los listos.
 
@@ -171,6 +181,7 @@ Si un archivo no se puede leer, el juego lo respalda con sufijo `.danado` antes 
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --editor --quit
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/musica.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/verificar.gd
+/Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/valentina.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/ruta.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/progresion.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/lugares.gd
@@ -178,8 +189,10 @@ Si un archivo no se puede leer, el juego lo respalda con sufijo `.danado` antes 
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/slam.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/lanzamiento.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/balance.gd
+/Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/penalizaciones.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/impulsos.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/vuelo.gd
+/Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/ritmo.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/distribucion.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/paralaje.gd
 /Applications/Godot.app/Contents/MacOS/Godot --path . --script res://pruebas/rendimiento.gd
@@ -188,6 +201,8 @@ Si un archivo no se puede leer, el juego lo respalda con sufijo `.danado` antes 
 La segunda orden comprueba entradas, compras, desbloqueos, premios sin duplicados, persistencia, datos inválidos, poderes, accesorios, pausa y una carrera real completa hasta volver al taller. Utiliza un archivo de prueba separado y lo borra al terminar. No modifica tu progreso.
 
 `ruta.gd` comprueba los límites del viaje, las cuatro etapas del HUD, las 19 señales del camino, la llegada por aire, el cierre del terreno y el cobro único de recompensas. También comprueba las fotos y los datos curiosos de los 19 destinos elegidos en sus límites de distancia. Si se quita una foto, verifica que no se sustituya por la de otro lugar. `balance.gd` exige completar al menos una carrera de 5200 metros con mejoras, equipo y slams, con física real.
+
+`valentina.gd` comprueba la elección al romperse o detenerse, la pausa, el consumo único al aceptar, el rechazo, Esc y el vencimiento sin gastar la salsa. Usa un guardado separado. Sin `--headless` también comprueba los límites del diálogo y guarda capturas a 1280 × 720 y 960 × 540 en `user://revision_grafica/`.
 
 `lugares.gd` comprueba que los 19 puntos tengan su imagen en la posición correcta, sin duplicados en los límites de tramo ni colisiones. También verifica que cambiar una imagen del mapa por un sprite conserve la foto de resultados.
 
@@ -201,6 +216,8 @@ La segunda orden comprueba entradas, compras, desbloqueos, premios sin duplicado
 
 `impulsos.gd` revisa que todo el terreno sea plano, la separación de los melones, el límite de generación y la retirada de los que quedan atrás. Compara 18 carreras con las ayudas adicionales activas o desactivadas, con las mismas semillas y controles. Comprueba que apuntar los slams permita llegar con menos mejoras. Otras tres carreras verifican que pulsar slam sin apuntar siga fallando y termine mucho antes de la meta. Usa un archivo de prueba separado.
 
+`penalizaciones.gd` compara melones con pizza, con y sin pájaro, charco o coladera. Comprueba que los tres tamaños pierdan velocidad y que el efecto dure al menos medio segundo. También verifica que el slam conserve un frenón del mismo paso y que encadenarlo no acumule velocidad sin límite.
+
 `vuelo.gd` comprueba el consumo y bloqueo de saltos, el alcance de E y el uso único de cada ayuda sin recargar saltos ni perder las cargas extra de la jarana. También recorre la ruta aérea con tres tamaños y tres semillas, sin mejoras ni accesorios, tanto con D sostenida como sin ella. Exige encadenar al menos dos ayudas, llegar a 140 metros de altura y permanecer seis segundos sobre los 40 metros. Las carreras deben terminar dentro de dos minutos y, sin mejoras, antes de la meta. Repite con el melón mediano y mejoras máximas y exige alcanzar al menos la salida de Xalapa. El límite de tiempo detecta vuelos que no terminan; no es un tope dentro del juego. Usa un guardado de prueba separado.
 
 `progresion.gd` comprueba la longitud de 5200 metros, que la dificultad siga creciendo hasta la meta y que los obstáculos se acerquen. Compara 3000 sorteos al inicio, en medio y al final para comprobar el aumento de obstáculos dañinos y rivales listos.
@@ -208,6 +225,8 @@ La segunda orden comprueba entradas, compras, desbloqueos, premios sin duplicado
 `distribucion.gd` revisa seis semillas, las monedas desde el inicio, la frecuencia de poderes, la cobertura de puntos en las cuatro franjas de altura y la variedad de poderes. Limita la densidad a doce monedas por cada mil píxeles de camino y a dieciséis monedas en una vista de 1500 por 1000 píxeles. También comprueba que los premios aéreos no cambien el suelo ni las ayudas, que todos los premios queden dentro de su tramo, que una semilla fija repita la distribución y que los intentos al azar sean diferentes.
 
 `rendimiento.gd` necesita una ventana con render real. Comprueba que el melón conserve una textura con el máximo de seis mil puntos al moverse y girar, que solo la actualice al consumir equipo o romperse y que sus efectos sigan cambiando. La textura se dibuja a doble resolución para conservar los detalles. También comprueba que el fondo conserve su dibujo hasta cambiar de altura o tamaño de ventana. No escribe el progreso del jugador.
+
+`ritmo.gd` comprueba los diez retos, el cobro único, el guardado anterior y los datos inválidos. También verifica el ritmo de las mejoras, la pulsación anticipada de E, su caducidad y un rebote real preparado antes de la ventana verde. Usa un guardado separado.
 
 ## Xalapa en el juego
 

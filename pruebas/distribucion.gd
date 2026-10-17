@@ -18,7 +18,7 @@ func comprobar(condicion: bool, mensaje: String) -> void:
 
 func _verificar() -> void:
 	var config := root.get_node("Config")
-	config.generar_adelante = 16000.0
+	config.generar_adelante = config.meta_m * config.px_por_metro
 	var franjas: Array = config.franjas_premios_aire.duplicate()
 	for semilla in [1509, 42, 7301, 7, 99, 2026]:
 		config.semilla_terreno = semilla
@@ -113,7 +113,10 @@ func generar(revisar: bool) -> Dictionary:
 		for i in range(1, monedas_bajas.size()):
 			comprobar(monedas_bajas[i] - monedas_bajas[i - 1] < 2000.0, "Las monedas mantienen grupos separados a lo largo de la calle")
 		for i in range(1, poderes_bajos.size()):
-			comprobar(poderes_bajos[i] - poderes_bajos[i - 1] <= config.separacion_poderes.y, "Los poderes mantienen su frecuencia entre tramos")
+			var anterior := poderes_bajos[i - 1]
+			var holgura: float = lerpf(1.0, config.escasez_poderes, terreno.dificultad(anterior))
+			var separacion := poderes_bajos[i] - anterior
+			comprobar(separacion >= config.separacion_poderes.x * holgura - 0.01 and separacion <= config.separacion_poderes.y * holgura + 0.01, "Los poderes se espacian gradualmente sin huecos extra entre tramos")
 		comprobar(not pajaros.is_empty() and pajaros[0].x >= config.primer_pajaro_x, "Los pájaros aparecen después de la salida")
 		for pajaro in pajaros:
 			comprobar(pajaro.x <= config.meta_m * config.px_por_metro + 200.0, "No hay pájaros después de la meta")

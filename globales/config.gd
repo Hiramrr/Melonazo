@@ -26,7 +26,7 @@ var tamanos: Array = [
 		"amortiguacion": 0.23, "friccion_rodado": 170.0, "inercia": 0.3, "resistencia": 3, "umbral_caida": 1050.0},
 	{"nombre": "Grande", "desc": "Pesado: sale corto, pero conserva la inercia y aguanta más golpes.",
 		"radio": 30.0, "masa": 3.6, "mult_lanzamiento": 0.75, "rebote": 0.22, "friccion": 0.9,
-		"amortiguacion": 0.2, "friccion_rodado": 155.0, "inercia": 0.6, "resistencia": 4, "umbral_caida": 1250.0},
+		"amortiguacion": 0.2, "friccion_rodado": 155.0, "inercia": 0.45, "resistencia": 4, "umbral_caida": 1250.0},
 ]
 
 # --- Accesorios --------------------------------------------------------------
@@ -66,6 +66,7 @@ var arrastre_extra := 1.0            # fracción por segundo del exceso que se p
 
 # --- Rebote impulsado --------------------------------------------------------
 var ventana_rebote := 0.26           # s antes de tocar suelo en que cuenta el Espacio
+var tolerancia_rebote := 0.40        # s para guardar una pulsación adelantada sin gastar un salto aéreo
 var bloqueo_rebote := 0.45           # s sin poder volver a intentarlo (evita machacar)
 var rebote_mult_normal := 0.95       # multiplica la velocidad de impacto
 var rebote_min := 520.0              # velocidad mínima de salida del rebote
@@ -146,6 +147,7 @@ var empuje_base := 240.0
 var empuje_por_carisma := 0.08       # +8% de empuje por punto de carisma
 var empuje_dir := Vector2(1.0, -0.55)
 var empuje_cansancio := 0.75         # cada empujón de la misma carrera vale 75% del anterior
+var margen_ayuda := 0.18            # s que se conserva E si se pulsa justo antes de entrar en rango
 
 # --- Ruta aérea --------------------------------------------------------------
 var primer_papalote_x := 600.0
@@ -211,7 +213,7 @@ var inicio_obstaculos_x := 900.0
 # Todo el camino después del lanzamiento es plano.
 # Dificultad gradual durante el viaje. Los primeros 100 m sirven para aprender.
 var dificultad_metros := Vector2(100.0, 5200.0)
-var obstaculos_holgura := 1.8        # multiplica la separación de obstáculos con dificultad 0
+var obstaculos_holgura := Vector2(1.8, 1.2)  # separación multiplicada al inicio y al final
 var prob_empedrado := 0.5
 var separacion_obstaculos := Vector2(280, 560)
 var separacion_publico := Vector2(380, 750)
@@ -255,8 +257,23 @@ var mejoras: Dictionary = {
 	"rebotes": {"nombre": "Rebotes impulsados", "costo_base": 300, "crecimiento": 1.5, "max": 5},
 }
 var fuerza_por_nivel := 0.2         # +20% de velocidad de salida
+var crucero_por_nivel := 120.0      # px/s más de ritmo para slams y rebotes por nivel de fuerza
 var resistencia_por_nivel := 1
 var rebotes_por_nivel := 1
+
+# Un reto por intento. Añadir al final conserva el progreso de los guardados.
+var retos: Array = [
+	{"texto": "Avanza 300 m", "dato": "distancia", "meta": 300, "premio": 80},
+	{"texto": "Haz 2 rebotes impulsados", "dato": "rebotes", "meta": 2, "premio": 100},
+	{"texto": "Usa 2 ayudas aéreas", "dato": "papalotes", "meta": 2, "premio": 120},
+	{"texto": "Recoge 9 monedas", "dato": "monedas", "meta": 9, "premio": 140},
+	{"texto": "Alcanza 140 m de altura", "dato": "altura", "meta": 140, "premio": 160},
+	{"texto": "Acierta 3 slams", "dato": "slams", "meta": 3, "premio": 200},
+	{"texto": "Avanza 1200 m", "dato": "distancia", "meta": 1200, "premio": 250},
+	{"texto": "Alcanza 240 m de altura", "dato": "altura", "meta": 240, "premio": 300},
+	{"texto": "Sal de Xalapa", "dato": "distancia", "meta": 2400, "premio": 500},
+	{"texto": "Llega al CUCosta", "dato": "llegada", "meta": 1, "premio": 800},
+]
 # Salsa Valentina: se compra en el taller y revive al melón si se rompe o se detiene.
 # Se muestra en la tiendita y el almanaque con la imagen de Poder.TEXTURAS.
 var poderes_tienda: Dictionary = {
@@ -322,19 +339,20 @@ var orden_poderes: Array = ["chile", "cafe", "pizza"]
 var poderes: Dictionary = {
 	"chile": {"nombre": "Chile jalapeño", "descripcion": "Explota y te lanza hacia adelante.", "color": Color("4f9a3a"), "duracion": 0.0, "impulso": Vector2(900, -320)},
 	"cafe": {"nombre": "Café de Coatepec", "descripcion": "Energía ilimitada: saltas todo lo que quieras sin gastar cargas durante 4 s.", "color": Color("a56d43"), "duracion": 4.0, "impulso": Vector2.ZERO},
-	"pizza": {"nombre": "Pizza con yogur", "descripcion": "Te subes a una pizza que avanza unos metros sin perder altura.", "color": Color("f1ce67"), "duracion": 2.5, "impulso": Vector2.ZERO},
+	"pizza": {"nombre": "Pizza con yogur", "descripcion": "Te subes a una pizza que avanza unos metros sin perder altura. Un frenón te tira.", "color": Color("f1ce67"), "duracion": 2.5, "impulso": Vector2.ZERO},
 }
 var chile_vel_min := 1100.0          # px/s hacia adelante tras la explosión, como mínimo
 var cafe_bloqueo := 0.18             # s entre saltos mientras dura el café
 var pizza_vel := 1000.0              # px/s hacia adelante sobre la pizza, como mínimo
 var primer_poder_x := 700.0
 var separacion_poderes := Vector2(950.0, 1400.0)
+var escasez_poderes := 1.6            # con dificultad 1 los poderes quedan 60 % más separados
 var altura_poderes := Vector2(70.0, 150.0)   # los más bajos se tocan rodando
 # Rescates: si el melón va mal un rato (lento en el suelo o sin cargas de salto),
 # aparece por delante el poder que le hace falta, a ras de calle.
 var rescate_velocidad := 450.0       # px/s; por debajo, rodando, cuenta como lento
 var rescate_tras := 0.5              # s seguidos en apuros antes del rescate
-var rescate_espera := 7.0            # s mínimos entre rescates
+var rescate_espera := 12.0           # s mínimos entre rescates; el café dura 4 s, así no hay saltos sin fin
 var rescate_altura := 45.0           # px sobre el suelo; se alcanza sin saltar
 var rescate_distancia := Vector2(160.0, 1100.0)  # px por delante, según la velocidad
 var bonus_postal := 60

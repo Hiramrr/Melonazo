@@ -20,6 +20,7 @@ extends RigidBody2D
 signal aviso(texto: String)             ## texto flotante para el recorrido
 signal se_rompio                        ## sin resistencia: termina la carrera
 signal danado(cantidad: float)          ## perdió resistencia (1.0 = un golpe completo)
+signal maniobra(tipo: String)          ## rebote impulsado o slam acertado
 
 # Imágenes de los poderes sobre el melón. Se cambian en el inspector de melon.tscn
 # (cualquier Texture2D: PNG, WebP o un AtlasTexture de una hoja de sprites).
@@ -34,6 +35,7 @@ const DURACION_EXPLOSION := 0.45
 var tamano := 1                         # índice en Config.tamanos
 var slots: Array = [null, null, null]   # accesorio por tecla 1-2-3 (null = usado/perdido)
 var radio := 22.0
+var vel_crucero := 1800.0
 var resistencia := 3.0                  # golpes que aguanta antes de romperse; las caídas
 var resistencia_max := 3.0              # medianas quitan fracciones
 var rebotes := 1                        # cargas para saltar o rebotar con impulso
@@ -91,8 +93,9 @@ func _ready() -> void:
 ## Prepara el melón para una carrera. ids = accesorios equipados por tecla.
 
 
-func configurar(p_tamano: int, ids: Array, p_resistencia: float, p_rebotes: int) -> void:
+func configurar(p_tamano: int, ids: Array, p_resistencia: float, p_rebotes: int, p_crucero := 0.0) -> void:
 	tamano = p_tamano
+	vel_crucero = p_crucero if p_crucero > 0.0 else Config.vel_crucero
 	var d := datos()
 	radio = d["radio"]
 	mass = d["masa"]
@@ -293,17 +296,19 @@ func acertar_slam() -> void:
 		return
 	slam_activo = false
 	t_slam = Config.slam_recarga
-	var vx := maxf(0.0, linear_velocity.x + _dv.x)
+	# _mult cuenta un frenón del mismo paso; si no, el slam lo borraría al reiniciarlo.
+	var vx := maxf(0.0, linear_velocity.x * _mult + _dv.x)
 	fijar_velocidad(Vector2(_impulso_hasta_crucero(vx, Config.slam_impulso.x), Config.slam_impulso.y))
 	_dv = Vector2.ZERO
 	_mult = 1.0
 	aviso.emit("¡Slam acertado! Más velocidad")
+	maniobra.emit("slams")
 
 
-## Suma la ganancia hasta Config.vel_crucero; si ya iba más rápido, no gana ni pierde.
+## Suma la ganancia hasta vel_crucero; si ya iba más rápido, no gana ni pierde.
 ## Así encadenar slams o rebotes sostiene el ritmo, pero no lo dispara sin límite.
 func _impulso_hasta_crucero(rapidez: float, ganancia: float) -> float:
-	return maxf(rapidez, minf(rapidez + ganancia, Config.vel_crucero))
+	return maxf(rapidez, minf(rapidez + ganancia, vel_crucero))
 
 
 ## Llama a acc.fisica() en cada paso durante dur segundos.
@@ -384,8 +389,8 @@ func _physics_process(delta: float) -> void:
 		if Input.is_action_just_pressed("slam"):
 			iniciar_slam()
 		if not slam_activo and Input.is_action_just_pressed("rebote") and puede_saltar() and t_bloqueo <= 0.0:
-			if not en_suelo and t_impacto >= 0.0 and t_impacto <= Config.ventana_rebote:
-				t_rebote = Config.ventana_rebote
+			if not en_suelo and t_impacto >= 0.0 and t_impacto <= Config.tolerancia_rebote:
+				t_rebote = maxf(Config.ventana_rebote, t_impacto + 0.10)
 				t_bloqueo = Config.bloqueo_rebote
 			else:
 				saltar()
@@ -475,8 +480,8 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 			v = v / s * maxf(0.0, s - float(datos()["friccion_rodado"]) * dt)
 	# Tope suave: por encima de la velocidad de crucero el aire frena más.
 	var rapidez := v.length()
-	if rapidez > Config.vel_crucero:
-		v -= v / rapidez * (rapidez - Config.vel_crucero) * Config.arrastre_extra * dt
+	if rapidez > vel_crucero:
+		v -= v / rapidez * (rapidez - vel_crucero) * Config.arrastre_extra * dt
 
 	if controlable:
 		for activo in _activos:
@@ -507,6 +512,7 @@ func _aterrizar(state: PhysicsDirectBodyState2D, nrm: Vector2, v: Vector2) -> Ve
 			rebotes -= 1
 		t_rebote = 0.0
 		aviso.emit("¡Rebote impulsado!")
+		maniobra.emit("rebotes")
 		var salida := maxf(impacto * Config.rebote_mult_normal, Config.rebote_min)
 		if nrm.y > -0.5:
 			# Contra una pared (costado de rampa, escalón): salta por encima, nunca hacia atrás.

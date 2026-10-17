@@ -13,24 +13,24 @@ La postal de Parque Juárez usa una foto del parque. El PDF muestra allí la Cat
 | Lugar | Metros de juego | Foto y autor | Derechos |
 | --- | ---: | --- | --- |
 | Xallitic | 0 | [Juan Javier Mora-Rivera](https://commons.wikimedia.org/wiki/File:Bajos_del_Puente_de_Xallitic,_Xalapa,_Veracruz.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
-| Parque Juárez | 150 | [ProtoplasmaKid](https://commons.wikimedia.org/wiki/File:Parque_Ju%C3%A1rez%2C_Xalapa_-_1.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
-| Paseo de los Lagos | 300 | [Adam Jones from Kelowna, BC, Canada](https://commons.wikimedia.org/wiki/File:Park_Scene_-_Paseo_de_los_Lagos_-_Xalapa_-_Veracruz_-_Mexico_-_04_(15470840693).jpg) | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0) |
-| El Águila | 450 | [Diario de Xalapa](https://oem.com.mx/diariodexalapa/tendencias/atractivos-turisticos-de-xalapa-el-aguila-de-los-lagos-cual-es-su-historia-15228078) | [Créditos](https://oem.com.mx/diariodexalapa/tendencias/atractivos-turisticos-de-xalapa-el-aguila-de-los-lagos-cual-es-su-historia-15228078) |
-| Facultad de Estadística e Informática | 600 | [Koffermejia](https://commons.wikimedia.org/wiki/File:Entrada_de_la_Facultad_de_Estad%C3%ADstica_e_Inform%C3%A1tica_de_la_universidad_veracruzana_(cropped).jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
-| Cerro de Macuiltépetl | 750 | [panza.rayada](https://commons.wikimedia.org/wiki/File:Cerro_Macuilt%C3%A9petl_-_panoramio.jpg) | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) |
-| Museo de Antropología de Xalapa | 900 | [ProtoplasmaKid](https://commons.wikimedia.org/wiki/File:Fachada_del_Museo_de_Antropolog%C3%ADa_de_Xalapa_02.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
-| Bachilleres Experimental | 1050 | [Escuela de Bachilleres Experimental](https://experimentalmixta.edu.mx/) | [Créditos](https://experimentalmixta.edu.mx/) |
-| La Joya | 1200 | [Documento de ListiStar](https://www.instagram.com/p/DbLufKEDNr-/) | [Créditos](https://www.instagram.com/p/DbLufKEDNr-/) |
-| Bosques rumbo a Perote | 1350 | Documento de ListiStar · PDF del equipo, página 11 | No indicados en el PDF |
-| Cofre de Perote | 1500 | [Lee Siebert, Smithsonian Institution](https://commons.wikimedia.org/wiki/File:Cofre_de_Perote.jpg) | [Dominio público](https://commons.wikimedia.org/wiki/File:Cofre_de_Perote.jpg) |
-| Pico de Orizaba | 1650 | [Andy García García](https://commons.wikimedia.org/wiki/File:Pico_de_Orizaba,_Veracruz..JPG) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
-| Estrella de Puebla | 1800 | [Koffermejia](https://commons.wikimedia.org/wiki/File:Panoramica_Estrella_de_Puebla.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
-| Escaleras eléctricas de Tlaxcala | 1900 | [Jesús Lima · El Sol de Tlaxcala](https://verne.elpais.com/verne/2017/04/06/mexico/1491513451_431106.html) | [Créditos](https://verne.elpais.com/verne/2017/04/06/mexico/1491513451_431106.html) |
-| Ángel de la Independencia | 2000 | [Ulises00](https://commons.wikimedia.org/wiki/File:Angel_de_la_independencia_M%C3%A9xico.JPG) | [Dominio público](https://commons.wikimedia.org/wiki/File:Angel_de_la_independencia_M%C3%A9xico.JPG) |
-| Teotihuacán | 2100 | [Gzzz](https://commons.wikimedia.org/wiki/File:Teotihuacan_Pir%C3%A1mide_del_Sol.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
-| Santuario de la Mariposa Monarca | 2200 | [Lunita28mx](https://commons.wikimedia.org/wiki/File:Angangueo_bosque_Mariposas_Monarca_Michoacan.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
-| Puerto Vallarta | 2300 | [Stan Shebs](https://commons.wikimedia.org/wiki/File:Puerto_Vallarta_panorama_1.jpg) | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) |
-| Centro Universitario de la Costa | 2600 | [Universidad de Guadalajara](https://asinea109.cuc.udg.mx/) | [© UdeG](https://asinea109.cuc.udg.mx/) |
+| Parque Juárez | 300 | [ProtoplasmaKid](https://commons.wikimedia.org/wiki/File:Parque_Ju%C3%A1rez%2C_Xalapa_-_1.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| Paseo de los Lagos | 600 | [Adam Jones from Kelowna, BC, Canada](https://commons.wikimedia.org/wiki/File:Park_Scene_-_Paseo_de_los_Lagos_-_Xalapa_-_Veracruz_-_Mexico_-_04_(15470840693).jpg) | [CC BY-SA 2.0](https://creativecommons.org/licenses/by-sa/2.0) |
+| El Águila | 900 | [Diario de Xalapa](https://oem.com.mx/diariodexalapa/tendencias/atractivos-turisticos-de-xalapa-el-aguila-de-los-lagos-cual-es-su-historia-15228078) | [Créditos](https://oem.com.mx/diariodexalapa/tendencias/atractivos-turisticos-de-xalapa-el-aguila-de-los-lagos-cual-es-su-historia-15228078) |
+| Facultad de Estadística e Informática | 1200 | [Koffermejia](https://commons.wikimedia.org/wiki/File:Entrada_de_la_Facultad_de_Estad%C3%ADstica_e_Inform%C3%A1tica_de_la_universidad_veracruzana_(cropped).jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| Cerro de Macuiltépetl | 1500 | [panza.rayada](https://commons.wikimedia.org/wiki/File:Cerro_Macuilt%C3%A9petl_-_panoramio.jpg) | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) |
+| Museo de Antropología de Xalapa | 1800 | [ProtoplasmaKid](https://commons.wikimedia.org/wiki/File:Fachada_del_Museo_de_Antropolog%C3%ADa_de_Xalapa_02.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| Bachilleres Experimental | 2100 | [Escuela de Bachilleres Experimental](https://experimentalmixta.edu.mx/) | [Créditos](https://experimentalmixta.edu.mx/) |
+| La Joya | 2400 | [Documento de ListiStar](https://www.instagram.com/p/DbLufKEDNr-/) | [Créditos](https://www.instagram.com/p/DbLufKEDNr-/) |
+| Bosques rumbo a Perote | 2700 | Documento de ListiStar · PDF del equipo, página 11 | No indicados en el PDF |
+| Cofre de Perote | 3000 | [Lee Siebert, Smithsonian Institution](https://commons.wikimedia.org/wiki/File:Cofre_de_Perote.jpg) | [Dominio público](https://commons.wikimedia.org/wiki/File:Cofre_de_Perote.jpg) |
+| Pico de Orizaba | 3300 | [Andy García García](https://commons.wikimedia.org/wiki/File:Pico_de_Orizaba,_Veracruz..JPG) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| Estrella de Puebla | 3600 | [Koffermejia](https://commons.wikimedia.org/wiki/File:Panoramica_Estrella_de_Puebla.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| Escaleras eléctricas de Tlaxcala | 3800 | [Jesús Lima · El Sol de Tlaxcala](https://verne.elpais.com/verne/2017/04/06/mexico/1491513451_431106.html) | [Créditos](https://verne.elpais.com/verne/2017/04/06/mexico/1491513451_431106.html) |
+| Ángel de la Independencia | 4000 | [Ulises00](https://commons.wikimedia.org/wiki/File:Angel_de_la_independencia_M%C3%A9xico.JPG) | [Dominio público](https://commons.wikimedia.org/wiki/File:Angel_de_la_independencia_M%C3%A9xico.JPG) |
+| Teotihuacán | 4200 | [Gzzz](https://commons.wikimedia.org/wiki/File:Teotihuacan_Pir%C3%A1mide_del_Sol.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| Santuario de la Mariposa Monarca | 4400 | [Lunita28mx](https://commons.wikimedia.org/wiki/File:Angangueo_bosque_Mariposas_Monarca_Michoacan.jpg) | [CC BY-SA 4.0](https://creativecommons.org/licenses/by-sa/4.0) |
+| Puerto Vallarta | 4600 | [Stan Shebs](https://commons.wikimedia.org/wiki/File:Puerto_Vallarta_panorama_1.jpg) | [CC BY-SA 3.0](https://creativecommons.org/licenses/by-sa/3.0) |
+| Centro Universitario de la Costa | 5200 | [Universidad de Guadalajara](https://asinea109.cuc.udg.mx/) | [© UdeG](https://asinea109.cuc.udg.mx/) |
 
 Las entradas con el enlace "Créditos" conservan la fuente aportada y no se presentan como fotografías con licencia Creative Commons. El documento no identifica una licencia abierta para las fotos de El Águila, Bachilleres Experimental, La Joya o los bosques. La fotografía de las escaleras y la imagen institucional del CUCosta tampoco publican una licencia abierta en sus fuentes consultadas.
 

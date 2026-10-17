@@ -52,6 +52,10 @@ func _ready() -> void:
 		%Destino.text = "%s\n%s" % [Config.nombre_meta, Config.institucion_meta]
 	else:
 		%Destino.text = "%s\nFaltan %d m para llegar al CUCosta" % [$Margen/Columnas/Postal.lugar_nombre, ceili(maxf(0.0, Config.meta_m - metros))]
+		for postal in Config.postales:
+			if float(postal["metros"]) > metros:
+				%Destino.text = "Siguiente: %s\nTe faltaron %d m para alcanzarlo" % [postal["nombre"], ceili(float(postal["metros"]) - metros)]
+				break
 	_generar_desglose(r)
 	var total := int(r.get("total", 0))
 	lbl_total.text = "+%d" % total
@@ -94,6 +98,14 @@ func _generar_desglose(r: Dictionary) -> void:
 	_fila("Recogidos en el camino", int(r.get("por_recolectados", 0)))
 	if int(r.get("por_visitas", 0)) > 0:
 		_fila("Por lugares nuevos", int(r.get("por_visitas", 0)))
+	var reto: Dictionary = r.get("reto", {})
+	if not reto.is_empty():
+		if int(r.get("por_reto", 0)) > 0:
+			_fila("Por reto cumplido", int(r["por_reto"]))
+		_linea("%s · %d/%d" % [reto["texto"], r.get("avance_reto", 0), reto["meta"]])
+		var siguiente := Juego.reto_actual()
+		if int(r.get("por_reto", 0)) > 0 and not siguiente.is_empty():
+			_linea("Siguiente reto: %s" % siguiente["texto"])
 	var nuevas: Array = r.get("visitas_nuevas", [])
 	if not nuevas.is_empty():
 		_linea("%d lugares nuevos en el pasaporte" % nuevas.size())
