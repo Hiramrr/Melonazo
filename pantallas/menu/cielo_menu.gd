@@ -55,10 +55,7 @@ func _draw() -> void:
 	var m := get_viewport_rect().size / 2.0 + Vector2(4, 4)
 	var altura := suelo_y - global_position.y
 	var alfa := smoothstep(alto_claro, alto_opaco, altura)
-	var arriba := Color(ARRIBA, alfa)
-	var abajo := Color(ABAJO, alfa)
-	draw_polygon(PackedVector2Array([-m, Vector2(m.x, -m.y), m, Vector2(-m.x, m.y)]),
-		PackedColorArray([arriba, arriba, abajo, abajo]))
+	Sprites.dibujar(self, "interfaz/cielo_menu", Rect2(-m, m * 2), Color(1, 1, 1, alfa))
 	var zoom := _camara.zoom.x
 	for n in _nubes:
 		var p := Vector2(n.x, (n.y - global_position.y) * zoom)
@@ -66,15 +63,5 @@ func _draw() -> void:
 			_nube(p, n.z)
 
 
-## Nube de cinco bolas como las del paisaje, pero grande y cercana. Siempre opaca:
-## con transparencia se notarían las bolas encimadas. Quedan arriba del encuadre final.
 func _nube(pos: Vector2, escala: float) -> void:
-	draw_set_transform(pos, 0, Vector2(1.0, 0.65) * escala)
-	for capa in [[Vector2(0, 8), SOMBRA], [Vector2.ZERO, LUZ]]:
-		for i in 5:
-			var x := (i - 2) * 26.0
-			var y := -sin(i * PI / 4) * 16
-			var radio := 19.0 + sin(i * PI / 4) * 15
-			draw_circle(Vector2(x, y) + capa[0], radio, capa[1])
-	draw_rect(Rect2(-52, 0, 104, 18), LUZ)
-	draw_set_transform(Vector2.ZERO)
+	Sprites.dibujar(self, "paisaje/nube_menu", Rect2(pos + Vector2(-80, -50) * escala, Vector2(160, 80) * escala))

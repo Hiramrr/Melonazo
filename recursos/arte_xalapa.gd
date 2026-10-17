@@ -14,7 +14,7 @@ extends Resource
 @export var paisaje: Texture2D
 ## Atribución de `paisaje`: {nombre, autor, licencia, fuente, url_licencia}.
 @export var credito_paisaje: Dictionary = {}
-## id de lugar -> {textura, nombre, autor, fuente, licencia, url_licencia}.
+## id de lugar -> {textura, nombre, dato_curioso, fuente_dato, autor, fuente, licencia, url_licencia}.
 ## Las claves coinciden con los id de Config.postales.
 ## Vacía el diccionario para quitar las fotos.
 @export var fotografias: Dictionary = {}
@@ -41,19 +41,19 @@ func crear_creditos_paisaje() -> HBoxContainer:
 	var fila := HBoxContainer.new()
 	fila.name = "CreditosFondo"
 	fila.alignment = BoxContainer.ALIGNMENT_CENTER
-	fila.add_theme_constant_override("separation", 8)
+	fila.theme_type_variation = &"FilaNormal"
 	fila.visible = paisaje != null and not credito_paisaje.is_empty()
 	if not fila.visible:
 		return fila
 	var autor := Label.new()
 	autor.text = "Foto: " + str(credito_paisaje["autor"])
-	autor.add_theme_font_size_override("font_size", 13)
+	autor.theme_type_variation = &"AutorPaisaje"
 	fila.add_child(autor)
 	for entrada in [["Fuente", credito_paisaje["fuente"]], [credito_paisaje["licencia"], credito_paisaje["url_licencia"]]]:
 		var enlace := LinkButton.new()
 		enlace.text = entrada[0]
 		enlace.uri = entrada[1]
 		enlace.tooltip_text = "Foto reducida y recortada en pantalla. " + entrada[1]
-		enlace.add_theme_font_size_override("font_size", 13)
+		enlace.theme_type_variation = &"EnlaceCredito"
 		fila.add_child(enlace)
 	return fila

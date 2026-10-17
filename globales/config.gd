@@ -111,6 +111,24 @@ var aleteo_melones := Vector2(0.45, 1.0)     # s entre impulsos
 var control_vuelo_melones := 700.0    # px/s² para igualar el avance del jugador
 var primer_melon_camino_x := 1000.0
 var separacion_melones := Vector2(1000, 1500)
+var prob_pareja_melones := 0.3        # a veces llegan dos juntos, para encadenar slams
+# Carácter de cada rival. peso: qué tan seguido sale (los tontos abundan al inicio y los
+# listos al final, ver GeneradorTerreno._elegir_tipo_melon). cara: índice en caras, solo
+# para los melones del camino. ritmo: multiplica su rapidez. pausa_saltos: multiplica la
+# espera entre saltos. tropiezos: frenones por segundo. sigue_aire: sube tras el jugador.
+# esquiva: probabilidad de apartarse la primera vez que un picado lo apunta.
+# margen_slam: multiplica la tolerancia del slam (más = más fácil de acertar).
+var tipos_melones: Dictionary = {
+	"tonto": {"peso": 3.0, "cara": 2, "ritmo": 0.85, "pausa_saltos": 0.6, "tropiezos": 0.35,
+		"sigue_aire": false, "esquiva": 0.0, "margen_slam": 1.5},
+	"normal": {"peso": 4.0, "cara": 1, "ritmo": 1.0, "pausa_saltos": 1.0, "tropiezos": 0.0,
+		"sigue_aire": true, "esquiva": 0.0, "margen_slam": 1.0},
+	"listo": {"peso": 2.0, "cara": 3, "ritmo": 1.12, "pausa_saltos": 1.6, "tropiezos": 0.0,
+		"sigue_aire": true, "esquiva": 0.5, "margen_slam": 0.85},
+}
+var tropiezo_melones := 0.7           # s frenado en cada tropiezo de un tonto
+var esquiva_melones := Vector2(300, 380)  # px/s: empujón hacia un lado y saltito al esquivar
+var separacion_pareja_melones := Vector2(200, 300)
 
 # --- Aterrizaje --------------------------------------------------------------
 var aire_min_aterrizaje := 0.15      # s en el aire para contar como caída
@@ -171,33 +189,32 @@ var rampa_angulo := 35.0             # grados sobre la rampa
 var toldo_rebote := 0.9
 var toldo_avance := 160.0            # impulso horizontal solo al caer sobre el toldo
 
+# --- Pájaros -----------------------------------------------------------------
+# Vuelan contra el melón por encima de la calle (mundo/obstaculos/pajaro.gd).
+# Chocar con uno le quita velocidad; cada pájaro estorba una sola vez.
+var primer_pajaro_x := 1800.0
+var separacion_pajaros := Vector2(1000.0, 1700.0)
+var altura_pajaros := Vector2(110.0, 750.0)   # px sobre la calle
+var prob_bandada := 0.35             # probabilidad de que llegue otro pájaro detrás
+var pajaro_vel := 150.0              # px/s hacia la izquierda
+var pajaro_freno := 0.55             # multiplica la velocidad del melón
+
 # --- Terreno -----------------------------------------------------------------
 var semilla_terreno := -1            # fija un número para repetir una ruta en pruebas
 var paso_puntos := 40.0
 var largo_tramo := 2400.0
 var generar_adelante := 3500.0       # px de terreno listos por delante
 var borrar_atras := 2500.0
-# Primer tramo: calle empedrada en bajada, al pie del trampolín.
+# Primer tramo: calle empedrada plana, al pie del trampolín.
 var calle_inicio_x := 40.0
 var casas_inicio_x := -800.0         # origen del sorteo de casas del primer tramo; moverlo cambia cada ruta
 var calle_fin_x := 2800.0
 var calle_y := 260.0                 # el borde del trampolín está en y = 0
-var calle_bajada_x := 250.0
-var calle_caida := 350.0
 var inicio_obstaculos_x := 900.0
-# Formas de los tramos siguientes: y = y0 + dy*suave(u) - amp*sin²(PI*k*u)
-# En promedio el camino casi no baja: la distancia depende del melón, no de la cuesta.
-var formas_tramo: Array = [
-	{"tipo": "ondulado", "peso": 3.0, "dy": Vector2(-120, 120), "amp": Vector2(50, 130), "k": [2, 3]},
-	{"tipo": "bajada", "peso": 1.5, "dy": Vector2(150, 320), "amp": Vector2(20, 50), "k": [3]},
-	{"tipo": "subida", "peso": 1.5, "dy": Vector2(-280, -150), "amp": Vector2(0, 30), "k": [2]},
-	{"tipo": "colina", "peso": 1.5, "dy": Vector2(-60, 100), "amp": Vector2(160, 260), "k": [1]},
-	{"tipo": "plano", "peso": 1.0, "dy": Vector2(0, 0), "amp": Vector2(10, 25), "k": [4]},
-]
+# Todo el camino después del lanzamiento es plano.
 # Dificultad del camino según la distancia: 0 al inicio, 1 desde dificultad_metros.y.
-# Las cuestas y lomas crecen, y los obstáculos se juntan, conforme avanza la carrera.
+# Los obstáculos se juntan conforme avanza la carrera.
 var dificultad_metros := Vector2(50.0, 800.0)
-var terreno_suave := 0.55            # escala de cuestas y lomas con dificultad 0
 var obstaculos_holgura := 1.6        # multiplica la separación de obstáculos con dificultad 0
 var prob_empedrado := 0.5
 var separacion_obstaculos := Vector2(280, 560)
@@ -213,7 +230,7 @@ var lugares: Dictionary = {}          # metros -> nombre; se llena con las posta
 
 # Ruta de fantasía, medida desde el borde del trampolín. Los huecos entre postales
 # de Xalapa se reservan para añadir lugares sin mover la meta ni los guardados.
-var salida_xalapa_m := 1800.0
+var salida_xalapa_m := 1200.0
 var costa_m := 2300.0
 var meta_m := 2600.0
 var nombre_meta := "Centro Universitario de la Costa"
@@ -239,6 +256,15 @@ var mejoras: Dictionary = {
 var fuerza_por_nivel := 0.2         # +20% de velocidad de salida
 var resistencia_por_nivel := 1
 var rebotes_por_nivel := 1
+# Salsa Valentina: se compra en el taller y revive al melón si se rompe o se detiene.
+# Se muestra en la tiendita y el almanaque con la imagen de Poder.TEXTURAS.
+var poderes_tienda: Dictionary = {
+	"valentina": {"nombre": "Salsa Valentina", "descripcion": "Revive al melón si se rompe o se detiene.", "color": Color("b8261a"), "duracion": 0.0},
+}
+var valentina_costo := 350
+var valentinas_max := 3
+var valentina_invulnerable := 2.0    # s sin daño después de revivir
+var valentina_impulso := Vector2(750.0, -650.0)  # velocidad mínima al revivir
 
 # --- Apariencia ---------------------------------------------------------------
 # Solo cambia el dibujo, nunca el peso ni la colisión.
@@ -290,26 +316,25 @@ var max_puntos_dibujo := 6000
 # --- Poderes del camino ------------------------------------------------------
 # Se activan al recogerlos (mundo/ayudas/poder.gd). Su efecto está en
 # Melon.recibir_poder(). Los accesorios, en cambio, se usan con 1, 2 y 3.
-var orden_poderes: Array = ["cafe", "chile", "niebla", "tamal"]
+var orden_poderes: Array = ["chile", "cafe", "pizza"]
 var poderes: Dictionary = {
-	"cafe": {"nombre": "Café de altura", "descripcion": "Impulso breve y aceleración durante 2 s.", "color": Color("a56d43"), "duracion": 2.0, "impulso": Vector2(180, -60)},
-	"chile": {"nombre": "Chile xalapeño", "descripcion": "Embestida de 1.5 s. Rompe puestos y resiste golpes.", "color": Color("cf5142"), "duracion": 1.5, "impulso": Vector2(260, -80)},
-	"niebla": {"nombre": "Niebla de Xalapa", "descripcion": "Protege de golpes y charcos durante 3 s.", "color": Color("79aaa8"), "duracion": 3.0, "impulso": Vector2.ZERO},
-	"tamal": {"nombre": "Tamal de hoja", "descripcion": "Recupera un golpe y un rebote, hasta su máximo.", "color": Color("72974b"), "duracion": 0.0, "impulso": Vector2.ZERO},
-	"jamaica": {"nombre": "Agua de jamaica", "descripcion": "Recarga todas las cargas de salto.", "color": Color("c2304f"), "duracion": 0.0, "impulso": Vector2.ZERO},
-	"miel": {"nombre": "Miel de Coatepec", "descripcion": "Recupera golpe y medio de resistencia, hasta su máximo.", "color": Color("e0a43a"), "duracion": 0.0, "impulso": Vector2.ZERO},
+	"chile": {"nombre": "Chile jalapeño", "descripcion": "Explota y te lanza hacia adelante.", "color": Color("4f9a3a"), "duracion": 0.0, "impulso": Vector2(900, -320)},
+	"cafe": {"nombre": "Café de Coatepec", "descripcion": "Energía ilimitada: saltas todo lo que quieras sin gastar cargas durante 4 s.", "color": Color("a56d43"), "duracion": 4.0, "impulso": Vector2.ZERO},
+	"pizza": {"nombre": "Pizza con yogur", "descripcion": "Te subes a una pizza que avanza unos metros sin perder altura.", "color": Color("f1ce67"), "duracion": 2.5, "impulso": Vector2.ZERO},
 }
-# Recargas: jamaica y miel se alternan sobre la calle con su propia separación,
-# aparte de orden_poderes, para no espaciar más los demás poderes.
-var orden_recargas: Array = ["jamaica", "miel"]
-var primer_recarga_x := 1300.0
-var separacion_recargas := Vector2(900.0, 1300.0)
-var miel_recupera := 1.5             # golpes de resistencia
-var cafe_aceleracion := 110.0        # px/s² hacia adelante mientras dura el café
-var cafe_vel_max := 1400.0           # el café no acelera por encima de esta velocidad
+var chile_vel_min := 1100.0          # px/s hacia adelante tras la explosión, como mínimo
+var cafe_bloqueo := 0.18             # s entre saltos mientras dura el café
+var pizza_vel := 1000.0              # px/s hacia adelante sobre la pizza, como mínimo
 var primer_poder_x := 700.0
-var separacion_poderes := Vector2(1100.0, 1600.0)
-var altura_poderes := Vector2(110.0, 170.0)
+var separacion_poderes := Vector2(950.0, 1400.0)
+var altura_poderes := Vector2(70.0, 150.0)   # los más bajos se tocan rodando
+# Rescates: si el melón va mal un rato (lento en el suelo o sin cargas de salto),
+# aparece por delante el poder que le hace falta, a ras de calle.
+var rescate_velocidad := 450.0       # px/s; por debajo, rodando, cuenta como lento
+var rescate_tras := 0.5              # s seguidos en apuros antes del rescate
+var rescate_espera := 7.0            # s mínimos entre rescates
+var rescate_altura := 45.0           # px sobre el suelo; se alcanza sin saltar
+var rescate_distancia := Vector2(160.0, 1100.0)  # px por delante, según la velocidad
 var bonus_postal := 60
 
 # --- Postales (pasaporte) -----------------------------------------------------
@@ -317,19 +342,25 @@ var bonus_postal := 60
 # Las fotografías se asignan por id en recursos/arte_xalapa.tres y solo aparecen
 # al terminar el intento. Los lugares no generan edificios ni fotos en el camino.
 var postales: Array = [
-	{"id": "xallitic", "nombre": "Barrio de Xallitic", "metros": 0, "nota": "Su bajada es la salida de esta carrera."},
-	{"id": "diamante", "nombre": "Callejón del Diamante", "metros": 100, "nota": "Cafés, artesanías y una calle para pasear."},
-	{"id": "catedral", "nombre": "Catedral de Xalapa", "metros": 200, "nota": "Una silueta del centro entre fachadas y balcones."},
-	{"id": "juarez", "nombre": "Parque Juárez", "metros": 300, "nota": "Una pausa verde sobre las lomas del centro."},
-	{"id": "berros", "nombre": "Los Berros", "metros": 450, "nota": "Árboles y un paseo alrededor del quiosco."},
-	{"id": "lagos", "nombre": "Los Lagos", "metros": 600, "nota": "Agua, caminos y reflejos entre el verde."},
-	{"id": "usbi", "nombre": "Zona universitaria · USBI", "metros": 850, "nota": "Un guiño a la Universidad Veracruzana."},
-	{"id": "macuiltepetl", "nombre": "Macuiltépetl", "metros": 1350, "nota": "El último cerro antes de dejar Xalapa y seguir hacia la costa."},
-	# Espacios libres de postales: 350..420, 650..800, 950..1250 y 1450..1750 m.
-	# Añadir aquí los lugares propios, en orden de metros y con un id nuevo.
-	{"id": "salida_xalapa", "nombre": "Camino a la costa", "metros": salida_xalapa_m, "nota": "Dejamos Xalapa. El viaje continúa entre montañas hacia Jalisco."},
-	{"id": "costa", "nombre": "Puerto Vallarta", "metros": costa_m, "nota": "Ya estamos en la costa de Jalisco. Falta llegar a la universidad."},
-	{"id": "cucosta", "nombre": nombre_meta, "nombre_corto": "CUCosta · UdeG", "metros": meta_m, "nota": "La meta del viaje. Centro Universitario de la Costa de la Universidad de Guadalajara, en Puerto Vallarta."},
+	{"id": "xallitic", "nombre": "Xallitic", "metros": 0, "nota": "En 1778 se hicieron obras para conducir agua de este barrio hacia la Plaza del Rey."},
+	{"id": "juarez", "nombre": "Parque Juárez", "metros": 150, "nota": "El parque ocupa el lugar donde estuvo un convento franciscano del siglo XVI."},
+	{"id": "lagos", "nombre": "Paseo de los Lagos", "metros": 300, "nota": "En 1837 se solicitó construir un dique para aprovechar el agua del río Santiago en una fábrica textil."},
+	{"id": "aguila", "nombre": "El Águila", "metros": 450, "nota": "La escultura se colocó en 1926, antes de que existiera la Universidad Veracruzana. La UV celebró su centenario en 2026."},
+	{"id": "fei", "nombre": "Facultad de Estadística e Informática", "metros": 600, "nota": "La FEI inició en 1966 con Técnico en Estadística. Aquí estudian Ingeniería en Sistemas y Tecnologías de la Información los integrantes de ListiStar.", "nombre_corto": "FEI · UV"},
+	{"id": "macuiltepetl", "nombre": "Cerro de Macuiltépetl", "metros": 750, "nota": "Este cerro es un volcán monogenético, formado durante un solo episodio eruptivo.", "nombre_corto": "Macuiltépetl"},
+	{"id": "max", "nombre": "Museo de Antropología de Xalapa", "metros": 900, "nota": "El MAX tiene antecedentes desde 1937. Su edificio actual se construyó en los años ochenta y conserva esculturas olmecas.", "nombre_corto": "MAX"},
+	{"id": "experimental", "nombre": "Bachilleres Experimental", "metros": 1050, "nota": "Dos integrantes de ListiStar estudiaron en la Escuela de Bachilleres Experimental."},
+	{"id": "joya", "nombre": "La Joya", "metros": salida_xalapa_m, "nota": "Esta comunidad de Acajete es conocida por sus quesos artesanales. Elaborarlos y venderlos sostiene a muchas familias de la localidad."},
+	{"id": "bosques_perote", "nombre": "Bosques rumbo a Perote", "metros": 1350, "nota": "Los bosques de pinos y oyameles de esta región ayudan a captar y conservar el agua que abastece a poblaciones cercanas."},
+	{"id": "cofre_perote", "nombre": "Cofre de Perote", "metros": 1500, "nota": "También se llama Nauhcampatépetl, Cerro de los Cuatro Costados. Es parque nacional desde el 4 de mayo de 1937."},
+	{"id": "pico_orizaba", "nombre": "Pico de Orizaba", "metros": 1650, "nota": "Citlaltépetl significa Cerro de la Estrella. Es la montaña más alta de México y conserva una zona glaciar en su parte elevada."},
+	{"id": "estrella_puebla", "nombre": "Estrella de Puebla", "metros": 1800, "nota": "Esta rueda de observación alcanza 80 metros de altura y tiene 54 cabinas. Obtuvo un Récord Guinness por su estructura transportable."},
+	{"id": "escaleras_tlaxcala", "nombre": "Escaleras eléctricas de Tlaxcala", "metros": 1900, "nota": "La inauguración de estas escaleras en Apizaco, en abril de 2017, se volvió viral y provocó memes en todo México.", "nombre_corto": "Escaleras de Tlaxcala"},
+	{"id": "angel", "nombre": "Ángel de la Independencia", "metros": 2000, "nota": "La figura es la Victoria Alada, inspirada en Niké. La columna se inauguró en 1910 para celebrar el centenario de la Independencia."},
+	{"id": "teotihuacan", "nombre": "Teotihuacán", "metros": 2100, "nota": "La Pirámide del Sol mide unos 65 metros de altura. Los mexicas dieron su nombre actual a la ciudad siglos después de su construcción."},
+	{"id": "monarca", "nombre": "Santuario de la Mariposa Monarca", "metros": 2200, "nota": "Cada otoño, las monarca viajan hasta 4200 kilómetros para pasar el invierno en México. Su reserva es Patrimonio Mundial desde 2008.", "nombre_corto": "Mariposa Monarca"},
+	{"id": "costa", "nombre": "Puerto Vallarta", "metros": costa_m, "nota": "Antes se llamaba Las Peñas. En 1918 recibió el nombre de Puerto Vallarta al convertirse en municipio."},
+	{"id": "cucosta", "nombre": nombre_meta, "metros": meta_m, "nota": "El CUCosta nació en 1994. Sus primeras carreras fueron Turismo, Administración, Contaduría y Derecho.", "nombre_corto": "CUCosta · UdeG"}
 ]
 
 

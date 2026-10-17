@@ -125,7 +125,7 @@ func _revisar() -> void:
 		current_scene.melon.slam_activo = false
 		esperadas += 1
 		current_scene.melon.position = Vector2(2200, current_scene.terreno.tramos[0].altura(2200) - 1100)
-		current_scene.postales_intento = ["xallitic", "diamante", "catedral"]
+		current_scene.postales_intento = ["xallitic", "juarez", "lagos"]
 		await _foto(prefijo + "vuelo-alto", ["Interfaz/%Vuelo", "Interfaz/%Indicacion"])
 		assert(current_scene.get_node("Paisaje/NubesCercanas").visible, "Faltan las nubes al subir sobre la ciudad")
 		current_scene.melon.position = Vector2(2200, current_scene.terreno.tramos[0].altura(2200) - 3000)
@@ -154,19 +154,21 @@ func _revisar() -> void:
 		juego.ultimo = ultimo
 	# Cada fotografía debe corresponder al lugar alcanzado en este intento.
 	var config := root.get_node("Config")
-	for lugar in config.postales:
-		if not fotografias.has(lugar["id"]):
-			continue
-		var datos: Dictionary = fotografias[lugar["id"]]
-		assert(datos["textura"] is Texture2D and not datos["autor"].is_empty())
-		assert(datos["fuente"].begins_with("https://commons.wikimedia.org/"))
-		assert(datos["url_licencia"].begins_with("https://creativecommons.org/"))
-		juego.ultimo = {"distancia": lugar["metros"]}
-		change_scene_to_file("res://pantallas/resultados/resultados.tscn")
-		await _foto("foto-" + lugar["id"])
-		var panel := current_scene.get_node("Margen/Columnas/Postal")
-		assert(panel.get_node("MargenFoto/Foto/Imagen").texture == datos["textura"])
-		esperadas += 1
+	for resolucion in [Vector2i(1280, 720), Vector2i(960, 540)]:
+		root.size = resolucion
+		for lugar in config.postales:
+			var datos: Dictionary = fotografias[lugar["id"]]
+			assert(datos["textura"] is Texture2D and not datos["autor"].is_empty())
+			assert(datos["fuente"].is_empty() or datos["fuente"].begins_with("https://"))
+			assert(datos["url_licencia"].is_empty() or datos["url_licencia"].begins_with("https://"))
+			assert(not datos["dato_curioso"].is_empty() and datos["fuente_dato"].begins_with("https://"))
+			juego.ultimo = {"distancia": lugar["metros"]}
+			change_scene_to_file("res://pantallas/resultados/resultados.tscn")
+			await _foto("%dx%d-foto-%s" % [resolucion.x, resolucion.y, lugar["id"]], ["Margen/Columnas/Postal/MargenFoto/Foto/Imagen", "Margen/Columnas/Postal/MargenFoto/Foto/DatoCurioso", "%BtnVolver"], 3.0)
+			var panel := current_scene.get_node("Margen/Columnas/Postal")
+			assert(panel.get_node("MargenFoto/Foto/Imagen").texture == datos["textura"])
+			assert(panel.get_node("MargenFoto/Foto/DatoCurioso").text == "Dato curioso\n" + datos["dato_curioso"])
+			esperadas += 1
 	juego.ultimo = ultimo
 	arte.fotografias.clear()
 	change_scene_to_file("res://pantallas/resultados/resultados.tscn")

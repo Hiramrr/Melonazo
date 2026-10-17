@@ -27,10 +27,10 @@ extends Control
 		_ajustar_tamano()
 @export var separacion := 3.0
 @export var max_visibles := 10
-## Color de los vacíos (se multiplica por el ícono).
-@export var apagado := Color(0.1, 0.15, 0.14, 0.45)
 
-const FUENTE := preload("res://recursos/fuentes/Fredoka.ttf")
+
+func _init() -> void:
+	theme_type_variation = &"Pips"
 
 
 func _ready() -> void:
@@ -38,9 +38,17 @@ func _ready() -> void:
 	_ajustar_tamano()
 
 
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_THEME_CHANGED:
+		_ajustar_tamano()
+
+
 func _ajustar_tamano() -> void:
 	var n := mini(total, max_visibles)
 	var extra := 34.0 if total > max_visibles else 0.0
+	if extra > 0.0:
+		var texto := "+%d" % (total - max_visibles)
+		extra = maxf(extra, get_theme_font("font").get_string_size(texto, HORIZONTAL_ALIGNMENT_LEFT, -1, get_theme_font_size("font_size")).x)
 	custom_minimum_size = Vector2(n * lado + maxf(0, n - 1) * separacion + extra, lado)
 	queue_redraw()
 
@@ -49,6 +57,7 @@ func _draw() -> void:
 	if icono == null:
 		return
 	var n := mini(total, max_visibles)
+	var apagado := get_theme_color("apagado")
 	for i in n:
 		var r := Rect2(i * (lado + separacion), (size.y - lado) * 0.5, lado, lado)
 		var lleno := i < llenos
@@ -57,5 +66,7 @@ func _draw() -> void:
 		var x := n * (lado + separacion)
 		var texto := "+%d" % (llenos - max_visibles)
 		var base := Vector2(x, size.y * 0.5 + lado * 0.3)
-		draw_string_outline(FUENTE, base, texto, HORIZONTAL_ALIGNMENT_LEFT, -1, int(lado * 0.8), 6, Color("203d38"))
-		draw_string(FUENTE, base, texto, HORIZONTAL_ALIGNMENT_LEFT, -1, int(lado * 0.8), Color("fff9ec"))
+		var fuente := get_theme_font("font")
+		var tamano := get_theme_font_size("font_size")
+		draw_string_outline(fuente, base, texto, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano, get_theme_constant("outline_size"), get_theme_color("font_outline_color"))
+		draw_string(fuente, base, texto, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano, get_theme_color("font_color"))

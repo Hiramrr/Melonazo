@@ -27,11 +27,11 @@ var _operacion := ""
 
 
 func _ready() -> void:
+	Musica.tocar(Musica.TIENDITA)
 	for i in categorias.size():
 		categorias[i].pressed.connect(_cambiar_categoria.bind(i))
 	lista.resized.connect(_ajustar_columnas)
 	aviso.text = Juego.guardado_error
-	confirmar.add_theme_stylebox_override("panel", get_theme_stylebox("panel", "PanelContainer"))
 	_refrescar()
 	%Volver.grab_focus()
 
@@ -68,8 +68,8 @@ func _refrescar() -> void:
 			_entradas = Config.orden_accesorios
 			resumen.text = "%d de %d accesorios disponibles. Se equipan en el taller y se usan con 1, 2 y 3." % [Juego.desbloqueados.size(), _entradas.size()]
 		2:
-			_entradas = Config.orden_poderes + Config.orden_recargas
-			resumen.text = "Poderes del camino. Se activan al recogerlos durante la carrera."
+			_entradas = Config.orden_poderes + Config.poderes_tienda.keys()
+			resumen.text = "Poderes del camino y de la tiendita. Los del camino se activan al recogerlos durante la carrera."
 	btn_guardar.visible = categoria == 0
 	btn_guardar.disabled = Juego.melones_guardados.size() >= Juego.MAX_MELONES
 	btn_guardar.tooltip_text = "Colección llena. Puedes actualizar una ficha o eliminar una." if btn_guardar.disabled else "Guardar el melón que tienes en el taller"
@@ -85,7 +85,7 @@ func _ajustar_columnas() -> void:
 
 
 func _crear_ficha(indice: int) -> void:
-	var boton := ComunTaller.boton("", 16)
+	var boton := ComunTaller.boton("", &"BotonPequeno")
 	boton.custom_minimum_size = Vector2(138, 164)
 	boton.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	boton.pressed.connect(_elegir.bind(indice))
@@ -104,7 +104,7 @@ func _crear_ficha(indice: int) -> void:
 	imagen.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_preparar_imagen(imagen, indice)
 	caja.add_child(imagen)
-	var titulo := ComunTaller.titulo_seccion(_nombre_entrada(indice), 16)
+	var titulo := ComunTaller.titulo_seccion(_nombre_entrada(indice), &"NombreTarjeta")
 	titulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	titulo.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	caja.add_child(titulo)
@@ -112,8 +112,8 @@ func _crear_ficha(indice: int) -> void:
 	if categoria == 1:
 		estado = "Disponible" if _entradas[indice] in Juego.desbloqueados else "Por desbloquear"
 	elif categoria == 2:
-		estado = "Poder del camino"
-	var nota := ComunTaller.etiqueta(estado, 13, true)
+		estado = "De la tiendita" if Config.poderes_tienda.has(_entradas[indice]) else "Poder del camino"
+	var nota := ComunTaller.etiqueta(estado, &"Detalle")
 	nota.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	caja.add_child(nota)
 	boton.tooltip_text = "%s. %s" % [titulo.text, estado]
@@ -123,7 +123,7 @@ func _nombre_entrada(indice: int) -> String:
 	match categoria:
 		0: return _entradas[indice]["nombre_melon"]
 		1: return Config.accesorios[_entradas[indice]].nombre
-		2: return Config.poderes[_entradas[indice]]["nombre"]
+		2: return _poder(_entradas[indice])["nombre"]
 	return ""
 
 
@@ -138,7 +138,7 @@ func _elegir(indice: int) -> void:
 	seleccionado = indice
 	texto.scroll_vertical = 0
 	for i in _botones.size():
-		_botones[i].theme_type_variation = &"Seleccion" if i == indice else &""
+		_botones[i].theme_type_variation = &"SeleccionPequena" if i == indice else &"BotonPequeno"
 	for boton in [btn_usar, btn_actualizar, btn_eliminar]:
 		boton.visible = categoria == 0 and indice >= 0
 	if indice < 0:
@@ -175,10 +175,19 @@ func _elegir(indice: int) -> void:
 			descripcion.text = accesorio.accion
 			datos.text = "Carisma: %d\nPrecio: %d aplausos\n%s\n\nAl usarlo, pierdes su carisma durante esa carrera. Vuelve en el siguiente intento." % [accesorio.carisma, accesorio.costo, "Disponible para equipar en el taller." if accesorio.id in Juego.desbloqueados else "Desbloquéalo en la pestaña Accesorios del taller."]
 		2:
-			var poder: Dictionary = Config.poderes[_entradas[indice]]
+			var id: String = _entradas[indice]
+			var poder := _poder(id)
 			descripcion.text = poder["descripcion"]
+			if Config.poderes_tienda.has(id):
+				datos.text = "Precio: %d aplausos en la tiendita del taller\nTienes %d de %d\n\nSe usa sola: si el melón se rompe o se detiene, vuelve a la carrera con toda su resistencia." % [Config.valentina_costo, Juego.valentinas, Config.valentinas_max]
+				return
 			var duracion := "Duración: %s s" % str(poder["duracion"]) if poder["duracion"] > 0 else "Efecto instantáneo"
 			datos.text = "%s\n\nSe activa al tocarlo. Busca los poderes por encima del camino y aprovecha los saltos para alcanzarlos." % duracion
+
+
+## Datos de un poder del camino o de la tiendita.
+func _poder(id: String) -> Dictionary:
+	return Config.poderes[id] if Config.poderes.has(id) else Config.poderes_tienda[id]
 
 
 func _guardar() -> void:

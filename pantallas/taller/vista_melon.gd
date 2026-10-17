@@ -83,7 +83,7 @@ func _draw() -> void:
 	draw_texture_rect(ESCENARIO, Rect2(Vector2.ZERO, size), false)
 	# Sombra: un círculo aplastado bajo el melón.
 	draw_set_transform(centro + Vector2(0, radio + 14), 0, Vector2(1, 0.16))
-	draw_circle(Vector2.ZERO, radio * 1.1, SOMBRA, true, -1.0, true)
+	Sprites.disco(self, Vector2.ZERO, radio * 1.1, SOMBRA)
 	draw_set_transform(Vector2.ZERO)
 	if not modo_dibujo:
 		_dibujar_estela(centro)
@@ -105,7 +105,7 @@ func _dibujar_estela(centro: Vector2) -> void:
 	for i in 6:
 		var p := centro + Vector2(-base - 18.0 - i * 20.0, 26.0 + i * 6.0)
 		col.a = 0.75 - i * 0.1
-		draw_circle(p, 9.0 - i * 1.2, col)
+		Sprites.disco(self, p, 9.0 - i * 1.2, col)
 
 
 ## Aro del pincel (con su color) o de la goma (rojo). Se dibuja ya centrado en el melón.
@@ -115,5 +115,5 @@ func _dibujar_cursor(radio: float) -> void:
 	var c: Vector2 = pestana_dibujo.cursor * radio
 	var rc := maxf(2.0, pestana_dibujo.radio_cursor() * radio)
 	var tinta: Color = Color(0.85, 0.2, 0.2) if pestana_dibujo.es_goma() else pestana_dibujo.color
-	draw_arc(c, rc, 0, TAU, 32, Color.WHITE, 3.0, true)
-	draw_arc(c, rc, 0, TAU, 32, tinta, 1.5, true)
+	Sprites.aro(self, c, rc, Color.WHITE)
+	Sprites.aro(self, c, rc, tinta)

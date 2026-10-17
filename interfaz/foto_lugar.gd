@@ -1,7 +1,7 @@
 class_name FotoLugar
 extends VBoxContainer
-## Fotografía real de un lugar de la ruta, con su nombre, atribución y enlaces a la
-## fuente y a la licencia. No tiene escena: se crea por código.
+## Fotografía real de un lugar de la ruta, con su nombre, dato curioso y créditos.
+## No tiene escena: se crea por código.
 ##
 ## Uso:
 ##   var foto := FotoLugar.new()
@@ -12,16 +12,18 @@ extends VBoxContainer
 ## Hijos que crea configurar(), en orden:
 ##   Imagen     TextureRect con la foto (las pruebas de capturas lo buscan por nombre)
 ##   (Label)    nombre del lugar (si con_titulo)
+##   DatoCurioso texto del lugar, si está asignado
 ##   (Label)    autor de la foto
-##   (HBox)     LinkButton "Fuente" y LinkButton con el nombre de la licencia
+##   (HBox)     enlaces a la foto original, sus derechos y la fuente del dato
 
 
 ## Crea los hijos a partir de una entrada de ArteXalapa.fotografias:
-## {textura, nombre, autor, fuente, licencia, url_licencia}. alto = alto mínimo de la foto.
+## {textura, nombre, dato_curioso, fuente_dato, autor, fuente, licencia, url_licencia}.
+## alto = alto mínimo de la foto.
 ## con_titulo = false omite el nombre (cuando la tarjeta que la contiene ya lo muestra).
 ## Llamar una sola vez.
 func configurar(datos: Dictionary, alto := 200.0, con_titulo := true) -> void:
-	add_theme_constant_override("separation", 8)
+	theme_type_variation = &"ColumnaNormal"
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	var imagen := TextureRect.new()
 	imagen.name = "Imagen"
@@ -34,24 +36,34 @@ func configurar(datos: Dictionary, alto := 200.0, con_titulo := true) -> void:
 	if con_titulo:
 		var titulo := Label.new()
 		titulo.text = datos["nombre"]
-		titulo.theme_type_variation = &"Subtitulo"
-		titulo.add_theme_font_size_override("font_size", 22)
+		titulo.theme_type_variation = &"TituloFoto"
 		titulo.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 		add_child(titulo)
+	if not str(datos.get("dato_curioso", "")).is_empty():
+		var dato := Label.new()
+		dato.name = "DatoCurioso"
+		dato.text = "Dato curioso\n" + str(datos["dato_curioso"])
+		dato.theme_type_variation = &"TextoPostal"
+		dato.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+		add_child(dato)
 	var credito := Label.new()
 	credito.text = "Foto: %s\nVersión reducida. Encuadre de pantalla." % datos["autor"]
-	credito.theme_type_variation = &"Suave"
-	credito.add_theme_font_size_override("font_size", 12)
+	credito.theme_type_variation = &"Credito"
 	credito.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(credito)
 	var enlaces := HBoxContainer.new()
-	enlaces.add_theme_constant_override("separation", 16)
+	enlaces.theme_type_variation = &"FilaEnlaces"
 	add_child(enlaces)
-	for entrada in [["Fuente", datos["fuente"]], [datos["licencia"], datos["url_licencia"]]]:
+	var destinos := [["Foto original", datos["fuente"]], [datos["licencia"], datos["url_licencia"]]]
+	if not str(datos.get("fuente_dato", "")).is_empty():
+		destinos.append(["Sobre el lugar", datos["fuente_dato"]])
+	for entrada in destinos:
+		if str(entrada[1]).is_empty():
+			continue
 		var enlace := LinkButton.new()
 		enlace.text = entrada[0]
 		enlace.uri = entrada[1]
 		enlace.tooltip_text = entrada[1]
-		enlace.add_theme_font_size_override("font_size", 13)
+		enlace.theme_type_variation = &"EnlaceCredito"
 		enlace.mouse_default_cursor_shape = Control.CURSOR_POINTING_HAND
 		enlaces.add_child(enlace)

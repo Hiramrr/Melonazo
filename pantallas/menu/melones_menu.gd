@@ -220,23 +220,18 @@ func _asustar_publico(punto: Vector2) -> void:
 
 func _draw() -> void:
 	for e in _manchas:
-		draw_set_transform(e.pos, 0, Vector2(1, 0.35))
-		draw_circle(Vector2.ZERO, e.r, Color(e.color, clampf(e.vida, 0.0, 1.0) * 0.8))
+		Sprites.girar(self, "efectos/disco", Transform2D(0, Vector2(e.r / 32.0, e.r / 32.0 * 0.35), 0, e.pos), Color(e.color, clampf(e.vida, 0.0, 1.0) * 0.8))
 	for o in _ondas:
 		var u: float = 1.0 - o.vida / 0.3
-		draw_set_transform(o.pos)
-		draw_arc(Vector2.ZERO, o.r * (1.0 + u * 1.6), 0, TAU, 32, Color(1, 0.98, 0.9, 1.0 - u), 8.0 * (1.0 - u) + 1.0)
+		Sprites.aro(self, o.pos, o.r * (1 + u * 1.6), Color(1, 0.98, 0.9, 1 - u))
 	for p in _trozos:
-		var alfa := clampf(p.vida / 0.4, 0.0, 1.0)
+		var alfa := clampf(p.vida / 0.4, 0, 1)
 		if p.forma.is_empty():
-			draw_set_transform(p.pos, p.rot, Vector2(1.0, 0.6))
-			draw_circle(Vector2.ZERO, 3.5, Color(p.color, alfa))
-			continue
-		draw_set_transform(p.pos, p.rot)
-		var forma: PackedVector2Array = p.forma
-		draw_colored_polygon(forma, Color(p.color, alfa))
-		draw_line(forma[0], forma[1], Color(p.cascara, alfa), 5.0)
-		draw_polyline(forma + PackedVector2Array([forma[0]]), Color(TINTA, alfa), 2.0)
-	draw_set_transform(Vector2.ZERO)
+			Sprites.girar(self, "efectos/disco", Transform2D(p.rot, Vector2(3.5 / 32, 2.1 / 32), 0, p.pos), Color(p.color, alfa))
+		else:
+			var tam := Rect2(p.forma[0], Vector2.ZERO)
+			for punto in p.forma: tam = tam.expand(punto)
+			var escala := maxf(tam.size.x, tam.size.y) / 32.0
+			Sprites.girar(self, "efectos/trozo", Transform2D(p.rot, Vector2.ONE * escala, 0, p.pos), Color(p.color, alfa))
 	for g in _gotas:
-		draw_circle(g.pos, g.r, g.color)
+		Sprites.disco(self, g.pos, g.r, g.color)

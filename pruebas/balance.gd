@@ -37,7 +37,7 @@ func _verificar() -> void:
 					var caso := "semilla %d, tamaño %d, mejora %d, fuerza %.2f" % [semilla, tamano, nivel, fuerza]
 					comprobar(r["termino"], "La carrera pasiva no termina: " + caso)
 					comprobar(r["metros"] < (500.0 if nivel == 0 else tope_pasivo), "La carrera pasiva avanza demasiado: " + caso + " · %.1f m" % r["metros"])
-					comprobar(r["impulsos_poderes"] <= 3, "La carrera pasiva encadena demasiados cafés o chiles: " + caso)
+					comprobar(r["impulsos_poderes"] <= 3, "La carrera pasiva encadena demasiados chiles: " + caso)
 					comprobar(r["papalotes"] == 0, "Los papalotes requieren pulsar E: " + caso)
 	config.semilla_terreno = 1509
 	var pasiva: Dictionary = await carrera(1, 0, false, true)
@@ -70,7 +70,7 @@ func _verificar() -> void:
 	quit(1 if fallos else 0)
 
 
-func carrera(tamano: int, nivel: int, activa: bool, equipo := false, fuerza := 0.91, con_slam := false) -> Dictionary:
+func carrera(tamano: int, nivel: int, activa: bool, equipo := false, fuerza := 0.91, con_slam := false, apuntar_slam := true) -> Dictionary:
 	seed(config.semilla_terreno)
 	juego.tamano = tamano
 	juego.accesorios = ["llantitas", "rebozo"] if equipo else []
@@ -84,7 +84,7 @@ func carrera(tamano: int, nivel: int, activa: bool, equipo := false, fuerza := 0
 		if texto.begins_with("¡Slam acertado!"):
 			conteo_poderes["slams"] += 1)
 	recorrido.terreno.poder_recogido.connect(func(tipo: String) -> void:
-		if tipo in ["cafe", "chile"]:
+		if tipo == "chile":
 			conteo_poderes["impulsos"] += 1)
 	recorrido.fuerza = fuerza
 	recorrido._lanzar()
@@ -104,7 +104,7 @@ func carrera(tamano: int, nivel: int, activa: bool, equipo := false, fuerza := 0
 		papalotes = recorrido.papalotes_usados
 		if activa and recorrido.fase == 2 and cuadros % 2 == 0:
 			var melon = recorrido.melon
-			if con_slam and melon.t_slam <= 0.0 and recorrido.hud._hay_melon_debajo(recorrido):
+			if con_slam and melon.t_slam <= 0.0 and (not apuntar_slam or recorrido.hud._hay_melon_debajo(recorrido)):
 				Input.action_press("slam")
 			elif melon.rebotes > 0 and melon.t_bloqueo <= 0 and melon.t_impacto >= 0 and melon.t_impacto < config.ventana_rebote * 0.75:
 				Input.action_press("rebote")

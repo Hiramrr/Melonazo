@@ -29,7 +29,7 @@ func mostrar(id) -> void:
 	if _id != null and id == null and is_inside_tree():
 		Animacion.rebotar(self, 1.2)
 	_id = id
-	modulate = Color.WHITE if id != null else Color(1, 1, 1, 0.55)
+	modulate = get_theme_color("ocupada" if id != null else "vacia")
 	var accesorio: Accesorio = Config.accesorios.get(id) if id != null else null
 	nombre.text = accesorio.nombre.get_slice(" ", 0) if accesorio else "Vacío"
 	tooltip_text = accesorio.nombre if accesorio else "Sin accesorio"
@@ -40,7 +40,7 @@ func mostrar(id) -> void:
 func _dibujar_icono() -> void:
 	if _id == null:
 		var c := icono.size * 0.5
-		icono.draw_arc(c, 12.0, 0, TAU, 24, Color(1, 1, 1, 0.35), 3.0, true)
+		Sprites.aro(icono, c, 12.0, get_theme_color("icono_vacio"))
 		return
 	var lado := minf(icono.size.x, icono.size.y)
 	Config.accesorios[_id].dibujar_icono(icono, Rect2((icono.size - Vector2(lado, lado)) * 0.5, Vector2(lado, lado)))

@@ -6,16 +6,13 @@ extends Node2D
 ##   - la flecha de puntería antes del lanzamiento (Recorrido la configura)
 ##   - los avisos flotantes ("¡Rampa!", "+5"...) que aparecen con un salto,
 ##     suben y se desvanecen; usan la letra gruesa del tema con contorno
+## Las consultas directas a Theme no heredan. AvisoFlotante y ObjetivoAereo
+## deben conservar todas sus propiedades explícitas en el recurso.
 
 const DURACION_AVISO := 1.4            # segundos en pantalla
 const SUBIDA_AVISO := 40.0             # px/s hacia arriba
 const RADIO_FLECHA := 130.0
-const TAM_AVISO := 30
 const POP_AVISO := 0.18                # segundos del salto inicial
-const TEMA: Theme = preload("res://interfaz/tema_xalapa.tres")
-const TINTA := Color("203d38")
-const CREMA := Color("fff9ec")
-const COLORES_AVISO: Array[Color] = [Color("fff9ec"), Color("ffc83d"), Color("fff9ec"), Color("8fe08a")]
 
 # Flecha de puntería
 var mostrar_flecha := false
@@ -25,13 +22,12 @@ var objetivo_aereo: Papalote
 
 var _avisos: Array = []                # [{texto, pos, t, color}]
 var _cuenta := 0
-var _fuente: Font = TEMA.get_font("font", "Titulo")
 
 
 ## Muestra un texto flotante en pos (coordenadas del mundo).
 func avisar(texto: String, pos: Vector2) -> void:
 	_cuenta += 1
-	_avisos.append({"texto": texto, "pos": pos, "t": DURACION_AVISO, "color": COLORES_AVISO[_cuenta % COLORES_AVISO.size()]})
+	_avisos.append({"texto": texto, "pos": pos, "t": DURACION_AVISO, "color": _cuenta % 4})
 
 
 func _process(delta: float) -> void:
@@ -43,6 +39,10 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
+	var tema := ThemeDB.get_project_theme()
+	var fuente := tema.get_font("font", "AvisoFlotante")
+	var tamano := tema.get_font_size("font_size", "AvisoFlotante")
+	var tinta := tema.get_color("font_outline_color", "AvisoFlotante")
 	if mostrar_flecha:
 		_dibujar_flecha()
 	for a in _avisos:
@@ -53,10 +53,11 @@ func _draw() -> void:
 		var escala := lerpf(0.5, 1.0, u) + 0.35 * sin(u * PI)
 		draw_set_transform(a["pos"], 0.0, Vector2.ONE * escala)
 		var pos := Vector2(-250, 0)
-		var col: Color = a["color"]
-		draw_string_outline(_fuente, pos + Vector2(0, 4), a["texto"], HORIZONTAL_ALIGNMENT_CENTER, 500, TAM_AVISO, 12, Color(TINTA, alfa))
-		draw_string_outline(_fuente, pos, a["texto"], HORIZONTAL_ALIGNMENT_CENTER, 500, TAM_AVISO, 10, Color(TINTA, alfa))
-		draw_string(_fuente, pos, a["texto"], HORIZONTAL_ALIGNMENT_CENTER, 500, TAM_AVISO, Color(col, alfa))
+		var col := tema.get_color("color_%d" % a["color"], "AvisoFlotante")
+		var sombra := Vector2(0, tema.get_constant("shadow_offset_y", "AvisoFlotante"))
+		draw_string_outline(fuente, pos + sombra, a["texto"], HORIZONTAL_ALIGNMENT_CENTER, 500, tamano, tema.get_constant("shadow_outline_size", "AvisoFlotante"), Color(tinta, alfa))
+		draw_string_outline(fuente, pos, a["texto"], HORIZONTAL_ALIGNMENT_CENTER, 500, tamano, tema.get_constant("outline_size", "AvisoFlotante"), Color(tinta, alfa))
+		draw_string(fuente, pos, a["texto"], HORIZONTAL_ALIGNMENT_CENTER, 500, tamano, Color(col, alfa))
 	draw_set_transform(Vector2.ZERO)
 	_dibujar_objetivo_aereo()
 
@@ -72,31 +73,23 @@ func _dibujar_objetivo_aereo() -> void:
 		return
 	var marcador := destino.clamp(limites.position, limites.end)
 	var direccion := (destino - marcador).normalized()
-	var punta := marcador + direccion * 22.0
-	var base := marcador - direccion * 5.0
 	draw_set_transform_matrix(transformacion.affine_inverse())
-	draw_line(base, punta, TINTA, 9.0, true)
-	draw_line(base, punta, CREMA, 4.0, true)
-	var cabeza := PackedVector2Array([punta + direccion * 7, punta - direccion * 5 + direccion.orthogonal() * 8, punta - direccion * 5 - direccion.orthogonal() * 8])
-	draw_colored_polygon(cabeza, CREMA)
+	var centro := marcador + direccion * 14
+	Sprites.girar(self, "efectos/indicador", Transform2D(direccion.angle(), centro))
 	var distancia := int(objetivo_aereo.global_position.distance_to(origen_flecha) / Config.px_por_metro)
 	var texto := "%s · %d m" % [objetivo_aereo.nombre(), distancia]
-	var ancho := _fuente.get_string_size(texto, HORIZONTAL_ALIGNMENT_LEFT, -1, 16).x
+	var tema := ThemeDB.get_project_theme()
+	var fuente := tema.get_font("font", "ObjetivoAereo")
+	var tamano := tema.get_font_size("font_size", "ObjetivoAereo")
+	var ancho := fuente.get_string_size(texto, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano).x
 	var pos := Vector2(clampf(marcador.x - ancho / 2, 20, pantalla.x - ancho - 20), marcador.y + 45)
-	draw_string_outline(_fuente, pos, texto, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, 5, TINTA)
-	draw_string(_fuente, pos, texto, HORIZONTAL_ALIGNMENT_LEFT, -1, 16, CREMA)
+	draw_string_outline(fuente, pos, texto, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano, tema.get_constant("outline_size", "ObjetivoAereo"), tema.get_color("font_outline_color", "ObjetivoAereo"))
+	draw_string(fuente, pos, texto, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano, tema.get_color("font_color", "ObjetivoAereo"))
 	draw_set_transform_matrix(Transform2D.IDENTITY)
 
 
 ## Flecha fija que señala la dirección de salida por la cuesta.
 func _dibujar_flecha() -> void:
-	var o := origen_flecha
-	var dir := direccion_flecha
-	var col := Color("ffc83d")
-	var punta := o + dir * RADIO_FLECHA
-	var cabeza := PackedVector2Array([punta + dir * 26.0, punta + dir.orthogonal() * 16.0, punta - dir.orthogonal() * 16.0])
-	draw_line(o, punta, TINTA, 14.0, true)
-	draw_colored_polygon(cabeza, TINTA)
-	draw_polyline(cabeza + PackedVector2Array([cabeza[0]]), TINTA, 8.0, true)
-	draw_line(o, punta, col, 7.0, true)
-	draw_colored_polygon(cabeza, col)
+	var giro := direccion_flecha.angle()
+	var centro := origen_flecha + Vector2(78, 0).rotated(giro)
+	Sprites.girar(self, "efectos/flecha", Transform2D(giro, centro))

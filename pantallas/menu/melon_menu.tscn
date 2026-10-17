@@ -6,7 +6,7 @@
 script = ExtResource("1")
 
 [node name="Aspecto" type="Sprite2D" parent="."]
-texture_filter = 2
+texture_filter = 1
 
 [node name="Lienzo" type="SubViewport" parent="."]
 transparent_bg = true

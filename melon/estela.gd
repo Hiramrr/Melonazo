@@ -41,13 +41,10 @@ func _draw() -> void:
 		var pos: Vector2 = punto["pos"]
 		match estilo["id"]:
 			"papel":
-				draw_set_transform(pos, punto["giro"])
-				draw_rect(Rect2(-4, -3, 8, 6), col)
-				draw_set_transform(Vector2.ZERO)
+				Sprites.girar(self, "efectos/papel", Transform2D(punto["giro"], pos), col)
 			"cafe":
-				draw_circle(pos, 4 * vida + 1, col)
-				draw_line(pos + Vector2(-1, -2), pos + Vector2(1, 2), Color("dfbd91"), 1, true)
+				Sprites.poner(self, "efectos/cafe", pos, col, (4 * vida + 1) / 5)
 			"niebla":
-				draw_circle(pos, 12 * vida + 1, col)
+				Sprites.disco(self, pos, 12 * vida + 1, col)
 			_:
-				draw_circle(pos, 5 * vida + 1, col)
+				Sprites.disco(self, pos, 5 * vida + 1, col)

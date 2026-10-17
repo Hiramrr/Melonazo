@@ -16,7 +16,8 @@ extends Node2D
 ##
 ## Fases: FUERZA → BAJADA sin controles → RECORRIDO al salir del trampolín → FIN.
 ## Este script aplica las reglas de la carrera: lanzamiento, cuándo termina,
-## efectos de obstáculos, empujones del público, papalotes, poderes y postales.
+## efectos de obstáculos, pájaros, empujones del público, papalotes, poderes,
+## la Salsa Valentina y postales.
 ## Al terminar registra el resultado en Juego y pasa a Resultados.
 
 enum Fase { FUERZA, BAJADA, RECORRIDO, FIN }
@@ -45,6 +46,7 @@ var altura_m := 0.0                    # altura sobre el suelo, para el HUD
 var altura_max_m := 0.0
 var recolectados := 0                  # aplausos sueltos recogidos
 var poderes_recogidos := 0
+var valentinas_usadas := 0
 var empujones := 0                     # cada empujón vale menos que el anterior
 var papalotes_usados := 0
 var postales_intento: Array = []       # ids de postales alcanzadas en esta carrera
@@ -57,6 +59,7 @@ var _t_fin := 0.0                      # espera antes de pasar a Resultados
 
 
 func _ready() -> void:
+	Musica.actualizar_recorrido(0.0)
 	PhysicsServer2D.area_set_param(get_world_2d().space, PhysicsServer2D.AREA_PARAM_GRAVITY, Config.gravedad)
 	terreno.iniciar()
 	terreno.preparar_corredores(bajada)
@@ -114,7 +117,7 @@ func _process(delta: float) -> void:
 			_t_fin -= delta
 			if _t_fin <= 0.0:
 				_t_fin = INF
-				Juego.registrar_intento(maxf(0.0, mejor_x) / Config.px_por_metro, melon.carisma(), recolectados, melon.roto, poderes_recogidos, altura_max_m)
+				Juego.registrar_intento(maxf(0.0, mejor_x) / Config.px_por_metro, melon.carisma(), recolectados, melon.roto, poderes_recogidos, altura_max_m, valentinas_usadas)
 				Animacion.cambiar_escena(ESCENA_RESULTADOS)
 	var apuntando := fase == Fase.FUERZA
 	efectos.mostrar_flecha = apuntando
@@ -173,6 +176,7 @@ func _avanzar_bajada(delta: float) -> void:
 func _revisar_avance(x: float, delta: float) -> void:
 	var avance := x - mejor_x
 	mejor_x = minf(maxf(mejor_x, x), Config.meta_m * Config.px_por_metro)
+	Musica.actualizar_recorrido(mejor_x / Config.px_por_metro)
 	if not melon.roto and x >= Config.meta_m * Config.px_por_metro:
 		_revisar_postales()
 		melon.freeze = true
@@ -183,7 +187,9 @@ func _revisar_avance(x: float, delta: float) -> void:
 	else:
 		_t_sin_avance += delta
 		if _t_sin_avance > Config.tiempo_sin_avance:
-			_fin("¡Se detuvo!")
+			_t_sin_avance = 0.0
+			if not _usar_valentina():
+				_fin("¡Se detuvo!")
 
 
 func _revisar_postales() -> void:
@@ -201,6 +207,8 @@ func _fin(texto: String) -> void:
 	_t_fin = Config.espera_fin
 	texto_fin = texto
 	melon.controlable = false
+	var llegada := not melon.roto and mejor_x >= Config.meta_m * Config.px_por_metro
+	Musica.tocar(Musica.MENU if llegada else Musica.DERROTA)
 
 
 # --- Señales -----------------------------------------------------------------
@@ -210,7 +218,17 @@ func _on_melon_aviso(texto: String) -> void:
 
 
 func _on_melon_roto() -> void:
-	_fin("¡Se rompió el melón!")
+	if not _usar_valentina():
+		_fin("¡Se rompió el melón!")
+
+
+## Si queda Salsa Valentina, gasta una y el melón sigue. Devuelve false si no hubo.
+func _usar_valentina() -> bool:
+	if fase != Fase.RECORRIDO or not Juego.usar_valentina():
+		return false
+	valentinas_usadas += 1
+	melon.revivir()
+	return true
 
 
 ## Conectada a Terreno.obstaculo_tocado. El efecto lo decide cada Obstaculo.
@@ -220,6 +238,15 @@ func _al_tocar_obstaculo(cuerpo: Node2D, ob: Obstaculo) -> void:
 	if ob.tipo == "aplauso":
 		recolectados += 1
 	var texto := ob.tocar(melon)
+	if not texto.is_empty():
+		efectos.avisar(texto, melon.global_position + Vector2(0, -50))
+
+
+## Conectada a Terreno.pajaro_tocado.
+func _al_tocar_pajaro(pajaro: Pajaro) -> void:
+	if fase != Fase.RECORRIDO:
+		return
+	var texto := pajaro.tocar(melon)
 	if not texto.is_empty():
 		efectos.avisar(texto, melon.global_position + Vector2(0, -50))
 

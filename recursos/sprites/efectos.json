@@ -1,0 +1,268 @@
+{
+	"frames": {
+		"disco": {
+			"frame": {
+				"x": 0,
+				"y": 0,
+				"w": 34,
+				"h": 34
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 34,
+				"h": 34
+			},
+			"sourceSize": {
+				"w": 34,
+				"h": 34
+			},
+			"duration": 100
+		},
+		"aro": {
+			"frame": {
+				"x": 36,
+				"y": 0,
+				"w": 36,
+				"h": 36
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 36,
+				"h": 36
+			},
+			"sourceSize": {
+				"w": 36,
+				"h": 36
+			},
+			"duration": 100
+		},
+		"soplo": {
+			"frame": {
+				"x": 74,
+				"y": 0,
+				"w": 14,
+				"h": 9
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 14,
+				"h": 9
+			},
+			"sourceSize": {
+				"w": 14,
+				"h": 9
+			},
+			"duration": 100
+		},
+		"linea": {
+			"frame": {
+				"x": 90,
+				"y": 0,
+				"w": 16,
+				"h": 2
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 16,
+				"h": 2
+			},
+			"sourceSize": {
+				"w": 16,
+				"h": 2
+			},
+			"duration": 100
+		},
+		"triangulo": {
+			"frame": {
+				"x": 108,
+				"y": 0,
+				"w": 12,
+				"h": 8
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 12,
+				"h": 8
+			},
+			"sourceSize": {
+				"w": 12,
+				"h": 8
+			},
+			"duration": 100
+		},
+		"papel": {
+			"frame": {
+				"x": 122,
+				"y": 0,
+				"w": 4,
+				"h": 3
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 4,
+				"h": 3
+			},
+			"sourceSize": {
+				"w": 4,
+				"h": 3
+			},
+			"duration": 100
+		},
+		"cafe": {
+			"frame": {
+				"x": 128,
+				"y": 0,
+				"w": 6,
+				"h": 6
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 6,
+				"h": 6
+			},
+			"sourceSize": {
+				"w": 6,
+				"h": 6
+			},
+			"duration": 100
+		},
+		"trozo": {
+			"frame": {
+				"x": 136,
+				"y": 0,
+				"w": 20,
+				"h": 20
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 20,
+				"h": 20
+			},
+			"sourceSize": {
+				"w": 20,
+				"h": 20
+			},
+			"duration": 100
+		},
+		"slam": {
+			"frame": {
+				"x": 158,
+				"y": 0,
+				"w": 24,
+				"h": 64
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 64
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 64
+			},
+			"duration": 100
+		},
+		"cafe_velocidad": {
+			"frame": {
+				"x": 184,
+				"y": 0,
+				"w": 12,
+				"h": 10
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 12,
+				"h": 10
+			},
+			"sourceSize": {
+				"w": 12,
+				"h": 10
+			},
+			"duration": 100
+		},
+		"flecha": {
+			"frame": {
+				"x": 198,
+				"y": 0,
+				"w": 88,
+				"h": 24
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 88,
+				"h": 24
+			},
+			"sourceSize": {
+				"w": 88,
+				"h": 24
+			},
+			"duration": 100
+		},
+		"indicador": {
+			"frame": {
+				"x": 288,
+				"y": 0,
+				"w": 24,
+				"h": 14
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 24,
+				"h": 14
+			},
+			"sourceSize": {
+				"w": 24,
+				"h": 14
+			},
+			"duration": 100
+		}
+	},
+	"meta": {
+		"app": "https://libresprite.github.io/",
+		"version": "conversion",
+		"image": "efectos.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 2048,
+			"h": 64
+		},
+		"scale": "1",
+		"frameTags": []
+	}
+}

@@ -3,7 +3,7 @@ extends Tramo
 ## Bajada de salida, sin obstáculos ni ayudas antes de cruzar Xallitic.
 
 const PersonaEscena := preload("res://mundo/ayudas/persona.tscn")
-var barrera: Line2D
+var barrera: Sprite2D
 
 
 func _ready() -> void:
@@ -35,12 +35,12 @@ func _ready() -> void:
 			get_node("Decoracion" if fila == 0 else "Publico").add_child(persona)
 	get_node("Publico").z_index = 2
 	marcadores.append({"pos": Vector2(inicio.x - 80, altura(inicio.x - 80)), "texto": "Salida"})
-	barrera = Line2D.new()
+	barrera = Sprite2D.new()
 	barrera.name = "BarreraSalida"
 	var salida := Vector2(inicio.x + 60.0, altura(inicio.x + 60.0))
-	barrera.points = PackedVector2Array([salida + Vector2(0, -12), salida + Vector2(24, 110)])
-	barrera.default_color = Color("ddd1af")
-	barrera.width = 7.0
+	barrera.texture = Sprites.textura("terreno/barrera")
+	barrera.position = salida + Vector2(12, 50)
+	barrera.scale = Vector2.ONE * Pixel.ESCALA
 	barrera.z_index = 3
 	add_child(barrera)
 
@@ -84,46 +84,10 @@ func abrir_salida() -> void:
 
 
 func _draw() -> void:
-	super._draw()
 	if puntos.size() < 2:
 		return
-	# El costado de la calle es un muro de contención, no un bloque de tierra liso.
-	var muro := puntos.duplicate()
-	for i in muro.size():
-		muro[i].y += 114.0
-	muro.append(Vector2(x1, _fondo))
-	muro.append(Vector2(x0, _fondo))
-	draw_colored_polygon(muro, Color("85877b"))
-	var y := floorf((puntos[0].y + 114.0) / 36.0) * 36.0
-	var fila_muro := 0
-	while y < _fondo:
-		var x := x0 + 4.0 - (fila_muro % 2) * 39.0
-		while x < x1 - 4.0:
-			var a := maxf(x, x0 + 4.0)
-			var b := minf(x + 72.0, x1 - 4.0)
-			var arriba := maxf(y, maxf(altura(a), altura(b)) + 116.0)
-			if b > a and arriba < y + 30.0:
-				var tono := Color("9e9c8f").lightened(_azar(x + y) * 0.1)
-				draw_rect(Rect2(a, arriba, b - a, y + 30.0 - arriba), tono)
-			x += 78.0
-		y += 36.0
-		fila_muro += 1
-	# Calle ancha entre dos filas de público, como en la carrera de melones.
-	var calle := puntos.duplicate()
-	for i in range(puntos.size() - 1, -1, -1):
-		calle.append(puntos[i] + Vector2(0, 106))
-	draw_colored_polygon(calle, Color("aaa69a"))
-	for fila in 5:
-		var x := x0 + 10.0 + (fila % 2) * 11.0
-		while x < x1 - 12.0:
-			var p := Vector2(x, altura(x) + 7.0 + fila * 20.0)
-			draw_set_transform(p, pendiente(x))
-			draw_rect(Rect2(-8, -4, 17, 10), Color("c2bfb2"))
-			draw_rect(Rect2(-8, -4, 17, 10), Color("88867d"), false, 1.0)
-			draw_set_transform(Vector2.ZERO)
-			x += 23.0
-	var banqueta := puntos.duplicate()
-	for i in banqueta.size():
-		banqueta[i].y += 110.0
-	draw_polyline(banqueta, Color("cfb559"), 8.0, true)
-	draw_polyline(puntos, Color("cfb559"), 6.0, true)
+	_dibujar_suelo("terreno/calle_bajada", true)
+	for m in marcadores:
+		var p: Vector2 = m["pos"]
+		Sprites.dibujar(self, "terreno/letrero", Rect2(p + Vector2(-40, -100), Vector2(80, 104)))
+		draw_string(ThemeDB.fallback_font, p + Vector2(-35, -77), m["texto"], HORIZONTAL_ALIGNMENT_CENTER, 70, 15, Color(0.15, 0.15, 0.15))

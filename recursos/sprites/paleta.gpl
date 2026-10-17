@@ -1,0 +1,56 @@
+GIMP Palette
+Name: Rueda Melon
+Columns: 8
+#
+ 37  62  50	tinta
+ 41  75  67	tinta2
+ 27  31  29	negro
+ 74  79  82	gris_osc
+133 135 123	gris
+170 166 154	gris_cl
+194 191 178	piedra
+255 243 213	crema
+247 243 234	blanco
+216 107  81	coral
+168  74  58	coral_osc
+184  90  62	teja
+138  63  44	teja_osc
+200  66  63	rojo
+223 113 128	rosa
+214  69 140	bugambilia
+232 145  58	naranja
+242 193  78	amarillo
+255 224 138	amarillo_cl
+168 121  44	oro_osc
+138  90  52	madera
+ 94  58  34	madera_osc
+226 180 140	piel1
+196 138  98	piel2
+142  91  60	piel3
+127 179  90	melon
+ 79 127  58	melon_osc
+181 217 138	melon_cl
+109 138  88	pasto
+ 76 106  62	pasto_osc
+147 176 109	pasto_cl
+ 63 110  69	hoja
+ 77 127 196	agua
+169 205 240	agua_cl
+159 203 224	cielo
+207 230 238	cielo_cl
+201 216 212	bruma
+125 147 166	montana
+ 93 116 134	montana_osc
+138  90 168	morado
+163 138 171	jacaranda
+149 128 106	tierra
+110  92  75	tierra_osc
+170 161 142	calle
+197 174 124	arena
+227 185 111	fachada1
+206 136 121	fachada2
+159 186 180	fachada3
+233 223 191	fachada4
+181 191 150	fachada5
+199 162 170	fachada6
+213 156 105	fachada7

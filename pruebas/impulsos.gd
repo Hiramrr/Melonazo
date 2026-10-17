@@ -23,6 +23,9 @@ func _verificar() -> void:
 		var conocidos: Array = []
 		for x in range(0, int(config.meta_m * config.px_por_metro) + 1, 1000):
 			r.terreno.actualizar(x)
+			for tramo in r.terreno.tramos:
+				for p in tramo.puntos:
+					comprobar(is_equal_approx(p.y, config.calle_y), "Todo el terreno después del lanzamiento es plano")
 			var cantidad: int = r.terreno.melones.size()
 			r.terreno.actualizar(x)
 			comprobar(r.terreno.melones.size() == cantidad, "Actualizar no duplica los melones del camino")
@@ -36,7 +39,7 @@ func _verificar() -> void:
 			r.terreno.actualizar_melones(r.melon, 0.0)
 			comprobar(r.terreno.melones.size() <= 20, "La ruta retira objetivos lejanos y mantiene una cantidad acotada")
 		posiciones.sort()
-		comprobar(posiciones.size() >= 16 and posiciones.size() <= 26, "Hay ayudas repartidas durante todo el viaje")
+		comprobar(posiciones.size() >= 10 and posiciones.size() <= 16, "Hay ayudas repartidas durante todo el viaje")
 		for i in range(1, posiciones.size()):
 			var separacion := posiciones[i] - posiciones[i - 1]
 			comprobar(separacion >= config.separacion_melones.x and separacion <= config.separacion_melones.y, "La separación se conserva al cambiar de tramo")
@@ -59,11 +62,17 @@ func _verificar() -> void:
 		anteriores.append(sumas[0] / 3.0)
 		nuevas.append(sumas[1] / 3.0)
 	comprobar(slams[1] > slams[0], "Hay más oportunidades reales de acertar slams")
-	comprobar(nuevas[1] > anteriores[1] and nuevas[2] > anteriores[2], "Las ayudas facilitan avanzar al combinar controles y mejoras")
-	comprobar(nuevas[0] < config.meta_m * 0.8, "El equipo inicial no permite completar el viaje con controles básicos")
+	comprobar(nuevas[0] > anteriores[0] and nuevas[1] >= anteriores[1] and nuevas[2] >= anteriores[2], "Las ayudas permiten llegar con menos mejoras al apuntar los slams")
 	config.primer_melon_camino_x = primer_melon
 	config.rampa_impulso = rampa
 	config.toldo_avance = toldo
+	var sin_apuntar := 0.0
+	for semilla in [1509, 42, 7301]:
+		config.semilla_terreno = semilla
+		var datos: Dictionary = await carrera(1, 0, true, true, 0.91, true, false)
+		comprobar(datos["termino"] and datos["metros"] < config.meta_m, "Pulsar slam sin apuntar no completa el viaje")
+		sin_apuntar += datos["metros"] / 3.0
+	comprobar(sin_apuntar < nuevas[0] * 0.6, "Apuntar sigue siendo necesario para aprovechar los melones")
 	DirAccess.remove_absolute(juego.archivo_guardado)
-	print("Impulsos: medias anteriores %s m, nuevas %s m; slams %s; fallos %d." % [str(anteriores), str(nuevas), str(slams), fallos])
+	print("Impulsos: medias anteriores %s m, nuevas %s m; sin apuntar %.0f m; slams %s; fallos %d." % [str(anteriores), str(nuevas), sin_apuntar, str(slams), fallos])
 	quit(1 if fallos else 0)

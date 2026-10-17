@@ -55,8 +55,10 @@ var _carisma_mostrado := -1
 
 
 func _ready() -> void:
+	Musica.tocar(Musica.TIENDITA)
 	# El nodo se llama TuMelon (sin acento ni espacio); el título lleva los dos.
 	pestanas.set_tab_title(pestanas.get_tab_idx_from_control(pestana_melon), "Tu melón")
+	pestanas.set_tab_title(pestanas.get_tab_idx_from_control(pestana_mejoras), "Tiendita")
 	pestanas.tab_changed.connect(_al_cambiar_pestana)
 	vista.pestana_dibujo = pestana_dibujo
 	for pestana in [pestana_melon, pestana_accesorios, pestana_mejoras]:
@@ -66,8 +68,7 @@ func _ready() -> void:
 	pestana_dibujo.cambio.connect(vista.queue_redraw)
 	for parte in [["Tab", "Elegir"], ["Enter", "Rodar"]]:
 		ayuda.add_child(Iconos.tecla(parte[0]))
-		var l := ComunTaller.etiqueta(parte[1], 15)
-		l.theme_type_variation = &"TextoHUD"
+		var l := ComunTaller.etiqueta(parte[1], &"AyudaHUD")
 		ayuda.add_child(l)
 	_refrescar()
 	btn_puente.grab_focus()

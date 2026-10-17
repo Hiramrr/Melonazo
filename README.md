@@ -17,7 +17,7 @@ La resolución de diseño es 1280 × 720, con ventana redimensionable desde 960 
 - Elegir tres tamaños, ponerle nombre al melón y combinar ocho pieles, colores propios para cuerpo y rayas, seis patrones, nueve caras, seis detalles y cinco estelas. Los cambios de apariencia son gratuitos y no cambian la física.
 - Dibujar sobre el melón en la pestaña Dibujo: pincel con ocho colores o uno libre, grosor ajustable, goma (también con clic derecho), deshacer (Ctrl+Z) y borrar todo. El dibujo gira con el melón durante la carrera y se guarda solo.
 - Equipar hasta tres de ocho accesorios. El rebozo permite planear, la flor recupera resistencia y atrae aplausos, y la jarana impulsa y añade un rebote. Los accesorios originales siguen disponibles.
-- Comprar mejoras permanentes de fuerza, resistencia y rebotes con los aplausos de cada carrera.
+- Comprar en la Tiendita del taller mejoras permanentes de fuerza, resistencia y rebotes, y hasta tres Salsas Valentina para revivir.
 - Llegar al CUCosta y completar once lugares del pasaporte. Cada lugar nuevo da 60 aplausos una sola vez.
 - Guardar automáticamente el aspecto, el equipo, las compras, el récord y el pasaporte entre sesiones.
 - Conservar hasta 24 melones personalizados en el almanaque, con nombre, tamaño, colores, dibujo, estela y equipo. Puedes volver a usarlos, actualizar sus fichas o eliminarlas.
@@ -27,11 +27,13 @@ Para guardar una creación, pulsa "Guardar melón en el almanaque" en la pestañ
 
 ## Objetivo del viaje
 
-La meta está a 2600 metros de juego. Los primeros 1800 metros corresponden a Xalapa. Después sigue el camino entre montañas, la costa aparece a los 2300 metros y el viaje termina al cruzar la meta del CUCosta, incluso en el aire. La barra del HUD muestra el recorrido total y los metros que faltan. Detenerse o romperse sigue terminando el intento.
+La meta está a 2600 metros de juego. Los primeros 1200 metros corresponden a Xalapa. Después sigue el camino entre montañas, la costa aparece a los 2300 metros y el viaje termina al cruzar la meta del CUCosta, incluso en el aire. La barra del HUD muestra el recorrido total y los metros que faltan. Detenerse o romperse sigue terminando el intento.
+
+Todo el terreno después del lanzamiento es plano, desde la primera calle hasta la meta. Solo la bajada y el trampolín de salida conservan su curva. Las rampas siguen siendo obstáculos de impulso sobre ese suelo.
 
 Una carrera de prueba con mejoras máximas, saltos y papalotes completó el recorrido en 40.7 segundos, sin accesorios. Los intentos cortos permiten ganar aplausos y comprar mejoras para llegar más lejos.
 
-Los intervalos de 350 a 420, 650 a 800, 950 a 1250 y 1450 a 1750 metros quedan libres de lugares para agregar los suyos. Se añaden como entradas de `Config.postales`, ordenadas por metros y con un `id` nuevo. No requieren crear edificios ni escenarios. Su fotografía se asigna con ese mismo `id` en `fotografias` de `recursos/arte_xalapa.tres`.
+La ruta sigue los 19 lugares del PDF elegido por ListiStar, en ese orden. Incluye El Águila, la FEI, el MAX, Bachilleres Experimental, La Joya, los bosques y volcanes rumbo a Perote, Puebla, Tlaxcala, el centro del país y la llegada al CUCosta. La lista y sus distancias de juego están en `Config.postales`. Las fotografías y sus datos curiosos se asignan por el mismo `id` en `recursos/arte_xalapa.tres`.
 
 Las fotos aparecen únicamente como postales al terminar el intento. La postal corresponde al lugar más lejano alcanzado en esa carrera. Si ese lugar aún no tiene foto, no se muestra una imagen de otro sitio ni una ilustración de reemplazo. El pasaporte conserva los nombres y sellos, sin fotos.
 
@@ -51,11 +53,13 @@ Las fotos aparecen únicamente como postales al terminar el intento. La postal c
 
 En la salida esperan seis rivales junto a tu melón. Cada intento toma al azar hasta seis diseños del almanaque sin repetir fichas. Si faltan, completa el grupo con otros melones. Conservan su tamaño, colores, patrón, cara, dibujo y accesorios. La carrera usa copias y no cambia tus fichas guardadas.
 
-El medidor de potencia aparece en la salida de la bajada. Espacio fija el valor, retira la barrera y suelta a todos los melones. Los rivales bajan por dos filas, saltan del trampolín y continúan por el camino con ritmos distintos. Todos los rivales salen de esa parrilla. La zona perfecta está entre 80 % y 100 %. Más potencia da más velocidad al llegar a Xalapa. Durante la bajada no puedes saltar, girar, usar accesorios ni pedir empujones. La pausa sigue disponible. Al salir del trampolín recuperas todos los controles de carrera.
+El medidor de potencia aparece en la salida de la bajada. Espacio fija el valor, retira la barrera y suelta a todos los melones. Los rivales bajan por dos filas, saltan del trampolín y continúan por el camino con ritmos distintos. Después aparecen más melones durante el viaje. La zona perfecta está entre 80 % y 100 %. Más potencia da más velocidad al llegar a Xalapa. Durante la bajada no puedes saltar, girar, usar accesorios ni pedir empujones. La pausa sigue disponible. Al salir del trampolín recuperas todos los controles de carrera.
 
 Empiezas con dos rebotes impulsados y puedes pulsar Espacio hasta 0.26 segundos antes de tocar suelo. Caer sobre el lado redondo conserva velocidad. Los accesorios tienen colisión propia y pueden frenar o caerse al aterrizar sobre ellos. Usarlos consume su carisma durante esa carrera. Vuelven a estar equipados en el siguiente intento.
 
 ## Slam y melones rodantes
+
+Además de los seis rivales de la salida, aparecen melones medianos y grandes desde los 100 metros, separados entre 170 y 230 metros. Se generan por delante del jugador hasta la meta y dejan de ocupar memoria al quedar lejos. Cada uno permite un único slam, así hay más oportunidades de recuperar velocidad sin repetir el mismo apoyo.
 
 Los rivales corren como tu melón: aceleran en las bajadas, frenan en las subidas, despegan en las crestas, rebotan al caer y saltan cada uno o tres segundos. Cada uno tiene su ritmo de crucero, entre 420 y 620 px/s. Si se quedan muy atrás apuran el paso, y si te sacan mucha ventaja lo aflojan, así siguen cerca durante el viaje. Cuando vuelas a más de 65 metros sobre la calle, los rivales cercanos te siguen al aire con impulsos, entre 32 y 54 metros por debajo de ti, y ajustan su avance al tuyo. Cada impulso deja un soplo blanco bajo el melón. No suben mientras caes en picado, y el que ya recibió un slam se queda abajo. Como vuelan más hondo de lo que devuelve un slam, golpearlos en lo alto cuesta algo de altura.
 
@@ -63,9 +67,11 @@ Pulsa S o flecha abajo en el aire para caer en picado. Golpear uno desde arriba 
 
 Durante el picado tu melón corrige un poco su avance hacia el rival que tiene debajo, hasta 1700 px/s². Picar desde más alto da más tiempo para corregir. Picar encima del rival apenas cambia nada. Un mal cálculo sigue fallando. El rival que apuntas deja de saltar mientras caes, aunque sigue rebotando si venía en el aire. El golpe admite entre 16 y 40 píxeles de margen lateral según la velocidad relativa. Los golpes laterales y desde abajo no cuentan. El HUD solo muestra el aviso de S cuando la caída sale con la mitad de esa corrección, y tiene en cuenta el arco del rival si está en el aire. En ese momento el rival lleva una mira amarilla con una flecha hacia abajo: si pulsas S, aciertas. Durante el picado, la mira se vuelve coral sobre el rival hacia el que se corrige la caída.
 
+Las rampas dan 280 px/s de impulso, frente a los 240 anteriores. Caer sobre un toldo añade 160 px/s hacia delante y devuelve el 90 % de la velocidad de caída como rebote. Tocar el toldo al subir no da impulso. Ambos se usan una sola vez por carrera.
+
 ## Ruta aérea
 
-La primera ayuda está a 60 metros de la salida y a 38 metros sobre la calle. Desde ahí, la ruta asciende entre 28 y 40 metros por ayuda hasta llegar a 330 metros de altura. Las ayudas están separadas entre 95 y 125 metros. Cada tercera ayuda es una corriente de niebla, con una silueta distinta del papalote. Acércate y pulsa E cuando aparezca el aro y el aviso de impulso. Ambas ayudan a subir y avanzar, protegen la siguiente caída fuerte y se usan una sola vez por carrera. No regalan saltos. Hay un tamal cerca de la primera ayuda y después cada cuatro ayudas para recuperar una carga.
+La primera ayuda está a 60 metros de la salida y a 38 metros sobre la calle. Desde ahí, la ruta asciende entre 28 y 40 metros por ayuda hasta llegar a 330 metros de altura. Las ayudas están separadas entre 95 y 125 metros. Cada tercera ayuda es una corriente de niebla, con una silueta distinta del papalote. Acércate y pulsa E cuando aparezca el aro y el aviso de impulso. Ambas ayudan a subir y avanzar, protegen la siguiente caída fuerte y se usan una sola vez por carrera. No regalan saltos. Hay un café de Coatepec cerca de la primera ayuda y después cada cuatro ayudas para saltar sin gastar cargas.
 
 Las monedas de aplausos aparecen desde la salida en grupos de tres, separados entre 70 y 100 metros. En el cielo hay grupos de dos o tres premios, separados entre 140 y 200 metros en cuatro franjas entre 50 y 330 metros de altura. Alternan filas, arcos y diagonales cortas. Los primeros grupos de cada altura aparecen escalonados para dejar espacio libre. Cada intento genera una distribución distinta. La cámara conserva un zoom mínimo de 0.72 para distinguir las ayudas y al melón.
 
@@ -79,14 +85,21 @@ Se activan al recogerlos y tienen siluetas diferentes. El primero aparece a los 
 
 | Poder | Efecto |
 | --- | --- |
-| Café de altura | Impulso breve y aceleración durante 2 segundos |
-| Chile xalapeño | Embestida, rompe puestos y protege de golpes durante 1.5 segundos |
-| Niebla de Xalapa | Protege de golpes y del frenado de obstáculos durante 3 segundos |
-| Tamal de hoja | Recupera un punto de resistencia y un rebote hasta su máximo. Conserva los rebotes extra de la jarana |
-| Agua de jamaica | Recarga todas las cargas de salto. Conserva los rebotes extra de la jarana |
-| Miel de Coatepec | Recupera golpe y medio de resistencia hasta su máximo |
+| Chile jalapeño | Explota y lanza al melón hacia adelante, como mínimo a 110 m/s, y un poco hacia arriba |
+| Café de Coatepec | Energía ilimitada durante 4 segundos: saltas y rebotas todo lo que quieras sin gastar cargas |
+| Pizza con yogur | El melón se sube a una pizza que avanza 2.5 segundos sin perder altura. Saltar o hacer slam lo baja |
 
-La jamaica y la miel son recargas: se alternan con su propia separación, cada 90 a 130 metros desde los 130 metros, y nunca quedan encimadas con otro poder.
+Si el melón va lento en el suelo y sin cargas de salto, aparece por delante, a ras de calle, un café. Hay como mucho un rescate cada 7 segundos.
+
+## Salsa Valentina
+
+Se compra en la Tiendita del taller por 350 aplausos; puedes tener hasta tres. Si el melón se rompe o se detiene, se usa sola una salsa: el melón vuelve con toda su resistencia y sus cargas, dos segundos invulnerable y con impulso para seguir. El HUD muestra cuántas te quedan.
+
+## Pájaros
+
+Desde los 180 metros vuelan pájaros contra el melón, a veces en pareja, entre 11 y 75 metros sobre la calle. Chocar con uno le quita casi la mitad de la velocidad. Cada pájaro estorba una sola vez.
+
+Los melones rivales tienen carácter: los tontos (cara de sueño) van lentos, tropiezan y son fáciles de aplastar; los listos (con lentes) van más rápido y a veces esquivan el primer slam. Al principio abundan los tontos y hacia el final, los listos.
 
 ## Estructura del proyecto
 
@@ -107,7 +120,7 @@ mundo/           Todo lo que aparece en la carrera
   ayudas/          Poderes, papalotes y público que empuja
   paisaje/         Fondo con paralaje y capas del cielo
 interfaz/        Tema visual compartido y componentes de interfaz
-recursos/        Imágenes, fotografías, fuente, íconos SVG y datos de arte (arte_xalapa.tres)
+recursos/        Imágenes, fotografías, fuente, íconos PNG y datos de arte (arte_xalapa.tres)
 pruebas/         Scripts de verificación automática
 docs/            Documentación técnica
 ```
@@ -118,17 +131,21 @@ La explicación de cada escena, su árbol de nodos, cómo se comunican y cómo a
 
 ## Arte y sustitución de recursos
 
-Las postales de resultados usan fotografías reales de Xallitic, la Catedral de Xalapa, la vista del Pico de Orizaba desde Parque Juárez y Los Lagos. Están en `recursos/fotos/`, con sus autores, fuentes y licencias Creative Commons en `recursos/fotos/README.md`. Cada foto muestra sus créditos y enlaces dentro del juego. No necesitan conexión para verse. Las fotos de los demás lugares, incluido el CUCosta, quedan pendientes de sus imágenes.
+El arte dibujado del juego usa hojas PNG con JSON Hash compatible con LibreSprite. El melón, los accesorios, el terreno, el paisaje y los efectos se cargan desde `recursos/sprites/`. Para editar o sustituir cuadros, consulta [recursos/sprites/README.md](recursos/sprites/README.md).
+
+Las postales de resultados muestran una fotografía del lugar alcanzado y un dato curioso para los 19 destinos elegidos, incluida la entrada del CUCosta. Las imágenes están en `recursos/fotos/` y funcionan sin conexión. Los autores, las fuentes y los derechos de cada fotografía están en [recursos/fotos/README.md](recursos/fotos/README.md). El juego muestra estos créditos y el enlace a la fuente del dato.
 
 Las entradas de `fotografias` en `recursos/arte_xalapa.tres` permiten sustituir o quitar las fotos sin tocar los scripts. Al vaciar ese diccionario, los resultados ocultan la postal y conservan el resumen del intento.
 
-El taller muestra una ilustración vectorial de Xallitic en `recursos/taller_xallitic.svg`. El tema compartido usa verde tinta, papel crema y botones coral con relieve, y la fuente Fredoka incluida en `recursos/fuentes/` (licencia OFL) para verse igual en cualquier sistema. El HUD muestra cada accesorio con su dibujo y tecla, y marca la zona perfecta en el medidor. La barra de resistencia baja un tramo completo con cada golpe y una fracción con las caídas medianas.
+El taller muestra una ilustración de Xallitic en `recursos/taller_xallitic.png`. El tema compartido usa verde tinta, papel crema y botones coral con relieve, y la fuente Fredoka incluida en `recursos/fuentes/` (licencia OFL) para verse igual en cualquier sistema. El HUD muestra cada accesorio con su dibujo y tecla, y marca la zona perfecta en el medidor. La barra de resistencia baja un tramo completo con cada golpe y una fracción con las caídas medianas.
 
 El recorrido usa fondos dibujados de ciudad, montañas y costa. `paisaje` queda vacío para reservar las fotografías a las postales del final. La panorámica de Xalapa desde el Ágora se conserva entre los recursos, con sus créditos en `recursos/fotos/README.md`.
 
 El personaje y sus accesorios siguen dibujados por código en `melon/aspecto.gd` y `melon/accesorios/`. El tema compartido de botones, pestañas, menús y medidor está en `interfaz/tema_xalapa.tres`.
 
-Los cuatro poderes usan imágenes 3D provisionales de Microsoft Fluent Emoji, incluidas en `recursos/poderes/` con licencia MIT. Se muestran en la ruta y en el pasaporte sin conexión. Las fuentes y la forma de cambiarlas están en [recursos/poderes/README.md](recursos/poderes/README.md).
+Los estilos de todas las pantallas, incluidos paneles, tipografía, colores de estado y barras del HUD, se editan en ese recurso desde el editor de Godot. La [guía de temas](docs/temas.md) indica qué variación controla cada parte. Los márgenes y la distribución de cada pantalla se editan en su escena.
+
+Los poderes, la Salsa Valentina, la explosión del chile y los pájaros usan imágenes PNG provisionales en `recursos/poderes/`, algunas de Microsoft Fluent Emoji con licencia MIT. Para cambiarlas basta con sobrescribir el PNG o elegir otra textura en el inspector. La tabla de archivos y la forma de cambiarlos están en [recursos/poderes/README.md](recursos/poderes/README.md).
 
 La revisión gráfica usa una ventana con render real y no modifica el progreso. Comprueba los límites de los controles y guarda capturas de todas las pestañas y pantallas en `user://revision_grafica/`, a 1280 × 720 y a 960 × 540. Incluye la fuerza de lanzamiento, los espacios de accesorios vacíos, un resultado con todas las recompensas y el modo sin fotografías.
 
@@ -148,12 +165,14 @@ Si un archivo no se puede leer, el juego lo respalda con sufijo `.danado` antes 
 
 ```sh
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --editor --quit
+/Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/musica.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/verificar.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/ruta.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/almanaque.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/slam.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/lanzamiento.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/balance.gd
+/Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/impulsos.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/vuelo.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/distribucion.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/paralaje.gd
@@ -162,7 +181,7 @@ Si un archivo no se puede leer, el juego lo respalda con sufijo `.danado` antes 
 
 La segunda orden comprueba entradas, compras, desbloqueos, premios sin duplicados, persistencia, datos inválidos, poderes, accesorios, pausa y una carrera real completa hasta volver al taller. Utiliza un archivo de prueba separado y lo borra al terminar. No modifica tu progreso.
 
-`ruta.gd` comprueba los límites del viaje, la llegada por aire, el cierre del terreno y el cobro único de recompensas. También comprueba que cada postal use la foto del lugar alcanzado en ese intento y que no sustituya las fotos pendientes. `vuelo.gd` exige completar al menos una carrera hasta el CUCosta con física real.
+`ruta.gd` comprueba los límites del viaje, la llegada por aire, el cierre del terreno y el cobro único de recompensas. También comprueba las fotos y los datos curiosos de los 19 destinos elegidos en sus límites de distancia. Si se quita una foto, verifica que no se sustituya por la de otro lugar. `vuelo.gd` exige completar al menos una carrera hasta el CUCosta con física real.
 
 `almanaque.gd` comprueba la colección, la independencia de los dibujos guardados, el límite de fichas, la carga de partidas anteriores y la validación de datos dañados. También recorre los botones de guardar, consultar, actualizar, eliminar y usar un melón. Usa un archivo separado y lo borra al terminar. La revisión gráfica incluye el almanaque vacío, la colección, accesorios, poderes y la confirmación de eliminación a ambas resoluciones.
 
@@ -171,6 +190,8 @@ La segunda orden comprueba entradas, compras, desbloqueos, premios sin duplicado
 `lanzamiento.gd` comprueba la parrilla con el almanaque vacío y con fichas guardadas, la salida conjunta, las copias independientes, la pausa y la continuidad de los rivales al saltar del trampolín. También compara fuerza mínima y máxima con los tres tamaños. Comprueba que más fuerza conserve más velocidad al salir del trampolín y aumente el alcance. Repite la bajada con todas las teclas de carrera pulsadas y verifica que no cambien la trayectoria ni consuman saltos o equipo. También comprueba la pausa y que los controles y las colisiones de accesorios vuelvan después del trampolín. Usa un guardado de prueba separado.
 
 `balance.gd` comprueba 54 carreras sin input después del lanzamiento, con tres tamaños, tres fuerzas, tres semillas y mejoras iniciales o al máximo. Todas deben terminar en menos de 30 segundos, recoger como máximo tres cafés o chiles y quedarse antes del 80 % de la última postal. También compara una carrera sin controles con otra que usa rebotes, accesorios y empujones. Comprueba que un lanzamiento al 70 %, con equipo inicial y controles, avance al menos 400 metros sin mejoras. Por último, mide la progresión media con tres semillas. Sin mejoras, las carreras con controles básicos deben promediar menos de novecientos metros. Las mejoras deben superar el alcance inicial y, al máximo, permitir un promedio de al menos mil metros. Utiliza su propio archivo de prueba.
+
+`impulsos.gd` revisa que todo el terreno sea plano, la separación de los melones, el límite de generación y la retirada de los que quedan atrás. Compara 18 carreras con las ayudas adicionales activas o desactivadas, con las mismas semillas y controles. Comprueba que apuntar los slams permita llegar con menos mejoras. Otras tres carreras verifican que pulsar slam sin apuntar siga fallando y termine mucho antes de la meta. Usa un archivo de prueba separado.
 
 `vuelo.gd` comprueba el consumo y bloqueo de saltos, el alcance de E y el uso único de cada ayuda sin recargar saltos ni perder las cargas extra de la jarana. También recorre la ruta aérea con tres tamaños y tres semillas, sin mejoras ni accesorios, tanto con D sostenida como sin ella. Exige encadenar al menos dos ayudas, llegar a 140 metros de altura y permanecer seis segundos sobre los 40 metros. Las carreras deben terminar dentro de un minuto y antes de 2500 metros. Repite con el melón mediano y mejoras máximas, con un límite de 3500 metros. Esos límites detectan vuelos que no terminan; no son un tope dentro del juego. Usa un guardado de prueba separado.
 
@@ -182,4 +203,4 @@ La segunda orden comprueba entradas, compras, desbloqueos, premios sin duplicado
 
 La ruta incluye Xallitic, Callejón del Diamante, Catedral de Xalapa, Parque Juárez, Los Berros, Los Lagos, zona universitaria y Macuiltépetl. Continúa hacia Puerto Vallarta y termina en el Centro Universitario de la Costa. El campus pertenece a la Universidad de Guadalajara y está en Puerto Vallarta, según su [ubicación oficial](https://cuc.udg.mx/ubicacion). La ruta y las distancias son de fantasía. Los poderes también son ficción del juego.
 
-Referencias de lugares: [archivo del Callejón del Diamante de la UV](https://fciuv.uv.mx/index.php/callejon-del-diamante?listLimit=10&sort=alphabetic&sortDir=asc&subjects=976), [USBI Xalapa](https://www.uv.mx/usbi/como-llegar/) y [ruta universitaria que pasa por Los Lagos y la USBI](https://www.uv.mx/daduv/files/2024/08/Ruta-Xalapa-Ajuste-29-AGO-2024.pdf).
+La selección procede de `Lugares_Xalapa_fotos_reales.pdf`, aportado por ListiStar. Los créditos de las fotografías y las fuentes de los datos están en [recursos/fotos/README.md](recursos/fotos/README.md).

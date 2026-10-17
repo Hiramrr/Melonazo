@@ -1,7 +1,6 @@
 [gd_scene format=3 uid="uid://cglka1g045k5q"]
 
 [ext_resource type="Script" path="res://pantallas/taller/taller.gd" id="1"]
-[ext_resource type="Theme" path="res://interfaz/tema_xalapa.tres" id="2"]
 [ext_resource type="Script" path="res://pantallas/taller/vista_melon.gd" id="vista_melon"]
 [ext_resource type="Script" path="res://pantallas/taller/pestanas/pestana_melon.gd" id="pestana_melon"]
 [ext_resource type="PackedScene" path="res://pantallas/taller/pestanas/pestana_dibujo.tscn" id="pestana_dibujo"]
@@ -15,39 +14,12 @@
 [ext_resource type="Texture2D" path="res://recursos/iconos/carisma.png" id="ico_carisma"]
 [ext_resource type="Texture2D" path="res://recursos/iconos/jugar.png" id="ico_jugar"]
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_previa"]
-content_margin_left = 10.0
-content_margin_top = 10.0
-content_margin_right = 10.0
-content_margin_bottom = 12.0
-bg_color = Color(0.78, 0.87, 0.83, 1)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
-border_color = Color(0.125, 0.239, 0.22, 1)
-corner_radius_top_left = 20
-corner_radius_top_right = 20
-corner_radius_bottom_right = 20
-corner_radius_bottom_left = 20
-shadow_color = Color(0.125, 0.239, 0.22, 0.25)
-shadow_size = 1
-shadow_offset = Vector2(0, 7)
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_vista"]
-bg_color = Color(0.125, 0.239, 0.22, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
 [node name="Taller" type="Control"]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-theme = ExtResource("2")
 script = ExtResource("1")
 
 [node name="Fondo" type="Control" parent="."]
@@ -89,14 +61,12 @@ theme_override_constants/separation = -6
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
-theme_type_variation = &"Titulo"
-theme_override_font_sizes/font_size = 48
+theme_type_variation = &"TituloTaller"
 text = "¡Rueda, Melón!"
 
 [node name="Subtitulo" type="Label" parent="Margen/Raiz/Cabecera/Logo"]
 layout_mode = 2
-theme_type_variation = &"TextoHUD"
-theme_override_font_sizes/font_size = 15
+theme_type_variation = &"AyudaHUD"
 text = "De Xalapa al CUCosta · Universidad de Guadalajara"
 
 [node name="BtnAlmanaque" type="Button" parent="Margen/Raiz/Cabecera"]
@@ -116,7 +86,7 @@ script = ExtResource("ficha")
 icono = ExtResource("ico_aplauso")
 texto = "0"
 oscura = false
-tam_texto = 24
+estilo_texto = &"ContadorPrincipal"
 lado_icono = 34.0
 
 [node name="Record" type="PanelContainer" parent="Margen/Raiz/Cabecera"]
@@ -128,7 +98,7 @@ script = ExtResource("ficha")
 icono = ExtResource("ico_trofeo")
 texto = "0 m"
 oscura = false
-tam_texto = 24
+estilo_texto = &"ContadorPrincipal"
 lado_icono = 34.0
 
 [node name="Medio" type="HBoxContainer" parent="Margen/Raiz"]
@@ -137,21 +107,21 @@ size_flags_vertical = 3
 theme_override_constants/separation = 22
 
 [node name="Previa" type="PanelContainer" parent="Margen/Raiz/Medio"]
+theme_type_variation = &"PanelPrevia"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(340, 0)
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_previa")
 
 [node name="CajaPrevia" type="VBoxContainer" parent="Margen/Raiz/Medio/Previa"]
 layout_mode = 2
 theme_override_constants/separation = 4
 
 [node name="MarcoVista" type="PanelContainer" parent="Margen/Raiz/Medio/Previa/CajaPrevia"]
+theme_type_variation = &"MarcoVista"
 clip_children = 2
 layout_mode = 2
 size_flags_vertical = 3
-theme_override_styles/panel = SubResource("StyleBoxFlat_vista")
 
 [node name="Vista" type="Control" parent="Margen/Raiz/Medio/Previa/CajaPrevia/MarcoVista"]
 unique_name_in_owner = true
@@ -163,8 +133,7 @@ script = ExtResource("vista_melon")
 [node name="NombreVista" type="Label" parent="Margen/Raiz/Medio/Previa/CajaPrevia"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"Titulo"
-theme_override_font_sizes/font_size = 36
+theme_type_variation = &"TituloPanel"
 text = "Melón"
 horizontal_alignment = 1
 text_overrun_behavior = 3
@@ -177,8 +146,7 @@ theme_override_constants/separation = 10
 [node name="Tamano" type="Label" parent="Margen/Raiz/Medio/Previa/CajaPrevia/Info"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"Subtitulo"
-theme_override_font_sizes/font_size = 18
+theme_type_variation = &"SubtituloMediano"
 text = "Mediano"
 
 [node name="Carisma" type="PanelContainer" parent="Margen/Raiz/Medio/Previa/CajaPrevia/Info"]
@@ -189,7 +157,6 @@ script = ExtResource("ficha")
 icono = ExtResource("ico_carisma")
 texto = "0"
 oscura = false
-tam_texto = 18
 lado_icono = 24.0
 
 [node name="Pestanas" type="TabContainer" parent="Margen/Raiz/Medio"]
@@ -220,10 +187,10 @@ theme_type_variation = &"Subtitulo"
 text = "Nombre"
 
 [node name="LineaNombre" type="LineEdit" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon/FilaNombre"]
+theme_type_variation = &"CampoNombre"
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_override_font_sizes/font_size = 20
 max_length = 24
 text = "Melón"
 
@@ -281,8 +248,7 @@ theme_override_constants/separation = 8
 [node name="FeedbackAcc" type="Label" parent="Margen/Raiz/Medio/Pestanas/Accesorios/CajaAcc"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"Subtitulo"
-theme_override_font_sizes/font_size = 17
+theme_type_variation = &"SubtituloChico"
 text = "Equípate con hasta 3 accesorios."
 autowrap_mode = 2
 
@@ -325,9 +291,7 @@ theme_override_constants/separation = 16
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_type_variation = &"TextoHUD"
-theme_override_colors/font_color = Color(1, 0.85, 0.8, 1)
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"ErrorGuardado"
 vertical_alignment = 1
 clip_text = true
 
@@ -337,12 +301,12 @@ layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="BtnReiniciar" type="Button" parent="Margen/Raiz/Pie"]
+theme_type_variation = &"BotonPequeno"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(196, 48)
 layout_mode = 2
 size_flags_vertical = 4
 tooltip_text = "Borrar aplausos, mejoras, accesorios, postales y aspecto para empezar desde cero"
-theme_override_font_sizes/font_size = 16
 text = "Reiniciar progreso"
 
 [node name="BtnPuente" type="Button" parent="Margen/Raiz/Pie"]
@@ -350,8 +314,7 @@ unique_name_in_owner = true
 custom_minimum_size = Vector2(290, 70)
 layout_mode = 2
 tooltip_text = "Salir de Xalapa y llegar al Centro Universitario de la Costa. Enter para confirmar."
-theme_type_variation = &"Principal"
-theme_override_font_sizes/font_size = 30
+theme_type_variation = &"Rodar"
 text = "¡A RODAR!"
 icon = ExtResource("ico_jugar")
 icon_alignment = 2

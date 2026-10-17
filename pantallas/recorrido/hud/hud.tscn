@@ -1,162 +1,19 @@
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://pantallas/recorrido/hud/hud.gd" id="1"]
-[ext_resource type="Theme" path="res://interfaz/tema_xalapa.tres" id="2"]
 [ext_resource type="PackedScene" path="res://pantallas/recorrido/hud/slot_accesorio.tscn" id="3"]
 [ext_resource type="Script" path="res://interfaz/ficha.gd" id="ficha"]
 [ext_resource type="Script" path="res://interfaz/pips.gd" id="pips"]
 [ext_resource type="Texture2D" path="res://recursos/iconos/aplauso.png" id="ico_aplauso"]
 [ext_resource type="Texture2D" path="res://recursos/iconos/carisma.png" id="ico_carisma"]
 [ext_resource type="Texture2D" path="res://recursos/iconos/poder.png" id="ico_poder"]
+[ext_resource type="Texture2D" path="res://recursos/poderes/valentina.png" id="ico_valentina"]
 [ext_resource type="Texture2D" path="res://recursos/iconos/impulso.png" id="ico_impulso"]
 [ext_resource type="Texture2D" path="res://recursos/iconos/altura.png" id="ico_altura"]
 [ext_resource type="Texture2D" path="res://recursos/iconos/papalote.png" id="ico_papalote"]
 [ext_resource type="Texture2D" path="res://recursos/iconos/pausa.png" id="ico_pausa"]
 [ext_resource type="Texture2D" path="res://recursos/iconos/jugar.png" id="ico_jugar"]
 [ext_resource type="Texture2D" path="res://recursos/iconos/lugar.png" id="ico_lugar"]
-
-[sub_resource type="StyleBoxFlat" id="Oscuro"]
-content_margin_left = 14.0
-content_margin_top = 8.0
-content_margin_right = 14.0
-content_margin_bottom = 10.0
-bg_color = Color(0.09, 0.18, 0.165, 0.78)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.125, 0.239, 0.22, 1)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
-
-[sub_resource type="StyleBoxFlat" id="Aviso"]
-content_margin_left = 12.0
-content_margin_top = 6.0
-content_margin_right = 20.0
-content_margin_bottom = 8.0
-bg_color = Color(0.09, 0.18, 0.165, 0.85)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 6
-border_color = Color(1, 0.976, 0.925, 0.9)
-corner_radius_top_left = 26
-corner_radius_top_right = 26
-corner_radius_bottom_right = 26
-corner_radius_bottom_left = 26
-
-[sub_resource type="StyleBoxFlat" id="BarraRuta"]
-content_margin_top = 3.0
-content_margin_bottom = 3.0
-bg_color = Color(1, 0.976, 0.925, 0.25)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="RellenoRuta"]
-bg_color = Color(1, 0.784, 0.239, 1)
-corner_radius_top_left = 5
-corner_radius_top_right = 5
-corner_radius_bottom_right = 5
-corner_radius_bottom_left = 5
-
-[sub_resource type="StyleBoxFlat" id="BarraResistencia"]
-content_margin_left = 4.0
-content_margin_top = 4.0
-content_margin_right = 4.0
-content_margin_bottom = 4.0
-bg_color = Color(0.09, 0.18, 0.165, 0.9)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(1, 0.976, 0.925, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="RellenoResistencia"]
-bg_color = Color(0.424, 0.765, 0.373, 1)
-corner_radius_top_left = 8
-corner_radius_top_right = 8
-corner_radius_bottom_right = 8
-corner_radius_bottom_left = 8
-
-[sub_resource type="StyleBoxFlat" id="BarraFuerza"]
-content_margin_left = 5.0
-content_margin_top = 5.0
-content_margin_right = 5.0
-content_margin_bottom = 5.0
-bg_color = Color(0.09, 0.18, 0.165, 0.9)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 4
-border_color = Color(1, 0.976, 0.925, 1)
-corner_radius_top_left = 18
-corner_radius_top_right = 18
-corner_radius_bottom_right = 18
-corner_radius_bottom_left = 18
-
-[sub_resource type="StyleBoxFlat" id="RellenoFuerza"]
-bg_color = Color(1, 0.784, 0.239, 1)
-corner_radius_top_left = 12
-corner_radius_top_right = 12
-corner_radius_bottom_right = 12
-corner_radius_bottom_left = 12
-
-[sub_resource type="StyleBoxFlat" id="BotonRedondo"]
-content_margin_left = 10.0
-content_margin_top = 8.0
-content_margin_right = 10.0
-content_margin_bottom = 12.0
-bg_color = Color(0.91, 0.333, 0.247, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 7
-border_color = Color(0.125, 0.239, 0.22, 1)
-corner_radius_top_left = 30
-corner_radius_top_right = 30
-corner_radius_bottom_right = 30
-corner_radius_bottom_left = 30
-
-[sub_resource type="StyleBoxFlat" id="BotonRedondoPulsado"]
-content_margin_left = 10.0
-content_margin_top = 12.0
-content_margin_right = 10.0
-content_margin_bottom = 8.0
-bg_color = Color(0.8, 0.27, 0.2, 1)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.125, 0.239, 0.22, 1)
-corner_radius_top_left = 30
-corner_radius_top_right = 30
-corner_radius_bottom_right = 30
-corner_radius_bottom_left = 30
-expand_margin_top = -4.0
-
-[sub_resource type="StyleBoxFlat" id="Cinta"]
-content_margin_left = 40.0
-content_margin_top = 4.0
-content_margin_right = 40.0
-content_margin_bottom = 10.0
-bg_color = Color(0.91, 0.333, 0.247, 1)
-border_width_left = 4
-border_width_top = 4
-border_width_right = 4
-border_width_bottom = 8
-border_color = Color(0.125, 0.239, 0.22, 1)
-corner_radius_top_left = 14
-corner_radius_top_right = 14
-corner_radius_bottom_right = 14
-corner_radius_bottom_left = 14
 
 [node name="HUD" type="CanvasLayer"]
 process_mode = 3
@@ -170,7 +27,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-theme = ExtResource("2")
 
 [node name="Datos" type="VBoxContainer" parent="Pantalla"]
 offset_left = 22.0
@@ -183,28 +39,23 @@ theme_override_constants/separation = 4
 [node name="Nombre" type="Label" parent="Pantalla/Datos"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"TextoHUD"
-theme_override_font_sizes/font_size = 15
-theme_override_constants/outline_size = 6
+theme_type_variation = &"NombreHUD"
 text = "Melón · Récord 0 m"
 clip_text = true
 
 [node name="Distancia" type="Label" parent="Pantalla/Datos"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"Titulo"
-theme_override_font_sizes/font_size = 64
-theme_override_constants/line_spacing = -12
+theme_type_variation = &"DistanciaHUD"
 text = "0 m"
 
 [node name="Resistencia" type="ProgressBar" parent="Pantalla/Datos"]
+theme_type_variation = &"BarraResistencia"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(240, 26)
 layout_mode = 2
 size_flags_horizontal = 0
 mouse_filter = 2
-theme_override_styles/background = SubResource("BarraResistencia")
-theme_override_styles/fill = SubResource("RellenoResistencia")
 max_value = 3.0
 step = 0.0
 value = 3.0
@@ -218,7 +69,7 @@ mouse_filter = 2
 script = ExtResource("pips")
 icono = ExtResource("ico_impulso")
 lado = 26.0
-apagado = Color(0.1, 0.15, 0.14, 0.55)
+theme_type_variation = &"ImpulsosHUD"
 
 [node name="Contadores" type="HBoxContainer" parent="Pantalla/Datos"]
 layout_mode = 2
@@ -231,7 +82,7 @@ layout_mode = 2
 mouse_filter = 2
 script = ExtResource("ficha")
 icono = ExtResource("ico_aplauso")
-tam_texto = 17
+estilo_texto = &"ContadorHUD"
 lado_icono = 24.0
 
 [node name="Carisma" type="PanelContainer" parent="Pantalla/Datos/Contadores"]
@@ -240,7 +91,7 @@ layout_mode = 2
 mouse_filter = 2
 script = ExtResource("ficha")
 icono = ExtResource("ico_carisma")
-tam_texto = 17
+estilo_texto = &"ContadorHUD"
 lado_icono = 24.0
 
 [node name="Poderes" type="PanelContainer" parent="Pantalla/Datos/Contadores"]
@@ -249,10 +100,21 @@ layout_mode = 2
 mouse_filter = 2
 script = ExtResource("ficha")
 icono = ExtResource("ico_poder")
-tam_texto = 17
+estilo_texto = &"ContadorHUD"
+lado_icono = 24.0
+
+[node name="Valentinas" type="PanelContainer" parent="Pantalla/Datos/Contadores"]
+unique_name_in_owner = true
+layout_mode = 2
+tooltip_text = "Salsas Valentina: reviven al melón"
+mouse_filter = 2
+script = ExtResource("ficha")
+icono = ExtResource("ico_valentina")
+estilo_texto = &"ContadorHUD"
 lado_icono = 24.0
 
 [node name="Lugar" type="PanelContainer" parent="Pantalla"]
+theme_type_variation = &"PanelHUD"
 unique_name_in_owner = true
 anchors_preset = 5
 anchor_left = 0.5
@@ -263,7 +125,6 @@ offset_right = 190.0
 offset_bottom = 112.0
 grow_horizontal = 2
 mouse_filter = 2
-theme_override_styles/panel = SubResource("Oscuro")
 
 [node name="Caja" type="VBoxContainer" parent="Pantalla/Lugar"]
 layout_mode = 2
@@ -273,8 +134,7 @@ theme_override_constants/separation = 4
 [node name="Destino" type="Label" parent="Pantalla/Lugar/Caja"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"TextoHUD"
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"DetalleHUD"
 text = "Meta CUCosta · faltan 2600 m"
 horizontal_alignment = 1
 
@@ -295,19 +155,17 @@ stretch_mode = 5
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
-theme_type_variation = &"TextoHUD"
-theme_override_font_sizes/font_size = 19
+theme_type_variation = &"LugarHUD"
 text = "Barrio de Xallitic"
 horizontal_alignment = 1
 text_overrun_behavior = 3
 
 [node name="Ruta" type="ProgressBar" parent="Pantalla/Lugar/Caja"]
+theme_type_variation = &"BarraRuta"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
 mouse_filter = 2
-theme_override_styles/background = SubResource("BarraRuta")
-theme_override_styles/fill = SubResource("RellenoRuta")
 max_value = 1.0
 step = 0.0
 show_percentage = false
@@ -315,10 +173,7 @@ show_percentage = false
 [node name="Siguiente" type="Label" parent="Pantalla/Lugar/Caja"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"TextoHUD"
-theme_override_colors/font_color = Color(0.86, 0.92, 0.84, 1)
-theme_override_font_sizes/font_size = 13
-theme_override_constants/outline_size = 4
+theme_type_variation = &"SiguienteHUD"
 text = "Siguiente: Callejón del Diamante · 100 m"
 horizontal_alignment = 1
 clip_text = true
@@ -351,6 +206,7 @@ layout_mode = 2
 tecla = 3
 
 [node name="BotonPausa" type="Button" parent="Pantalla"]
+theme_type_variation = &"BotonPausa"
 unique_name_in_owner = true
 anchors_preset = 1
 anchor_left = 1.0
@@ -363,10 +219,6 @@ grow_horizontal = 0
 tooltip_text = "Pausa (Esc)"
 focus_mode = 0
 theme_override_constants/icon_max_width = 26
-theme_override_styles/normal = SubResource("BotonRedondo")
-theme_override_styles/hover = SubResource("BotonRedondo")
-theme_override_styles/pressed = SubResource("BotonRedondoPulsado")
-theme_override_styles/hover_pressed = SubResource("BotonRedondoPulsado")
 icon = ExtResource("ico_pausa")
 icon_alignment = 1
 expand_icon = true
@@ -394,7 +246,7 @@ tooltip_text = "Altura sobre la calle"
 script = ExtResource("ficha")
 icono = ExtResource("ico_altura")
 texto = "0 m"
-tam_texto = 17
+estilo_texto = &"ContadorHUD"
 lado_icono = 24.0
 
 [node name="Papalotes" type="PanelContainer" parent="Pantalla/Vuelo"]
@@ -404,7 +256,7 @@ mouse_filter = 2
 tooltip_text = "Papalotes usados"
 script = ExtResource("ficha")
 icono = ExtResource("ico_papalote")
-tam_texto = 17
+estilo_texto = &"ContadorHUD"
 lado_icono = 24.0
 
 [node name="Efectos" type="HBoxContainer" parent="Pantalla"]
@@ -441,8 +293,7 @@ theme_override_constants/separation = 2
 
 [node name="TituloPotencia" type="Label" parent="Pantalla/Lanzamiento"]
 layout_mode = 2
-theme_type_variation = &"TextoHUD"
-theme_override_font_sizes/font_size = 24
+theme_type_variation = &"TituloPotencia"
 text = "Elige la potencia del lanzamiento"
 horizontal_alignment = 1
 
@@ -450,27 +301,25 @@ horizontal_alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"TextoHUD"
-theme_override_font_sizes/font_size = 18
 text = "ZONA PERFECTA"
 horizontal_alignment = 2
 
 [node name="Fuerza" type="ProgressBar" parent="Pantalla/Lanzamiento"]
+theme_type_variation = &"BarraFuerza"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 mouse_filter = 2
-theme_override_styles/background = SubResource("BarraFuerza")
-theme_override_styles/fill = SubResource("RellenoFuerza")
 show_percentage = false
 
 [node name="InstruccionBajada" type="Label" parent="Pantalla/Lanzamiento"]
 layout_mode = 2
-theme_type_variation = &"TextoHUD"
-theme_override_font_sizes/font_size = 16
+theme_type_variation = &"DetalleHUD"
 text = "Más potencia, más distancia. Controles después del trampolín."
 horizontal_alignment = 1
 
 [node name="Aviso" type="PanelContainer" parent="Pantalla"]
+theme_type_variation = &"AvisoHUD"
 unique_name_in_owner = true
 anchors_preset = 7
 anchor_left = 0.5
@@ -484,7 +333,6 @@ offset_bottom = -54.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("Aviso")
 
 [node name="Fila" type="HBoxContainer" parent="Pantalla/Aviso"]
 layout_mode = 2
@@ -496,15 +344,13 @@ alignment = 1
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
-theme_type_variation = &"Tecla"
-theme_override_font_sizes/font_size = 18
+theme_type_variation = &"TeclaAviso"
 text = "Espacio"
 
 [node name="Indicacion" type="Label" parent="Pantalla/Aviso/Fila"]
 unique_name_in_owner = true
 layout_mode = 2
-theme_type_variation = &"TextoHUD"
-theme_override_font_sizes/font_size = 22
+theme_type_variation = &"IndicacionHUD"
 text = "Elegir la fuerza"
 vertical_alignment = 1
 
@@ -550,15 +396,14 @@ layout_mode = 2
 theme_override_constants/separation = -22
 
 [node name="Cinta" type="PanelContainer" parent="Pantalla/Pausa/Centro/Columna"]
+theme_type_variation = &"CintaPausa"
 z_index = 1
 layout_mode = 2
 size_flags_horizontal = 4
-theme_override_styles/panel = SubResource("Cinta")
 
 [node name="Titulo" type="Label" parent="Pantalla/Pausa/Centro/Columna/Cinta"]
 layout_mode = 2
-theme_type_variation = &"Titulo"
-theme_override_font_sizes/font_size = 44
+theme_type_variation = &"TituloPausa"
 text = "PAUSA"
 horizontal_alignment = 1
 
@@ -574,7 +419,6 @@ theme_override_constants/separation = 14
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_type_variation = &"Subtitulo"
-theme_override_font_sizes/font_size = 20
 text = "De Xalapa al CUCosta"
 horizontal_alignment = 1
 vertical_alignment = 2
@@ -583,17 +427,16 @@ vertical_alignment = 2
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
-theme_type_variation = &"Principal"
-theme_override_font_sizes/font_size = 24
+theme_type_variation = &"Continuar"
 text = "Seguir rodando"
 icon = ExtResource("ico_jugar")
 expand_icon = true
 
 [node name="Volver" type="Button" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones"]
+theme_type_variation = &"BotonVolver"
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
-theme_override_font_sizes/font_size = 19
 text = "Volver al taller"
 
 [node name="Aviso" type="Label" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones"]

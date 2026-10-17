@@ -1,0 +1,583 @@
+{
+	"frames": {
+		"cuerpo": {
+			"frame": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"borde": {
+			"frame": {
+				"x": 50,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"tallo": {
+			"frame": {
+				"x": 100,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"luz": {
+			"frame": {
+				"x": 150,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"sombra": {
+			"frame": {
+				"x": 200,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"grieta": {
+			"frame": {
+				"x": 250,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"patron_rayas": {
+			"frame": {
+				"x": 300,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"patron_lunares": {
+			"frame": {
+				"x": 350,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"patron_red": {
+			"frame": {
+				"x": 400,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"patron_zigzag": {
+			"frame": {
+				"x": 450,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"patron_franjas": {
+			"frame": {
+				"x": 500,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"patron_liso": {
+			"frame": {
+				"x": 550,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"cara_sonrisa": {
+			"frame": {
+				"x": 600,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"cara_valiente": {
+			"frame": {
+				"x": 650,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"cara_dormido": {
+			"frame": {
+				"x": 700,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"cara_lentes": {
+			"frame": {
+				"x": 750,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"cara_susto": {
+			"frame": {
+				"x": 800,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"cara_guino": {
+			"frame": {
+				"x": 850,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"cara_lengua": {
+			"frame": {
+				"x": 900,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"cara_enamorado": {
+			"frame": {
+				"x": 950,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"cara_sin_cara": {
+			"frame": {
+				"x": 1000,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"detalle_ninguno": {
+			"frame": {
+				"x": 1050,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"detalle_mejillas": {
+			"frame": {
+				"x": 1100,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"detalle_pecas": {
+			"frame": {
+				"x": 1150,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"detalle_bigote": {
+			"frame": {
+				"x": 1200,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"detalle_curita": {
+			"frame": {
+				"x": 1250,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		},
+		"detalle_brillo": {
+			"frame": {
+				"x": 1300,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 48,
+				"h": 48
+			},
+			"sourceSize": {
+				"w": 48,
+				"h": 48
+			},
+			"duration": 100
+		}
+	},
+	"meta": {
+		"app": "https://libresprite.github.io/",
+		"version": "conversion",
+		"image": "melon.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 2048,
+			"h": 48
+		},
+		"scale": "1",
+		"frameTags": []
+	}
+}

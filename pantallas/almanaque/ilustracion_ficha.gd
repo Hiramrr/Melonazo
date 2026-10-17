@@ -22,7 +22,7 @@ func _draw() -> void:
 			var estela: Dictionary = Config.estelas[melon["estela"]]
 			if melon["estela"] > 0:
 				for i in 4:
-					draw_circle(centro + Vector2(-radio * (1.2 + i * 0.24), radio * 0.4), radio * (0.12 - i * 0.02), estela["color"])
+					Sprites.disco(self, centro + Vector2(-radio * (1.2 + i * 0.24), radio * 0.4), radio * (0.12 - i * 0.02), estela["color"])
 			draw_set_transform(centro)
 			Aspecto.dibujar_melon(self, radio, melon["accesorios"], false, true, melon)
 			draw_set_transform(Vector2.ZERO)

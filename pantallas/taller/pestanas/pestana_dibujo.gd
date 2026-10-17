@@ -45,6 +45,7 @@ func _ready() -> void:
 	grosor.max_value = Config.grosor_dibujo.y
 	for c in Config.colores_dibujo:
 		var b := Button.new()
+		b.theme_type_variation = &"MuestraColor"
 		b.custom_minimum_size = Vector2(42, 42)
 		b.tooltip_text = "#" + (c as Color).to_html(false)
 		b.focus_mode = Control.FOCUS_NONE
@@ -78,16 +79,11 @@ func refrescar() -> void:
 
 # --- Controles de la pestaña -------------------------------------------------
 
-## Muestra redonda de color con labio; la elegida lleva borde amarillo sin crecer.
-## Sin expand_margin: antes la muestra elegida dibujaba 3 px fuera de su rectángulo
-## y los vecinos o el ScrollContainer la recortaban (se veía "cortada").
+## Solo el relleno depende del color elegido por el jugador.
 func _estilo_muestra(c: Color, elegido: bool) -> StyleBoxFlat:
-	var s := StyleBoxFlat.new()
+	var tipo := &"MuestraColorElegida" if elegido else &"MuestraColor"
+	var s: StyleBoxFlat = get_theme_stylebox("normal", tipo).duplicate()
 	s.bg_color = c
-	s.set_corner_radius_all(21)
-	s.set_border_width_all(4 if elegido else 3)
-	s.border_width_bottom = 4 if elegido else 6
-	s.border_color = Color("ffc83d") if elegido else Color("203d38")
 	return s
 
 

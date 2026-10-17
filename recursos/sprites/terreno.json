@@ -1,0 +1,562 @@
+{
+	"frames": {
+		"arbol_0": {
+			"frame": {
+				"x": 0,
+				"y": 0,
+				"w": 130,
+				"h": 140
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 130,
+				"h": 140
+			},
+			"sourceSize": {
+				"w": 130,
+				"h": 140
+			},
+			"duration": 100
+		},
+		"arbol_1": {
+			"frame": {
+				"x": 132,
+				"y": 0,
+				"w": 130,
+				"h": 140
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 130,
+				"h": 140
+			},
+			"sourceSize": {
+				"w": 130,
+				"h": 140
+			},
+			"duration": 100
+		},
+		"arbol_2": {
+			"frame": {
+				"x": 264,
+				"y": 0,
+				"w": 130,
+				"h": 140
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 130,
+				"h": 140
+			},
+			"sourceSize": {
+				"w": 130,
+				"h": 140
+			},
+			"duration": 100
+		},
+		"arbol_3": {
+			"frame": {
+				"x": 396,
+				"y": 0,
+				"w": 130,
+				"h": 140
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 130,
+				"h": 140
+			},
+			"sourceSize": {
+				"w": 130,
+				"h": 140
+			},
+			"duration": 100
+		},
+		"casa_0_0": {
+			"frame": {
+				"x": 528,
+				"y": 0,
+				"w": 92,
+				"h": 84
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 92,
+				"h": 84
+			},
+			"sourceSize": {
+				"w": 92,
+				"h": 84
+			},
+			"duration": 100
+		},
+		"casa_0_1": {
+			"frame": {
+				"x": 622,
+				"y": 0,
+				"w": 92,
+				"h": 84
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 92,
+				"h": 84
+			},
+			"sourceSize": {
+				"w": 92,
+				"h": 84
+			},
+			"duration": 100
+		},
+		"casa_0_2": {
+			"frame": {
+				"x": 716,
+				"y": 0,
+				"w": 92,
+				"h": 84
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 92,
+				"h": 84
+			},
+			"sourceSize": {
+				"w": 92,
+				"h": 84
+			},
+			"duration": 100
+		},
+		"casa_0_3": {
+			"frame": {
+				"x": 810,
+				"y": 0,
+				"w": 92,
+				"h": 84
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 92,
+				"h": 84
+			},
+			"sourceSize": {
+				"w": 92,
+				"h": 84
+			},
+			"duration": 100
+		},
+		"casa_0_4": {
+			"frame": {
+				"x": 904,
+				"y": 0,
+				"w": 92,
+				"h": 84
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 92,
+				"h": 84
+			},
+			"sourceSize": {
+				"w": 92,
+				"h": 84
+			},
+			"duration": 100
+		},
+		"casa_0_5": {
+			"frame": {
+				"x": 998,
+				"y": 0,
+				"w": 92,
+				"h": 84
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 92,
+				"h": 84
+			},
+			"sourceSize": {
+				"w": 92,
+				"h": 84
+			},
+			"duration": 100
+		},
+		"casa_0_6": {
+			"frame": {
+				"x": 1092,
+				"y": 0,
+				"w": 92,
+				"h": 84
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 92,
+				"h": 84
+			},
+			"sourceSize": {
+				"w": 92,
+				"h": 84
+			},
+			"duration": 100
+		},
+		"casa_1_0": {
+			"frame": {
+				"x": 1186,
+				"y": 0,
+				"w": 92,
+				"h": 134
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 92,
+				"h": 134
+			},
+			"sourceSize": {
+				"w": 92,
+				"h": 134
+			},
+			"duration": 100
+		},
+		"casa_1_1": {
+			"frame": {
+				"x": 1280,
+				"y": 0,
+				"w": 92,
+				"h": 134
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 92,
+				"h": 134
+			},
+			"sourceSize": {
+				"w": 92,
+				"h": 134
+			},
+			"duration": 100
+		},
+		"casa_1_2": {
+			"frame": {
+				"x": 1374,
+				"y": 0,
+				"w": 92,
+				"h": 134
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 92,
+				"h": 134
+			},
+			"sourceSize": {
+				"w": 92,
+				"h": 134
+			},
+			"duration": 100
+		},
+		"casa_1_3": {
+			"frame": {
+				"x": 1468,
+				"y": 0,
+				"w": 92,
+				"h": 134
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 92,
+				"h": 134
+			},
+			"sourceSize": {
+				"w": 92,
+				"h": 134
+			},
+			"duration": 100
+		},
+		"casa_1_4": {
+			"frame": {
+				"x": 1562,
+				"y": 0,
+				"w": 92,
+				"h": 134
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 92,
+				"h": 134
+			},
+			"sourceSize": {
+				"w": 92,
+				"h": 134
+			},
+			"duration": 100
+		},
+		"casa_1_5": {
+			"frame": {
+				"x": 1656,
+				"y": 0,
+				"w": 92,
+				"h": 134
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 92,
+				"h": 134
+			},
+			"sourceSize": {
+				"w": 92,
+				"h": 134
+			},
+			"duration": 100
+		},
+		"casa_1_6": {
+			"frame": {
+				"x": 1750,
+				"y": 0,
+				"w": 92,
+				"h": 134
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 92,
+				"h": 134
+			},
+			"sourceSize": {
+				"w": 92,
+				"h": 134
+			},
+			"duration": 100
+		},
+		"pasto": {
+			"frame": {
+				"x": 1844,
+				"y": 0,
+				"w": 136,
+				"h": 80
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 136,
+				"h": 80
+			},
+			"sourceSize": {
+				"w": 136,
+				"h": 80
+			},
+			"duration": 100
+		},
+		"calle": {
+			"frame": {
+				"x": 0,
+				"y": 142,
+				"w": 136,
+				"h": 80
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 136,
+				"h": 80
+			},
+			"sourceSize": {
+				"w": 136,
+				"h": 80
+			},
+			"duration": 100
+		},
+		"tierra": {
+			"frame": {
+				"x": 138,
+				"y": 142,
+				"w": 16,
+				"h": 16
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 16,
+				"h": 16
+			},
+			"sourceSize": {
+				"w": 16,
+				"h": 16
+			},
+			"duration": 100
+		},
+		"muro": {
+			"frame": {
+				"x": 156,
+				"y": 142,
+				"w": 78,
+				"h": 36
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 78,
+				"h": 36
+			},
+			"sourceSize": {
+				"w": 78,
+				"h": 36
+			},
+			"duration": 100
+		},
+		"calle_bajada": {
+			"frame": {
+				"x": 236,
+				"y": 142,
+				"w": 23,
+				"h": 58
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 23,
+				"h": 58
+			},
+			"sourceSize": {
+				"w": 23,
+				"h": 58
+			},
+			"duration": 100
+		},
+		"letrero": {
+			"frame": {
+				"x": 261,
+				"y": 142,
+				"w": 40,
+				"h": 52
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 40,
+				"h": 52
+			},
+			"sourceSize": {
+				"w": 40,
+				"h": 52
+			},
+			"duration": 100
+		},
+		"barrera": {
+			"frame": {
+				"x": 303,
+				"y": 142,
+				"w": 20,
+				"h": 70
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 20,
+				"h": 70
+			},
+			"sourceSize": {
+				"w": 20,
+				"h": 70
+			},
+			"duration": 100
+		},
+		"picado": {
+			"frame": {
+				"x": 325,
+				"y": 142,
+				"w": 128,
+				"h": 32
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 128,
+				"h": 32
+			},
+			"sourceSize": {
+				"w": 128,
+				"h": 32
+			},
+			"duration": 100
+		}
+	},
+	"meta": {
+		"app": "https://libresprite.github.io/",
+		"version": "conversion",
+		"image": "terreno.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 2048,
+			"h": 222
+		},
+		"scale": "1",
+		"frameTags": []
+	}
+}

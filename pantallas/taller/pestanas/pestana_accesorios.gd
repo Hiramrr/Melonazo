@@ -36,7 +36,7 @@ func _ready() -> void:
 func refrescar() -> void:
 	var base := "Equipados %d de %d · teclas 1, 2 y 3 en el aire" % [Juego.accesorios.size(), Config.max_accesorios]
 	lbl_feedback.text = base if _aviso == "" else _aviso
-	lbl_feedback.add_theme_color_override("font_color", Color("c8402f") if _aviso != "" else Color("203d38"))
+	lbl_feedback.theme_type_variation = &"AvisoAccesorios" if _aviso != "" else &"SubtituloChico"
 	_aviso = ""
 	for id in Config.orden_accesorios:
 		var a: Accesorio = Config.accesorios[id]
@@ -49,7 +49,7 @@ func refrescar() -> void:
 		f["tecla"].visible = pos >= 0
 		f["tecla"].text = str(pos + 1)
 		f["candado"].visible = not libre
-		f["icono"].modulate = Color.WHITE if libre else Color(0.35, 0.4, 0.38, 0.8)
+		f["icono"].modulate = Color.WHITE if libre else b.get_theme_color("accesorio_bloqueado")
 		f["carisma"].visible = libre
 		f["carisma"].texto = "+%d" % a.carisma
 		f["precio"].visible = not libre
@@ -78,7 +78,7 @@ func _crear_tarjeta(id: String) -> void:
 	lista.add_child(b)
 	var caja := VBoxContainer.new()
 	caja.mouse_filter = Control.MOUSE_FILTER_IGNORE
-	caja.add_theme_constant_override("separation", 2)
+	caja.theme_type_variation = &"ColumnaDensa"
 	b.add_child(caja)
 	caja.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	caja.offset_left = 10
@@ -91,11 +91,11 @@ func _crear_tarjeta(id: String) -> void:
 	icono.draw.connect(accesorio.dibujar_icono.bind(icono, Rect2(0, 0, LADO_ICONO, LADO_ICONO)))
 	icono.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
 	caja.add_child(icono)
-	var nombre := ComunTaller.titulo_seccion(accesorio.nombre, 16)
+	var nombre := ComunTaller.titulo_seccion(accesorio.nombre, &"NombreTarjeta")
 	nombre.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	nombre.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	caja.add_child(nombre)
-	var info := ComunTaller.etiqueta(accesorio.accion, 13, true)
+	var info := ComunTaller.etiqueta(accesorio.accion, &"Detalle")
 	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	info.size_flags_vertical = Control.SIZE_EXPAND_FILL
@@ -105,13 +105,13 @@ func _crear_tarjeta(id: String) -> void:
 	pie.alignment = BoxContainer.ALIGNMENT_CENTER
 	pie.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	caja.add_child(pie)
-	var carisma := Ficha.crear(Iconos.CARISMA, "", false, 15)
+	var carisma := Ficha.crear(Iconos.CARISMA, "", false, &"ContadorTarjeta")
 	carisma.lado_icono = 20.0
 	pie.add_child(carisma)
-	var precio := Ficha.crear(Iconos.APLAUSO, "", false, 15)
+	var precio := Ficha.crear(Iconos.APLAUSO, "", false, &"ContadorTarjeta")
 	precio.lado_icono = 20.0
 	pie.add_child(precio)
-	var tecla := Iconos.tecla("1", 16)
+	var tecla := Iconos.tecla("1", &"TeclaTarjeta")
 	tecla.position = Vector2(8, 6)
 	b.add_child(tecla)
 	var candado := Iconos.imagen(Iconos.CANDADO, 28.0)

@@ -1,0 +1,184 @@
+{
+	"frames": {
+		"fondo": {
+			"frame": {
+				"x": 0,
+				"y": 0,
+				"w": 640,
+				"h": 360
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 640,
+				"h": 360
+			},
+			"sourceSize": {
+				"w": 640,
+				"h": 360
+			},
+			"duration": 100
+		},
+		"rayos": {
+			"frame": {
+				"x": 642,
+				"y": 0,
+				"w": 640,
+				"h": 640
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 640,
+				"h": 640
+			},
+			"sourceSize": {
+				"w": 640,
+				"h": 640
+			},
+			"duration": 100
+		},
+		"picado": {
+			"frame": {
+				"x": 1284,
+				"y": 0,
+				"w": 640,
+				"h": 50
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 640,
+				"h": 50
+			},
+			"sourceSize": {
+				"w": 640,
+				"h": 50
+			},
+			"duration": 100
+		},
+		"cielo_menu": {
+			"frame": {
+				"x": 1926,
+				"y": 0,
+				"w": 16,
+				"h": 360
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 16,
+				"h": 360
+			},
+			"sourceSize": {
+				"w": 16,
+				"h": 360
+			},
+			"duration": 100
+		},
+		"cinta": {
+			"frame": {
+				"x": 1944,
+				"y": 0,
+				"w": 60,
+				"h": 16
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 60,
+				"h": 16
+			},
+			"sourceSize": {
+				"w": 60,
+				"h": 16
+			},
+			"duration": 100
+		},
+		"degradado": {
+			"frame": {
+				"x": 2006,
+				"y": 0,
+				"w": 16,
+				"h": 360
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 16,
+				"h": 360
+			},
+			"sourceSize": {
+				"w": 16,
+				"h": 360
+			},
+			"duration": 100
+		},
+		"marco": {
+			"frame": {
+				"x": 0,
+				"y": 642,
+				"w": 60,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 60,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 60,
+				"h": 60
+			},
+			"duration": 100
+		},
+		"sombra": {
+			"frame": {
+				"x": 62,
+				"y": 642,
+				"w": 60,
+				"h": 60
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 60,
+				"h": 60
+			},
+			"sourceSize": {
+				"w": 60,
+				"h": 60
+			},
+			"duration": 100
+		}
+	},
+	"meta": {
+		"app": "https://libresprite.github.io/",
+		"version": "conversion",
+		"image": "interfaz.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 2048,
+			"h": 702
+		},
+		"scale": "1",
+		"frameTags": []
+	}
+}

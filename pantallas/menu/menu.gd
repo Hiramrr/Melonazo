@@ -35,6 +35,7 @@ var _bajada: Tween
 
 
 func _ready() -> void:
+	Musica.tocar(Musica.MENU)
 	$Paisaje.configurar(camara)
 	%BajadaXallitic.abrir_salida()
 	melones.calle = %BajadaXallitic

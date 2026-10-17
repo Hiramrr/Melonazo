@@ -4,6 +4,10 @@ extends Node2D
 ## rebota al caer y salta de vez en cuando. Si el jugador vuela alto y cerca, lo sigue
 ## con impulsos en el aire, un poco por debajo. Solo recibe golpes de un slam desde arriba.
 ##
+## Cada uno tiene un carácter (Config.tipos_melones): los tontos van lentos, saltan sin
+## ton ni son, tropiezan y son fáciles de aplastar; los listos van más rápido y a
+## veces esquivan el primer picado que los apunta.
+##
 ## No usa el motor de física: sigue la altura del terreno con Tramo.altura() para
 ## avanzar de un tramo a otro sin colisiones con el jugador ni con los obstáculos.
 
@@ -11,6 +15,7 @@ var radio := 30.0
 var rapidez := 480.0                    # px/s de crucero; la pendiente la sube o la baja
 var velocidad := Vector2.ZERO
 var aspecto: Dictionary = {}
+var tipo := "normal"                    # clave de Config.tipos_melones
 var usado := false
 var anterior := Vector2.ZERO
 var en_bajada := false
@@ -31,6 +36,8 @@ var _suelo_y := 0.0                     # y de su centro al tocar el suelo debaj
 var _bajo_jugador := 250.0              # px por debajo del jugador cuando lo sigue al aire
 var _t_aleteo := 0.0                    # espera entre impulsos en el aire
 var _t_soplo := 0.0                     # dibujo del último impulso
+var _t_tropiezo := 0.0                  # tonto: frenado un momento
+var _esquivo := false                   # listo: ya intentó esquivar (solo una vez)
 
 enum Marca { NINGUNA, ACERTABLE, FIJADO }
 const COLOR_ACERTABLE := Color("ffc83d")
@@ -47,6 +54,7 @@ func _ready() -> void:
 
 func configurar(datos: Dictionary) -> void:
 	aspecto = datos.duplicate(true)
+	tipo = aspecto.get("tipo", "normal")
 	radio = Config.tamanos[aspecto.get("tamano", 2)]["radio"]
 	if is_node_ready():
 		_actualizar_aspecto()
@@ -54,9 +62,9 @@ func configurar(datos: Dictionary) -> void:
 
 ## Rapidez de crucero y semilla de sus saltos.
 func preparar_carrera(p_rapidez: float, semilla: int) -> void:
-	rapidez = p_rapidez
+	rapidez = p_rapidez * _rasgo("ritmo")
 	rng.seed = semilla
-	_t_salto = rng.randf_range(Config.pausa_saltos_melones.x, Config.pausa_saltos_melones.y)
+	_t_salto = _pausa_salto()
 	_bajo_jugador = rng.randf_range(Config.bajo_jugador_melones.x, Config.bajo_jugador_melones.y)
 
 
@@ -89,6 +97,11 @@ func avanzar(terreno: GeneradorTerreno, delta: float, jugador := Vector2(NAN, NA
 	_t_aplastado = maxf(0.0, _t_aplastado - delta)
 	_t_aleteo = maxf(0.0, _t_aleteo - delta)
 	_t_soplo = maxf(0.0, _t_soplo - delta)
+	_t_tropiezo = maxf(0.0, _t_tropiezo - delta)
+	if en_mira and not _esquivo and not usado:
+		_esquivo = true
+		if rng.randf() < _rasgo("esquiva"):
+			_esquivar(jugador.x)
 	var aplastado := _t_aplastado / Config.aplastado_melones
 	scale = Vector2(1.0 + 0.25 * aplastado, 1.0 - 0.35 * aplastado)
 	$Aspecto.position.y = radio / scale.y - radio     # achatado sin despegarse del suelo
@@ -160,7 +173,7 @@ func _ajuste_ritmo(x_jugador: float) -> float:
 ## y a la que sigue al jugador por el aire, o NAN si el jugador va bajo, lejos o en
 ## picado, o si este melón ya recibió un slam. Así nunca sube al encuentro de un slam.
 func _altura_vuelo(jugador: Vector2, vel_jugador: Vector2) -> float:
-	if usado or is_nan(jugador.x) or absf(jugador.x - global_position.x) > Config.alcance_vuelo_melones:
+	if usado or not _rasgo("sigue_aire") or is_nan(jugador.x) or absf(jugador.x - global_position.x) > Config.alcance_vuelo_melones:
 		return NAN
 	if vel_jugador.y >= Config.slam_caida * 0.9:
 		return NAN
@@ -198,6 +211,10 @@ func _rodar(tramo: Tramo, delta: float, x_jugador: float, vuelo_y: float) -> voi
 	var objetivo := rapidez * _ajuste_ritmo(x_jugador)
 	if _t_aplastado > 0.0:
 		objetivo *= 0.4
+	if _t_tropiezo > 0.0:
+		objetivo *= 0.45
+	elif rng.randf() < _rasgo("tropiezos") * delta:
+		_t_tropiezo = Config.tropiezo_melones
 	if s < objetivo:
 		s = minf(objetivo, s + Config.aceleracion_melones * delta)
 	else:
@@ -208,7 +225,7 @@ func _rodar(tramo: Tramo, delta: float, x_jugador: float, vuelo_y: float) -> voi
 		return
 	_t_salto -= delta
 	if saltos and not en_mira and _t_salto <= 0.0 and _t_aplastado <= 0.0:
-		_t_salto = rng.randf_range(Config.pausa_saltos_melones.x, Config.pausa_saltos_melones.y)
+		_t_salto = _pausa_salto()
 		velocidad.y = -rng.randf_range(Config.salto_melones.x, Config.salto_melones.y)
 		en_suelo = false
 		_giro = velocidad.x / radio
@@ -232,8 +249,30 @@ func _aterrizar(pendiente: float) -> void:
 	_giro = velocidad.x / radio
 
 
+## Valor de su carácter en Config.tipos_melones.
+func _rasgo(clave: String) -> Variant:
+	return Config.tipos_melones[tipo][clave]
+
+
+func _pausa_salto() -> float:
+	return rng.randf_range(Config.pausa_saltos_melones.x, Config.pausa_saltos_melones.y) * _rasgo("pausa_saltos")
+
+
+## Listo: un empujón hacia el lado contrario al jugador y un saltito. El guiado del
+## picado alcanza a corregir parte del desvío, así que esquivar no es seguro.
+func _esquivar(x_jugador: float) -> void:
+	var lado := 1.0 if is_nan(x_jugador) or x_jugador <= global_position.x else -1.0
+	velocidad.x += lado * Config.esquiva_melones.x
+	if en_suelo:
+		velocidad.y = -Config.esquiva_melones.y
+		en_suelo = false
+		_giro = velocidad.x / radio
+	_t_soplo = 0.3
+
+
 func margen_slam(melon: Melon) -> float:
-	return clampf(absf(melon.linear_velocity.x - velocidad.x) * Config.slam_tolerancia, Config.slam_margen.x, Config.slam_margen.y)
+	var margen := absf(melon.linear_velocity.x - velocidad.x) * Config.slam_tolerancia
+	return clampf(margen, Config.slam_margen.x, Config.slam_margen.y) * _rasgo("margen_slam")
 
 
 ## Anticipa un picado sobre este melón: x = segundos hasta alcanzarlo,
@@ -298,6 +337,7 @@ func recibir_slam(melon: Melon) -> bool:
 	if contacto.y >= -radio * 0.25:
 		return false
 	usado = true
+	Sonidos.muerte(self)
 	melon.acertar_slam()
 	_aplastar()
 	return true
@@ -323,19 +363,18 @@ func _draw() -> void:
 	if _t_soplo > 0.0:
 		var a := _t_soplo / 0.3
 		for lado in [-1.0, 1.0]:
-			draw_arc(Vector2(lado * radio * 0.5, radio + 10.0 + 14.0 * (1.0 - a)), 9.0, 0.0, PI, 10, Color(1, 1, 1, 0.8 * a), 3.0, true)
+			Sprites.dibujar(self, "efectos/soplo", Rect2(lado * radio * 0.5 - 14, radio + 6 + 14 * (1 - a), 28, 18), Color(1, 1, 1, 0.8 * a))
 	if marca == Marca.NINGUNA:
 		return
 	var t := Time.get_ticks_msec() / 1000.0
 	var color := COLOR_ACERTABLE if marca == Marca.ACERTABLE else COLOR_FIJADO
 	var r := radio + 12.0 + (3.0 * sin(t * 10.0) if marca == Marca.ACERTABLE else 0.0)
-	draw_arc(Vector2.ZERO, r, 0.0, TAU, 40, color, 3.0, true)
+	Sprites.aro(self, Vector2.ZERO, r, color)
 	for i in 4:
-		var dir := Vector2.from_angle(i * PI * 0.5 + t * 1.5)
-		draw_line(dir * (r - 7.0), dir * (r + 7.0), color, 3.0, true)
-	# Flecha que apunta hacia abajo, a dónde caer.
-	var punta := Vector2(0.0, -r - 6.0 - 4.0 * absf(sin(t * 6.0)))
-	draw_colored_polygon(PackedVector2Array([punta, punta + Vector2(-11, -14), punta + Vector2(11, -14)]), color)
+		var a := i * PI * 0.5 + t * 1.5
+		Sprites.girar(self, "efectos/linea", Transform2D(a, Vector2(14.0 / 32, 1), 0, Vector2.from_angle(a) * r), color)
+	var punta := Vector2(0, -r - 6 - 4 * absf(sin(t * 6)))
+	Sprites.dibujar(self, "efectos/triangulo", Rect2(punta + Vector2(-12, -14), Vector2(24, 16)), color)
 
 
 func _actualizar_aspecto() -> void:

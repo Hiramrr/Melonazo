@@ -1,0 +1,310 @@
+{
+	"frames": {
+		"persona_ropa_0": {
+			"frame": {
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 50
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 50
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 50
+			},
+			"duration": 100
+		},
+		"persona_piel_0": {
+			"frame": {
+				"x": 34,
+				"y": 0,
+				"w": 32,
+				"h": 50
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 50
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 50
+			},
+			"duration": 100
+		},
+		"persona_ropa_1": {
+			"frame": {
+				"x": 68,
+				"y": 0,
+				"w": 32,
+				"h": 50
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 50
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 50
+			},
+			"duration": 100
+		},
+		"persona_piel_1": {
+			"frame": {
+				"x": 102,
+				"y": 0,
+				"w": 32,
+				"h": 50
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 50
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 50
+			},
+			"duration": 100
+		},
+		"persona_ropa_2": {
+			"frame": {
+				"x": 136,
+				"y": 0,
+				"w": 32,
+				"h": 50
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 50
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 50
+			},
+			"duration": 100
+		},
+		"persona_piel_2": {
+			"frame": {
+				"x": 170,
+				"y": 0,
+				"w": 32,
+				"h": 50
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 32,
+				"h": 50
+			},
+			"sourceSize": {
+				"w": 32,
+				"h": 50
+			},
+			"duration": 100
+		},
+		"tecla": {
+			"frame": {
+				"x": 204,
+				"y": 0,
+				"w": 20,
+				"h": 20
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 20,
+				"h": 20
+			},
+			"sourceSize": {
+				"w": 20,
+				"h": 20
+			},
+			"duration": 100
+		},
+		"papalote_0": {
+			"frame": {
+				"x": 226,
+				"y": 0,
+				"w": 112,
+				"h": 100
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 112,
+				"h": 100
+			},
+			"sourceSize": {
+				"w": 112,
+				"h": 100
+			},
+			"duration": 100
+		},
+		"papalote_1": {
+			"frame": {
+				"x": 340,
+				"y": 0,
+				"w": 112,
+				"h": 100
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 112,
+				"h": 100
+			},
+			"sourceSize": {
+				"w": 112,
+				"h": 100
+			},
+			"duration": 100
+		},
+		"papalote_2": {
+			"frame": {
+				"x": 454,
+				"y": 0,
+				"w": 112,
+				"h": 100
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 112,
+				"h": 100
+			},
+			"sourceSize": {
+				"w": 112,
+				"h": 100
+			},
+			"duration": 100
+		},
+		"corriente_0": {
+			"frame": {
+				"x": 568,
+				"y": 0,
+				"w": 112,
+				"h": 100
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 112,
+				"h": 100
+			},
+			"sourceSize": {
+				"w": 112,
+				"h": 100
+			},
+			"duration": 100
+		},
+		"corriente_1": {
+			"frame": {
+				"x": 682,
+				"y": 0,
+				"w": 112,
+				"h": 100
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 112,
+				"h": 100
+			},
+			"sourceSize": {
+				"w": 112,
+				"h": 100
+			},
+			"duration": 100
+		},
+		"corriente_2": {
+			"frame": {
+				"x": 796,
+				"y": 0,
+				"w": 112,
+				"h": 100
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 112,
+				"h": 100
+			},
+			"sourceSize": {
+				"w": 112,
+				"h": 100
+			},
+			"duration": 100
+		},
+		"insignia": {
+			"frame": {
+				"x": 910,
+				"y": 0,
+				"w": 44,
+				"h": 44
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 44,
+				"h": 44
+			},
+			"sourceSize": {
+				"w": 44,
+				"h": 44
+			},
+			"duration": 100
+		}
+	},
+	"meta": {
+		"app": "https://libresprite.github.io/",
+		"version": "conversion",
+		"image": "ayudas.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 2048,
+			"h": 100
+		},
+		"scale": "1",
+		"frameTags": []
+	}
+}

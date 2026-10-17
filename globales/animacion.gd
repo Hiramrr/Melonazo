@@ -17,21 +17,7 @@ extends CanvasLayer
 const DURACION_CORTINA := 0.55
 const ESCALA_RATON := 1.05
 const ESCALA_PULSADO := 0.94
-const SHADER_CORTINA := """
-shader_type canvas_item;
-uniform float abierto = 0.0;
-uniform vec4 color : source_color = vec4(0.125, 0.239, 0.22, 1.0);
-uniform vec4 borde : source_color = vec4(1.0, 0.784, 0.239, 1.0);
-void fragment() {
-	vec2 tam = 1.0 / SCREEN_PIXEL_SIZE;
-	float d = length((UV - 0.5) * tam) - abierto * length(tam) * 0.55;
-	vec4 c = d < 14.0 ? borde : color;
-	COLOR = vec4(c.rgb, c.a * smoothstep(0.0, 2.0, d));
-}
-"""
-
-var _cortina: ColorRect
-var _material: ShaderMaterial
+var _cortina: TextureRect
 
 
 func _ready() -> void:
@@ -40,11 +26,11 @@ func _ready() -> void:
 		ThemeDB.fallback_font = tema.get_font("font", "Titulo")
 	layer = 100
 	process_mode = Node.PROCESS_MODE_ALWAYS
-	_material = ShaderMaterial.new()
-	_material.shader = Shader.new()
-	_material.shader.code = SHADER_CORTINA
-	_cortina = ColorRect.new()
-	_cortina.material = _material
+	_cortina = TextureRect.new()
+	_cortina.texture = Sprites.textura("transiciones/cortina_0")
+	_cortina.expand_mode = TextureRect.EXPAND_IGNORE_SIZE
+	_cortina.stretch_mode = TextureRect.STRETCH_KEEP_ASPECT_COVERED
+	_cortina.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_cortina.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_cortina.set_anchors_and_offsets_preset(Control.PRESET_FULL_RECT)
 	_cortina.visible = false
@@ -58,9 +44,10 @@ func _ready() -> void:
 func cambiar_escena(ruta: String) -> void:
 	get_tree().change_scene_to_file(ruta)
 	_cortina.visible = true
-	_material.set_shader_parameter("abierto", 0.0)
+	_cortina.texture = Sprites.textura("transiciones/cortina_0")
 	var t := create_tween()
-	t.tween_method(func(v: float) -> void: _material.set_shader_parameter("abierto", v),
+	t.tween_method(func(v: float) -> void:
+		_cortina.texture = Sprites.textura("transiciones/cortina_%d" % clampi(int(v * 16), 0, 15)),
 		0.0, 1.0, DURACION_CORTINA).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	t.tween_callback(_cortina.hide)
 

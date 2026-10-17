@@ -113,103 +113,41 @@ func _draw() -> void:
 
 
 func _costa(m: Vector2, cam: Vector2, dy: float) -> void:
-	var horizonte := 60.0 - clampf(dy * 0.04, -120, 120)
-	_cordillera(m, cam.x * 0.04, horizonte + 20.0, 90.0, LEJANO, 1.0, false)
-	draw_rect(Rect2(-m.x, horizonte + 24, m.x * 2, maxf(0.0, m.y - horizonte - 24)), Color("68a9b5"))
-	for i in 5:
-		var y := horizonte + 45.0 + i * 30.0
-		var x := -m.x + fposmod(i * 113.0 - cam.x * 0.06, 180.0)
-		while x < m.x:
-			draw_line(Vector2(x, y), Vector2(x + 75, y), Color("c4e1dc"), 2.0)
-			x += 180.0
-	var orilla := m.y - 90.0 - clampf(dy * 0.02, -50, 60)
-	draw_colored_polygon(PackedVector2Array([Vector2(-m.x, orilla), Vector2(0, orilla + 28), Vector2(m.x, orilla - 12), Vector2(m.x, m.y), Vector2(-m.x, m.y)]), Color("e4c88e"))
+	var desp := fposmod(cam.x * 0.06, 1280.0)
+	for i in range(floori((-m.x + desp + 640) / 1280) - 1, ceili((m.x + desp + 640) / 1280) + 1):
+		var rect := Rect2(Vector2(i * 1280 - desp - 640, -m.y - clampf(dy * 0.04, -120, 120)), Vector2(1280, m.y * 2))
+		var escala := rect.size / Vector2(1280, 720)
+		if posmod(i, 2) == 1:
+			escala.x = -escala.x
+		Sprites.girar(self, "paisaje/costa", Transform2D(0, escala, 0, rect.get_center()))
 
-
-## Número pseudoaleatorio estable en [0, 1).
 static func _azar(n: float) -> float:
 	return fposmod(sin(n * 12.9898) * 43758.5453, 1.0)
 
+func _franja(id: String, m: Vector2, desp: float, base: float, alto: float, tinte := Color.WHITE) -> void:
+	var ancho := 2048.0
+	var inicio := floori((-m.x + desp) / ancho)
+	var fin := ceili((m.x + desp) / ancho)
+	for i in range(inicio, fin + 1):
+		var rect := Rect2(i * ancho - desp, base - alto, ancho, maxf(1000.0, m.y + alto - base))
+		# Alternar el reflejo une los mismos bordes de la franja sin saltos.
+		var escala := rect.size / Vector2(2048, 1000)
+		if posmod(i, 2) == 1:
+			escala.x = -escala.x
+		Sprites.girar(self, id, Transform2D(0, escala, 0, rect.get_center()), tinte)
 
-## Suma de senos en [0, 1] aprox.; s (semilla) distingue una cordillera de otra.
-func _ruido(u: float, s: float) -> float:
-	return 0.5 + 0.25 * sin(u * 0.004 + s) + 0.15 * sin(u * 0.011 + s * 2.1) + 0.1 * sin(u * 0.027 + s * 3.7)
+func _cordillera(m: Vector2, desp: float, base: float, _alto: float, col: Color, s: float, _arboles: bool) -> void:
+	_franja("paisaje/cerros_%d" % int(s), m, desp, base, 200.0, col)
 
-
-## Línea de cerros continua; u = x de pantalla + desplazamiento, así no se repite.
-func _cordillera(m: Vector2, desp: float, base: float, alto: float, col: Color, s: float, arboles: bool) -> void:
-	var pts := PackedVector2Array()
-	var x := -m.x
-	while x <= m.x + 20.0:
-		pts.append(Vector2(x, base - alto * _ruido(x + desp, s)))
-		x += 20.0
-	# Con la cámara muy alta la cresta baja de la pantalla; el fondo va siempre debajo
-	# para que el polígono no se cruce.
-	var fondo := maxf(m.y, base + 10.0)
-	pts.append(Vector2(m.x + 20.0, fondo))
-	pts.append(Vector2(-m.x, fondo))
-	draw_colored_polygon(pts, col)
-	if not arboles:
-		return
-	# Copas sobre la cresta, ancladas al mundo para que no "naden".
-	var paso := 16.0 if s > 5.0 else 11.0
-	var u := ceilf((-m.x + desp) / paso) * paso
-	while u - desp < m.x + 10.0:
-		var sx := u - desp
-		var h := _azar(u + s)
-		if h < 0.7:
-			var r := paso * (0.5 + 0.4 * h)
-			draw_circle(Vector2(sx, base - alto * _ruido(u, s) + r * 0.4), r, col.darkened(0.12 + 0.1 * h))
-		u += paso
-
-
-func _volcan(m: Vector2, cam_x: float, base: float) -> void:
-	# Un cono nevado lejano y un macizo de cima plana; reaparecen cada 2600 px de pantalla.
+func _volcan(_m: Vector2, cam_x: float, base: float) -> void:
 	var x := fposmod(260.0 - cam_x * 0.015 + 1300.0, 2600.0) - 1300.0
-	var cima := Vector2(x, base - 270.0)
-	draw_colored_polygon(PackedVector2Array([Vector2(x - 480, base + 40), Vector2(x - 60, cima.y + 30), cima,
-		Vector2(x + 50, cima.y + 26), Vector2(x + 500, base + 40)]), VOLCAN)
-	draw_colored_polygon(PackedVector2Array([Vector2(x - 60, cima.y + 30), cima, Vector2(x + 50, cima.y + 26),
-		Vector2(x + 105, cima.y + 72), Vector2(x + 60, cima.y + 60), Vector2(x + 30, cima.y + 82),
-		Vector2(x - 10, cima.y + 58), Vector2(x - 50, cima.y + 84), Vector2(x - 115, cima.y + 74)]), Color(0.97, 0.97, 0.98))
-	var x2 := x - 900.0 if x > 0.0 else x + 900.0
-	draw_colored_polygon(PackedVector2Array([Vector2(x2 - 380, base + 40), Vector2(x2 - 70, base - 150),
-		Vector2(x2 + 10, base - 158), Vector2(x2 + 20, base - 172), Vector2(x2 + 34, base - 160),
-		Vector2(x2 + 90, base - 150), Vector2(x2 + 360, base + 40)]), VOLCAN.darkened(0.05))
-
+	Sprites.dibujar(self, "paisaje/volcan", Rect2(x - 1560, base - 300, 2600, 1120))
 
 func _niebla(m: Vector2, desp: float, y: float, alfa: float) -> void:
-	# Jirones de niebla bajos, característicos de la ciudad; se mueven despacio.
-	var periodo := 1900.0
-	for i in 4:
-		var x := fposmod(i * 520.0 - desp + _t * 10.0 + periodo / 2.0, periodo) - periodo / 2.0
-		var c := Vector2(x, y + 24.0 * _azar(i + 9.0))
-		var r := Vector2(240.0 + 120.0 * _azar(i + 2.0), 22.0)
-		var pts := PackedVector2Array()
-		for k in 20:
-			var a := TAU * k / 20.0
-			pts.append(c + Vector2(cos(a) * r.x, sin(a) * r.y))
-		draw_colored_polygon(pts, Color(BRUMA, alfa))
-
+	var inicio := floori((-m.x + desp - _t * 10) / 1900.0)
+	var fin := ceili((m.x + desp - _t * 10) / 1900.0)
+	for i in range(inicio, fin + 1):
+		Sprites.dibujar(self, "paisaje/niebla", Rect2(i * 1900 - desp + _t * 10, y - 30, 1900, 100), Color(1, 1, 1, alfa))
 
 func _ciudad(m: Vector2, desp: float, base: float) -> void:
-	# Manzanas lejanas, teñidas por la bruma; de vez en cuando una torre o cúpula.
-	var ancho := 46.0
-	var k := floori((-m.x + desp) / ancho) - 1
-	while k * ancho - desp < m.x + ancho:
-		var sx := k * ancho - desp
-		var h := _azar(k * 1.37)
-		var y := base - 18.0 - 46.0 * _azar(k * 2.11 + 0.3) - 6.0 * sin(k * 0.21) * 4.0
-		var col: Color = FACHADAS[int(h * FACHADAS.size())]
-		col = col.lerp(BRUMA, 0.45).darkened(0.08)
-		draw_rect(Rect2(sx, y, ancho + 1.0, m.y - y + 4.0), col)
-		draw_rect(Rect2(sx - 2, y - 5, ancho + 5.0, 6), Color(0.72, 0.38, 0.28).lerp(BRUMA, 0.4))
-		for v in 3:
-			draw_rect(Rect2(sx + 7 + v * 13, y + 12, 6, 9), col.darkened(0.25))
-		if h > 0.93:
-			var tx := sx + ancho / 2.0
-			draw_rect(Rect2(tx - 9, y - 60, 18, 60), Color(0.9, 0.88, 0.82).lerp(BRUMA, 0.3))
-			draw_circle(Vector2(tx, y - 60), 9.0, Color(0.82, 0.78, 0.68).lerp(BRUMA, 0.3))
-			draw_line(Vector2(tx, y - 69), Vector2(tx, y - 82), Color(0.35, 0.35, 0.38), 2.0)
-			draw_line(Vector2(tx - 4, y - 77), Vector2(tx + 4, y - 77), Color(0.35, 0.35, 0.38), 2.0)
-		k += 1
+	_franja("paisaje/ciudad", m, desp, base, 180)

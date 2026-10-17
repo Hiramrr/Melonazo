@@ -1,6 +1,6 @@
 class_name Iconos
 extends RefCounted
-## Íconos de la interfaz (SVG en recursos/iconos/) y atajos para crear piezas
+## Íconos de la interfaz (sprites PNG en recursos/iconos/, editables en LibreSprite) y atajos para crear piezas
 ## pequeñas con el estilo del tema. No es un nodo: se usa como Iconos.APLAUSO,
 ## Iconos.imagen(...) o Iconos.tecla(...).
 ##
@@ -37,13 +37,11 @@ static func imagen(textura: Texture2D, lado := 24.0) -> TextureRect:
 
 
 ## Tecla dibujada ("Espacio", "E", "1"...), con la variación Tecla del tema.
-static func tecla(texto: String, tam := 15) -> Label:
+static func tecla(texto: String, estilo: StringName = &"Tecla") -> Label:
 	var l := Label.new()
-	l.theme_type_variation = &"Tecla"
+	l.theme_type_variation = estilo
 	l.text = texto
 	l.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	l.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	l.size_flags_vertical = Control.SIZE_SHRINK_CENTER
-	if tam != 15:
-		l.add_theme_font_size_override("font_size", tam)
 	return l

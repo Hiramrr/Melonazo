@@ -19,6 +19,8 @@ script = ExtResource("1")
 [node name="Paisaje" parent="." instance=ExtResource("4")]
 
 [node name="Mundo" type="Node2D" parent="."]
+texture_filter = 1
+texture_repeat = 2
 
 [node name="BajadaXallitic" parent="Mundo" instance=ExtResource("9")]
 script = ExtResource("10")
@@ -59,3 +61,4 @@ unique_name_in_owner = true
 [connection signal="se_rompio" from="Mundo/Melon" to="." method="_on_melon_roto"]
 [connection signal="obstaculo_tocado" from="Mundo/Terreno" to="." method="_al_tocar_obstaculo"]
 [connection signal="poder_recogido" from="Mundo/Terreno" to="." method="_al_recoger_poder"]
+[connection signal="pajaro_tocado" from="Mundo/Terreno" to="." method="_al_tocar_pajaro"]

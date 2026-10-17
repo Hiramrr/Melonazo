@@ -24,9 +24,10 @@ extends PanelContainer
 	set(valor):
 		oscura = valor
 		_aplicar_estilo()
-@export var tam_texto := 18:
+## Vacío usa TextoFichaOscura o TextoFichaClara según oscura.
+@export var estilo_texto: StringName = &"":
 	set(valor):
-		tam_texto = valor
+		estilo_texto = valor
 		_aplicar_estilo()
 @export var lado_icono := 26.0:
 	set(valor):
@@ -38,19 +39,19 @@ var _imagen: TextureRect
 var _etiqueta: Label
 
 
-static func crear(p_icono: Texture2D, p_texto: String, p_oscura := true, p_tam := 18) -> Ficha:
+static func crear(p_icono: Texture2D, p_texto: String, p_oscura := true, p_estilo: StringName = &"") -> Ficha:
 	var f := Ficha.new()
 	f.icono = p_icono
 	f.texto = p_texto
 	f.oscura = p_oscura
-	f.tam_texto = p_tam
+	f.estilo_texto = p_estilo
 	return f
 
 
 func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	var fila := HBoxContainer.new()
-	fila.add_theme_constant_override("separation", 6)
+	fila.theme_type_variation = &"FilaIconos"
 	fila.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	add_child(fila, false, Node.INTERNAL_MODE_FRONT)
 	_imagen = Iconos.imagen(icono, lado_icono)
@@ -73,5 +74,4 @@ func _aplicar_estilo() -> void:
 	if _etiqueta == null:
 		return
 	theme_type_variation = &"Chip" if oscura else &"ChipClaro"
-	_etiqueta.theme_type_variation = &"TextoHUD" if oscura else &"Subtitulo"
-	_etiqueta.add_theme_font_size_override("font_size", tam_texto)
+	_etiqueta.theme_type_variation = estilo_texto if estilo_texto != &"" else (&"TextoFichaOscura" if oscura else &"TextoFichaClara")

@@ -8,14 +8,17 @@ Este documento explica cómo está organizado el proyecto en Godot: qué hace ca
 - **Un script por nodo.** Cada nodo con comportamiento propio tiene su script y un `class_name` (por ejemplo `Melon`, `Tramo` o `HUD`). Los demás nodos solo organizan la escena.
 - **Datos en `Config`, estado en `Juego`.** Ningún script guarda números de balance sueltos. Si quieres ajustar algo, lo más probable es que esté en `globales/config.gd`.
 - **Señales hacia arriba, llamadas hacia abajo.** Un nodo hijo avisa con señales (`Melon.aviso`, `GeneradorTerreno.obstaculo_tocado`). El nodo padre llama métodos de sus hijos (`terreno.actualizar(x)`, `hud.actualizar(self)`). Las conexiones estables están en los `.tscn` (sección `[connection]`), así se ven en el editor.
-- **Dibujo vectorial.** El melón, el terreno y los obstáculos se dibujan con `_draw()`. Los lugares usan fotografías como postales al terminar el intento. Los scripts con `@tool` también se ven en el editor.
+- **Sprites PNG.** `globales/sprites.gd` carga hojas PNG y sus regiones desde JSON Hash de LibreSprite. `_draw()` compone texturas para el melón, terreno, obstáculos, escenario y efectos. Los lugares usan fotografías como postales al terminar el intento. Los scripts con `@tool` también se ven en el editor.
 
 ## Autoloads (`globales/`)
 
 | Nombre | Archivo | Qué contiene |
 | --- | --- | --- |
 | `Config` | `globales/config.gd` | Reglas y valores ajustables: física, lanzamiento, terreno, economía, apariencia, poderes y postales. Al iniciar carga los accesorios de `melon/accesorios/`. |
-| `Juego` | `globales/juego.gd` | Progreso del jugador: aplausos, mejoras, accesorios, aspecto, colección de melones, récord y pasaporte. Calcula las recompensas (`registrar_intento`) y guarda en `user://progreso.json`. |
+| `Juego` | `globales/juego.gd` | Progreso del jugador: aplausos, mejoras, accesorios, Salsas Valentina, aspecto, colección de melones, récord y pasaporte. Calcula las recompensas (`registrar_intento`) y guarda en `user://progreso.json`. |
+| `Musica` | `globales/musica.gd` | Un reproductor persistente con fundidos breves. Menú en la portada, Tiendita en taller y almanaque. Base Lenta al iniciar, Media desde el 50 % de la ruta y Rápida desde el 80 %. Derrota suena una vez al detenerse o romperse el melón y continúa en resultados. Al llegar a la meta suena Menú. |
+
+Las seis pistas están en `recursos/musica/`, comprimidas en Ogg Vorbis estéreo a 44,1 kHz. Sus archivos `.import` activan el bucle salvo en `derrota.ogg`. `Musica` pausa con la carrera y conserva la reproducción al pedir la misma pista.
 
 ## Flujo entre pantallas
 
@@ -35,6 +38,8 @@ El botón "Almanaque" del taller abre `pantallas/almanaque/almanaque.tscn`. "Vol
 
 El estilo de todas las pantallas sale del tema `interfaz/tema_xalapa.tres`, que también es el tema del proyecto (`gui/theme/custom`). Usa la fuente incluida `recursos/fuentes/Fredoka.ttf` (licencia OFL), así se ve igual en Windows, macOS y Linux. No uses fuentes del sistema: no existen en todos los equipos.
 
+Los paneles, tamaños de letra y colores de estado se editan en ese Theme. Las escenas solo eligen sus variaciones y conservan la distribución. La [guía de temas](temas.md) explica qué variación corresponde a cada parte y cómo editarla desde Godot. Los helpers `ComunTaller`, `Ficha` e `Iconos.tecla` reciben nombres de variaciones en lugar de tamaños de letra.
+
 | Variación del tema | Base | Para qué |
 | --- | --- | --- |
 | `Titulo` | Label | Letra gruesa crema con contorno y sombra (logo, distancias, listones) |
@@ -44,7 +49,7 @@ El estilo de todas las pantallas sale del tema `interfaz/tema_xalapa.tres`, que 
 | `Principal`, `Comprar`, `Seleccion` | Button | Botón coral grande, botón verde de compra y opción elegida (amarilla) |
 | `Tarjeta`, `Chip`, `ChipClaro` | PanelContainer | Tarjetas de listas y fichas redondeadas |
 
-Los botones tienen "labio": el borde inferior es más grueso y, al presionarlos, el relleno baja y se hunden. La fuente no trae flechas, estrellas ni el símbolo de pausa. Esos dibujos son SVG en `recursos/iconos/` y se usan desde `Iconos` (`interfaz/iconos.gd`).
+Los botones tienen "labio": el borde inferior es más grueso y, al presionarlos, el relleno baja y se hunden. La fuente no trae flechas, estrellas ni el símbolo de pausa. Esos dibujos son sprites PNG en `recursos/iconos/` y se usan desde `Iconos` (`interfaz/iconos.gd`).
 
 | Componente | Archivo | Qué hace |
 | --- | --- | --- |
@@ -91,7 +96,7 @@ Taller (taller.gd)                 Coordina pestañas, pie y vista previa
    │     ├─ TuMelon      (pestanas/pestana_melon.gd)       Nombre, tamaño y aspecto
    │     ├─ Dibujo       (pestanas/pestana_dibujo.tscn)    Pincel, goma y colores
    │     ├─ Accesorios   (pestanas/pestana_accesorios.gd)  Equipar y desbloquear
-   │     ├─ Mejoras      (pestanas/pestana_mejoras.gd)     Comprar mejoras
+   │     ├─ Mejoras      (pestanas/pestana_mejoras.gd)     "Tiendita": mejoras y Salsa Valentina
    │     └─ Pasaporte    (pestanas/pestana_pasaporte.gd)   Postales, fotos y poderes
    └─ Pie                          Errores, teclas de ayuda y botón "¡A rodar!"
 ```
@@ -147,6 +152,9 @@ Recorrido (recorrido.gd)           Reglas de la carrera y fases
 | `Melon.se_rompio` | `_on_melon_roto` | Termina la carrera |
 | `Terreno.obstaculo_tocado(cuerpo, ob)` | `_al_tocar_obstaculo` | Llama a `ob.tocar(melon)` y muestra el aviso |
 | `Terreno.poder_recogido(tipo)` | `_al_recoger_poder` | `melon.recibir_poder(tipo)` |
+| `Terreno.pajaro_tocado(pajaro)` | `_al_tocar_pajaro` | Llama a `pajaro.tocar(melon)`, que frena al melón |
+
+**Salsa Valentina.** `_on_melon_roto()` y la falta de avance llaman a `_usar_valentina()`. Si `Juego.usar_valentina()` encuentra una, `Melon.revivir()` devuelve resistencia, cargas e impulso y la carrera sigue; si no, termina. Se compra con `Juego.comprar_valentina()` y se guarda como `valentinas` en el JSON.
 
 El **HUD** (`hud/hud.tscn`) es un `CanvasLayer` con `process_mode` *Always*, así funciona en pausa. No guarda estado: el Recorrido llama a `hud.actualizar(self)` cada cuadro. Las tres casillas de accesorios son instancias de `hud/slot_accesorio.tscn`.
 
@@ -164,7 +172,7 @@ Melon (RigidBody2D, melon.gd)
 - `melon.gd` lee el control (A/D, Espacio, 1-2-3) y ajusta la velocidad en `_integrate_forces()`: aterrizajes, rebote impulsado, rodado y efectos activos.
 - Otros nodos **no cambian `linear_velocity` directamente**. Piden cambios con `empujar(dv)`, `frenar(mult)` o `fijar_velocidad(v)`, y el melón los aplica en el siguiente paso. Así nunca se pisan dos cambios en el mismo cuadro.
 - Los temporizadores de efectos (`t_planeo`, `t_cafe`…) se descuentan solos. Están en la lista `TEMPORIZADORES`.
-- `aspecto.gd` (`Aspecto`) dibuja piel, patrón, cara, detalle, dibujo libre y accesorios. Solo tiene funciones estáticas. Lo usan el melón del recorrido y la vista previa del taller.
+- `aspecto.gd` (`Aspecto`) combina sprites de piel, patrón, cara, detalle y accesorios. Rasteriza los trazos libres al cambiar y reutiliza la textura. Sus funciones estáticas sirven al recorrido, el taller y el almanaque. El formato y la edición de las hojas están en [recursos/sprites/README.md](../recursos/sprites/README.md).
 - En el recorrido, la señal `draw` de `Melon/Lienzo/Dibujo` llama a `_dibujar_aspecto()`. El `SubViewport` actualiza una textura una sola vez y el `Sprite2D` la muestra al mover y girar el cuerpo. `configurar()`, `_quitar_slot()` y la rotura piden un nuevo dibujo con `UPDATE_ONCE`. El `_draw()` del cuerpo solo actualiza aros y efectos. Así ni la CPU ni la GPU tienen que dibujar miles de puntos en cada fotograma.
 
 ### Capas de física
@@ -180,13 +188,13 @@ Melon (RigidBody2D, melon.gd)
 | Carpeta | Escenas | Qué hacen |
 | --- | --- | --- |
 | `terreno/` | `tramo.tscn`, `postal.tscn` + `generador_terreno.gd`, `bajada_xallitic.gd` | `GeneradorTerreno` crea tramos de `Config.largo_tramo` píxeles y los llena. Cada `Tramo` tiene contenedores fijos: `Decoracion`, `Postales`, `Suelo`, `Obstaculos`, `Publico`, `Coleccionables` y `Aire`. |
-| `obstaculos/` | `obstaculo.tscn` y ocho escenas heredadas | Cada tipo edita su forma de colisión en su escena. El efecto está en `Obstaculo.tocar()`. |
+| `obstaculos/` | `obstaculo.tscn` y ocho escenas heredadas, `pajaro.tscn` | Cada tipo edita su forma de colisión en su escena. El efecto está en `Obstaculo.tocar()`. `Pajaro` vuela hacia la izquierda y frena una vez; `GeneradorTerreno._poner_pajaros()` los coloca en `Aire` con su propio `rng_pajaros`. |
 | `ayudas/` | `poder.tscn`, `papalote.tscn`, `persona.tscn` | Poderes que se recogen, papalotes que impulsan con E y público que empuja con E. |
 | `paisaje/` | `paisaje.tscn` | Fondo lejano con paralaje. Cada capa del cielo es un nodo `CapaCielo` que puedes ocultar o ajustar en el inspector. |
 
 **Generación reproducible.** El terreno usa `Config.semilla_terreno`, con -1 por defecto para cambiar en cada intento. Una semilla fija permite repetir una ruta. Los papalotes usan `rng_aire` y las rutas de premios altos usan `rng_premios`. Ambos conservan el azar del suelo. Cambiar las llamadas a `rng` en `GeneradorTerreno._poblar()` cambia las rutas del suelo y puede afectar las pruebas de balance.
 
-La ruta aérea asciende desde `Config.altura_papalotes.x` hasta `Config.altura_papalotes.y`. Cada tercera ayuda activa `Papalote.corriente` y dibuja niebla con flechas de viento. Ambas variantes usan `impulsar()` con E y nunca recargan saltos. Los tamales cercanos a la primera ayuda y cada cuatro ayudas recuperan una carga. `Recorrido.papalote_siguiente` y `EfectosRecorrido.objetivo_aereo` señalan el siguiente destino fuera de pantalla.
+La ruta aérea asciende desde `Config.altura_papalotes.x` hasta `Config.altura_papalotes.y`. Cada tercera ayuda activa `Papalote.corriente` y dibuja niebla con flechas de viento. Ambas variantes usan `impulsar()` con E y nunca recargan saltos. Los cafés cercanos a la primera ayuda y cada cuatro ayudas permiten saltar sin gastar cargas. `Recorrido.papalote_siguiente` y `EfectosRecorrido.objetivo_aereo` señalan el siguiente destino fuera de pantalla.
 
 `Recorrido` conserva `altura_max_m` aunque el melón descienda. Al finalizar la pasa como sexto argumento opcional a `Juego.registrar_intento()`, que calcula `por_altura` con `Config.aplausos_por_metro_altura`. Las entradas de `Config.zonas_cielo` cambian el objetivo del HUD y anuncian las alturas alcanzadas. La falta de avance horizontal solo termina la carrera cuando el melón está en el suelo.
 
@@ -204,31 +212,31 @@ Cada accesorio es un archivo en `melon/accesorios/` que extiende `Accesorio`. `C
 2. En `_init()` define `nombre`, `carisma`, `accion`, `costo`, `orden`, `color`, `forma` e `inicial`.
 3. En `usar(m)` combina los efectos de `Melon`: `planear`, `embestir`, `caida_lenta`, `rodar`, `proteger`, `reparar`, `atraer_aplausos`, `sumar_rebote`, `empujar` y `fijar_velocidad`.
 4. Si necesita física propia durante unos segundos, llama a `m.activar(self, segundos)` y escribe `fisica(m, v, dt)`. El HUD muestra su tiempo restante solo.
-5. Para un dibujo especial, escribe `dibujar_detalle()` o reemplaza `dibujar()`, como hace el paraguas.
+5. Añade el sprite con su id a `recursos/sprites/accesorios.png` y su cuadro a `accesorios.json`. El lienzo mide 96 × 96 píxeles y representa un melón de radio 32, orientado hacia arriba. `Accesorio.dibujar()` aplica el ángulo y el tamaño del melón.
 
 ### Una opción de aspecto
 
-Pieles, patrones, caras, detalles y estelas son listas en `Config`. Agrega la entrada **al final** de su lista (los índices se guardan) y su dibujo en el `match` correspondiente de `melon/aspecto.gd` (o de `melon/estela.gd` para las estelas). El taller crea las opciones solo. Los colores rápidos y los límites del dibujo libre están en `Config.colores_dibujo`, `grosor_dibujo`, `max_trazos` y `max_puntos_dibujo`.
+Pieles, patrones, caras, detalles y estelas son listas en `Config`. Agrega la entrada **al final** de su lista (los índices se guardan) y su cuadro en `recursos/sprites/melon.png` con el nombre `patron_<id>`, `cara_<id>` o `detalle_<id>`, junto con los metadatos de `melon.json`. Las estelas se eligen en `melon/estela.gd` y usan `efectos.png`. El taller crea las opciones solo. Los colores rápidos y los límites del dibujo libre están en `Config.colores_dibujo`, `grosor_dibujo`, `max_trazos` y `max_puntos_dibujo`.
 
 ### Un obstáculo
 
 1. Crea una escena heredada de `mundo/obstaculos/obstaculo.tscn` (por ejemplo `tope.tscn`) y ajusta su `Zona` de colisión.
-2. Añade el tipo al `@export_enum` de `obstaculo.gd`, su dibujo en `_draw()` y su efecto en `tocar()`.
+2. Añade el tipo al `@export_enum` y las medidas base en `_draw()` de `obstaculo.gd`, su sprite a `recursos/sprites/obstaculos.png` con su entrada en `obstaculos.json`, y su efecto en `tocar()`.
 3. Registra la escena en `GeneradorTerreno.OBSTACULOS` y su peso en `Config.pesos_obstaculos` y `Config.obstaculos`.
 
 ### Un poder
 
-Agrega su entrada en `Config.poderes` y su id en `Config.orden_poderes` (o en `Config.orden_recargas` si debe salir con la jamaica y la miel, que `GeneradorTerreno._poner_recargas()` coloca con su propia separación), su efecto en `Melon.recibir_poder()` y su imagen en `Poder.TEXTURAS`, en `mundo/ayudas/poder.gd`. Las imágenes provisionales están en `recursos/poderes/` y se comparten entre la ruta y el pasaporte.
+Agrega su entrada en `Config.poderes` y su id en `Config.orden_poderes`, su efecto en `Melon.recibir_poder()` y su imagen en `Poder.TEXTURAS`, en `mundo/ayudas/poder.gd`. Los objetos de la tiendita, como la Salsa Valentina, van en `Config.poderes_tienda`. Aparte, `GeneradorTerreno._revisar_rescate()` vigila al jugador en cada paso: si lleva `Config.rescate_tras` segundos lento y sin cargas, pone a ras de calle un café (`_poder_de_rescate()`), con al menos `Config.rescate_espera` segundos entre rescates. No usa `rng`, así que no cambia la ruta. Las imágenes provisionales están en `recursos/poderes/`; su README explica cómo reemplazarlas, también la pizza y la explosión que se asignan en el inspector de `melon/melon.tscn` y el pájaro en `mundo/obstaculos/pajaro.tscn`.
 
 ### Una postal
 
 Agrega el lugar en `Config.postales`, en orden de metros y con un `id` que no se repita. No requiere un dibujo ni una escena. Añade su fotografía con el mismo `id` en `fotografias` de `recursos/arte_xalapa.tres`. La imagen se muestra como postal únicamente al terminar un intento en ese lugar.
 
-Los primeros 1800 metros se reservan para Xalapa. Quedan huecos entre 350 y 420, 650 y 800, 950 y 1250, y 1450 y 1750 metros. La meta está en `Config.meta_m`, a 2600 metros. `salida_xalapa_m` y `costa_m` delimitan los fondos del camino. `Recorrido._revisar_avance()` detecta la llegada, limita la distancia y congela el melón. El generador conserva terreno de margen tras la meta, pero deja de extenderlo. Se mantienen los identificadores y las distancias anteriores de los ocho lugares de Xalapa para conservar el pasaporte guardado.
+La ruta sigue los 19 lugares elegidos por el equipo, en el orden del PDF. Los primeros 1200 metros corresponden a Xalapa; La Joya inicia el tramo de montaña. La meta está en `Config.meta_m`, a 2600 metros. `salida_xalapa_m` y `costa_m` delimitan los fondos del camino. `Recorrido._revisar_avance()` detecta la llegada, limita la distancia y congela el melón. El generador conserva terreno de margen tras la meta, pero deja de extenderlo. Los lugares conservados mantienen sus identificadores para conservar sus sellos del pasaporte. El cargador descarta los identificadores que ya no forman parte de la ruta, sin afectar al resto del progreso.
 
 ### Cambiar el terreno
 
-Ajusta `formas_tramo`, `largo_tramo`, `semilla_terreno`, `dificultad_metros` y las separaciones en `Config`. Las rampas y los toldos dan impulso una sola vez por carrera.
+El generador mantiene todos los puntos del recorrido en `Config.calle_y`, incluida la primera calle. Solo `BajadaXallitic` tiene un perfil curvo para el lanzamiento. Ajusta `largo_tramo`, `calle_y`, `semilla_terreno`, `dificultad_metros` y las separaciones en `Config`. Las rampas y los toldos dan impulso una sola vez por carrera.
 
 ## Pruebas (`pruebas/`)
 
@@ -240,6 +248,7 @@ Se ejecutan desde la terminal y nunca tocan tu guardado: cada una usa su propio 
 | `ruta.gd` | Llegada al CUCosta, límite de terreno, recompensas únicas y selección exacta de fotos por lugar |
 | `almanaque.gd` | Colección, copias independientes, carga de partidas anteriores, datos inválidos y navegación por el almanaque |
 | `balance.gd` | 54 carreras sin controles y la progresión con mejoras |
+| `impulsos.gd` | Distribución de melones y comparación de alcance con las ayudas adicionales activas o desactivadas |
 | `vuelo.gd` | Saltos, papalotes y la ruta aérea |
 | `distribucion.gd` | Cobertura del cielo, variedad de poderes y generación reproducible sin alterar el suelo |
 | `rendimiento.gd` | Dibujo personalizado conservado al mover y girar, con actualización de equipo, rotura y cielo. Abre una ventana |
@@ -249,7 +258,7 @@ Se ejecutan desde la terminal y nunca tocan tu guardado: cada una usa su propio 
 
 `Melon.iniciar_slam()` activa el picado con S o flecha abajo. `_integrate_forces()` impone la velocidad de caída y resuelve el fallo contra el suelo con `Config.slam_conserva`. `acertar_slam()` aplica el impulso y termina el picado. No consume cargas de salto.
 
-`mundo/ayudas/melon_rodante.gd` dibuja cada objetivo con `Aspecto` y lo mueve con una física propia sobre `Tramo.altura()`, sin cuerpo rígido ni colisiones. En el suelo suma la gravedad a lo largo de la pendiente y un empuje hacia su `rapidez`, ajustada según su distancia al jugador (`Config.ritmo_melones`). Despega cuando el suelo cae más rápido que su arco, rebota al caer con el rebote de su tamaño y salta a intervalos aleatorios con su propio `rng`. `avanzar()` recibe la posición y la velocidad del jugador. Si el jugador está a más de `Config.vuelo_melones_desde` sobre el suelo y a menos de `Config.alcance_vuelo_melones`, `_altura_vuelo()` fija una altura por debajo de él (`Config.bajo_jugador_melones`). `_volar()` iguala su avance y `_impulsar_hacia()` lo sube cada vez que cae por debajo de esa altura. No hay vuelo si el jugador cae en picado o si el rival ya está `usado`. `GeneradorTerreno` los conserva como hijos propios, porque cruzan entre tramos. Usa un generador aleatorio separado para conservar la distribución previa del camino. `Recorrido` llama a `preparar_corredores(bajada)` al preparar la salida y a `actualizar_melones()` durante la bajada y la carrera. Los seis rivales arrancan con `_lanzar()` y no aparecen otros al generar terreno. Cada objetivo comprueba el recorrido relativo de ambos centros entre pasos para detectar golpes desde arriba, incluso a alta velocidad. Un objetivo acertado queda `usado`, se achata y frena un momento, y sigue corriendo. Solo se liberan los que quedan atrás. `margen_slam()` calcula una tolerancia horizontal de 16 a 40 píxeles según la velocidad relativa. El barrido conserva el radio vertical para rechazar golpes desde abajo.
+`mundo/ayudas/melon_rodante.gd` dibuja cada objetivo con `Aspecto` y lo mueve con una física propia sobre `Tramo.altura()`, sin cuerpo rígido ni colisiones. En el suelo suma la gravedad a lo largo de la pendiente y un empuje hacia su `rapidez`, ajustada según su distancia al jugador (`Config.ritmo_melones`). Despega cuando el suelo cae más rápido que su arco, rebota al caer con el rebote de su tamaño y salta a intervalos aleatorios con su propio `rng`. `avanzar()` recibe la posición y la velocidad del jugador. Si el jugador está a más de `Config.vuelo_melones_desde` sobre el suelo y a menos de `Config.alcance_vuelo_melones`, `_altura_vuelo()` fija una altura por debajo de él (`Config.bajo_jugador_melones`). `_volar()` iguala su avance y `_impulsar_hacia()` lo sube cada vez que cae por debajo de esa altura. No hay vuelo si el jugador cae en picado o si el rival ya está `usado`. `GeneradorTerreno` los conserva como hijos propios, porque cruzan entre tramos. Usa un generador aleatorio separado para conservar la distribución previa del camino. `Recorrido` llama a `preparar_corredores(bajada)` al preparar la salida y a `actualizar_melones()` durante la bajada y la carrera. Los seis rivales arrancan con `_lanzar()`. Después, `_poner_melones()` crea apoyos adicionales por delante del jugador, desde `Config.primer_melon_camino_x` y separados según `Config.separacion_melones`; con `Config.prob_pareja_melones` llega un segundo melón poco después, para encadenar slams. Nunca los crea más allá de la meta ni duplica los existentes al actualizar el mismo punto. Cada objetivo comprueba el recorrido relativo de ambos centros entre pasos para detectar golpes desde arriba, incluso a alta velocidad. Un objetivo acertado queda `usado`, se achata y frena un momento, y sigue corriendo. Cada rival tiene un `tipo` de `Config.tipos_melones` (tonto, normal o listo) que `GeneradorTerreno._elegir_tipo_melon()` sortea con más tontos al inicio y más listos al final. Los tontos van lentos, tropiezan, no suben al aire y tienen más margen de slam. Los listos van más rápido y, la primera vez que un picado los apunta, pueden esquivar con `_esquivar()`. Al aplastar un rival, o al romperse el jugador, `Sonidos.muerte()` (`globales/sonidos.gd`) toca al azar `recursos/sonidos/slash.wav` o `splash.wav`. Solo se liberan los que quedan atrás. `margen_slam()` calcula una tolerancia horizontal de 16 a 40 píxeles según la velocidad relativa. El barrido conserva el radio vertical para rechazar golpes desde abajo.
 
 `prevision_slam()` estima cuándo llega el picado al objetivo y cuánto desvío horizontal quedaría. Si el objetivo está en el aire, sigue su arco hasta el suelo. `alcance_slam()` suma los radios, el margen y lo que `Config.slam_guiado` alcanza a corregir en ese tiempo. `GeneradorTerreno.objetivo_slam()` elige el objetivo con menor desvío dentro de ese alcance. Durante el picado, `_guiar_slam()` pide con `Melon.empujar()` una corrección horizontal limitada y marca el objetivo con `en_mira`, que le impide saltar o impulsar un rebote. El HUD llama a `objetivo_slam()` con `Config.slam_confianza_aviso` para avisar solo de caídas con holgura. `actualizar_melones()` usa esa misma consulta para poner `Marca.ACERTABLE` en el objetivo, y durante el picado pone `Marca.FIJADO` en el que devuelve `_guiar_slam()`. `MelonRodante._draw()` dibuja la mira y el soplo de sus impulsos.
 

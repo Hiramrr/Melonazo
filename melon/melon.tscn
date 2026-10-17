@@ -1,7 +1,9 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://melon/melon.gd" id="1"]
 [ext_resource type="Script" path="res://melon/estela.gd" id="2"]
+[ext_resource type="Texture2D" path="res://recursos/poderes/pizza.png" id="tex_pizza"]
+[ext_resource type="Texture2D" path="res://recursos/poderes/explosion.png" id="tex_explosion"]
 [sub_resource type="CircleShape2D" id="Cuerpo"]
 radius = 22.0
 
@@ -16,6 +18,8 @@ contact_monitor = true
 max_contacts_reported = 4
 can_sleep = false
 script = ExtResource("1")
+textura_pizza = ExtResource("tex_pizza")
+textura_explosion = ExtResource("tex_explosion")
 
 [node name="Cuerpo" type="CollisionShape2D" parent="."]
 shape = SubResource("Cuerpo")
@@ -34,7 +38,7 @@ disabled = true
 
 [node name="Aspecto" type="Sprite2D" parent="."]
 show_behind_parent = true
-texture_filter = 2
+texture_filter = 1
 scale = Vector2(0.5, 0.5)
 
 [node name="Lienzo" type="SubViewport" parent="."]

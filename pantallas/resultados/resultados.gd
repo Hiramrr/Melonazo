@@ -34,6 +34,7 @@ var _filas_animadas: Array[Control] = []
 
 func _ready() -> void:
 	var r: Dictionary = Juego.ultimo
+	Musica.tocar(Musica.MENU if bool(r.get("llegada", false)) else Musica.DERROTA)
 	lbl_titulo.text = "¡Se rompió el melón!" if bool(r.get("roto", false)) else "¡Qué buena rodada!"
 	if bool(r.get("llegada", false)):
 		lbl_titulo.text = "¡Llegaste al CUCosta!"
@@ -79,16 +80,7 @@ func _animar(metros: int, total: int, record_nuevo: bool) -> void:
 
 ## Etiqueta amarilla, inclinada y con borde: el sello de "¡Nuevo récord!".
 func _estilo_sello(l: Label) -> void:
-	var s := StyleBoxFlat.new()
-	s.bg_color = Color("ffc83d")
-	s.set_border_width_all(4)
-	s.border_width_bottom = 7
-	s.border_color = Color("203d38")
-	s.set_corner_radius_all(14)
-	s.set_content_margin_all(10)
-	s.content_margin_bottom = 14
-	l.add_theme_stylebox_override("normal", s)
-	l.add_theme_font_size_override("font_size", 20)
+	l.theme_type_variation = &"SelloRecord"
 	l.rotation_degrees = -8.0
 
 
@@ -107,12 +99,14 @@ func _generar_desglose(r: Dictionary) -> void:
 		_linea("%d lugares nuevos en el pasaporte" % nuevas.size())
 	if int(r.get("poderes", 0)) > 0:
 		_linea("Poderes encontrados: %d" % int(r.get("poderes", 0)))
+	if int(r.get("valentinas", 0)) > 0:
+		_linea("Salsas Valentina usadas: %d" % int(r["valentinas"]))
 
 
 ## Fila "concepto ........ (moneda) cantidad".
 func _fila(concepto: String, cantidad: int) -> void:
 	var fila := HBoxContainer.new()
-	fila.add_theme_constant_override("separation", 6)
+	fila.theme_type_variation = &"FilaIconos"
 	lista_aplausos.add_child(fila)
 	var etiqueta := Label.new()
 	etiqueta.text = concepto
@@ -120,8 +114,7 @@ func _fila(concepto: String, cantidad: int) -> void:
 	fila.add_child(etiqueta)
 	fila.add_child(Iconos.imagen(Iconos.APLAUSO, 22.0))
 	var valor := Label.new()
-	valor.theme_type_variation = &"Subtitulo"
-	valor.add_theme_font_size_override("font_size", 19)
+	valor.theme_type_variation = &"ValorResultado"
 	valor.text = str(cantidad)
 	valor.custom_minimum_size.x = 56
 	valor.horizontal_alignment = HORIZONTAL_ALIGNMENT_RIGHT
@@ -133,8 +126,7 @@ func _fila(concepto: String, cantidad: int) -> void:
 func _linea(texto: String) -> Label:
 	var l := Label.new()
 	l.text = texto
-	l.theme_type_variation = &"Suave"
-	l.add_theme_font_size_override("font_size", 14)
+	l.theme_type_variation = &"Nota"
 	l.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lista_aplausos.add_child(l)
 	_filas_animadas.append(l)

@@ -6,8 +6,6 @@ extends Control
 ##
 ## Usa la letra gruesa de la variación Titulo del tema, con contorno y sombra.
 
-const TINTA := Color("203d38")
-const CREMA := Color("fff9ec")
 ## El melón del logo siempre se ve igual, sin importar el que tenga el jugador.
 const MELON_LOGO := {"piel": 0, "patron": 0, "cara": 0, "detalle": 1, "cuerpo_propio": "",
 	"rayas_propio": "", "dibujo": []}
@@ -23,19 +21,28 @@ const MELON_LOGO := {"piel": 0, "patron": 0, "cara": 0, "detalle": 1, "cuerpo_pr
 		indice_melon = valor
 		update_minimum_size()
 		queue_redraw()
-@export var tamano := 128:
-	set(valor):
-		tamano = valor
-		update_minimum_size()
-		queue_redraw()
-@export var separacion := 4.0
-@export var contorno := 16
+var tamano: int:
+	get: return get_theme_font_size("font_size")
+var separacion: int:
+	get: return get_theme_constant("separacion")
+var contorno: int:
+	get: return get_theme_constant("outline_size")
 
 var _t := 0.0
 var _giro := 0.0
 var _vel_giro := 1.2                   # radianes por segundo
 var _salto := 0.0
 var _vel_salto := 0.0
+
+
+func _init() -> void:
+	theme_type_variation = &"LogoMenu"
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_THEME_CHANGED:
+		update_minimum_size()
+		queue_redraw()
 
 
 func _ready() -> void:
@@ -53,7 +60,7 @@ func _process(delta: float) -> void:
 
 
 func _fuente() -> Font:
-	return get_theme_font("font", "Titulo")
+	return get_theme_font("font")
 
 
 func _ancho_letra(i: int) -> float:
@@ -98,6 +105,9 @@ func _gui_input(event: InputEvent) -> void:
 
 func _draw() -> void:
 	var fuente := _fuente()
+	var tinta := get_theme_color("font_outline_color")
+	var crema := get_theme_color("font_color")
+	var sombra := Vector2(0, get_theme_constant("shadow_offset_y"))
 	var x := contorno + 0.0
 	for i in texto.length():
 		var ancho := _ancho_letra(i)
@@ -105,18 +115,18 @@ func _draw() -> void:
 			var p := Vector2(x, _linea_base() + _ola(i))
 			var letra := texto[i]
 			# Sombra, contorno y relleno.
-			draw_string_outline(fuente, p + Vector2(0, 9), letra, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano, contorno, TINTA)
-			draw_string(fuente, p + Vector2(0, 9), letra, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano, TINTA)
-			draw_string_outline(fuente, p, letra, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano, contorno, TINTA)
-			draw_string(fuente, p, letra, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano, CREMA)
+			draw_string_outline(fuente, p + sombra, letra, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano, contorno, tinta)
+			draw_string(fuente, p + sombra, letra, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano, tinta)
+			draw_string_outline(fuente, p, letra, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano, contorno, tinta)
+			draw_string(fuente, p, letra, HORIZONTAL_ALIGNMENT_LEFT, -1, tamano, crema)
 		x += ancho
 	var c := _centro_melon()
 	var r := _radio()
-	draw_circle(c + Vector2(0, 9), r + contorno * 0.5, TINTA)
-	draw_circle(c, r + contorno * 0.5, TINTA)
+	Sprites.disco(self, c + sombra, r + contorno * 0.5, tinta)
+	Sprites.disco(self, c, r + contorno * 0.5, tinta)
 	draw_set_transform(c, _giro)
 	if Engine.is_editor_hint():
-		draw_circle(Vector2.ZERO, r, Color("a6cc62"))
+		Sprites.disco(self, Vector2.ZERO, r, Color("a6cc62"))
 	else:
 		Aspecto.dibujar_melon(self, r, [], false, false, MELON_LOGO)
 	draw_set_transform(Vector2.ZERO)

@@ -47,7 +47,7 @@ func refrescar() -> void:
 	for i in botones_tamano.size():
 		var b := botones_tamano[i]
 		b.text = Config.tamanos[i]["nombre"]
-		b.theme_type_variation = &"Seleccion" if i == Juego.tamano else &""
+		b.theme_type_variation = &"SeleccionMediana" if i == Juego.tamano else &"BotonMediano"
 	lbl_desc_tamano.text = Config.tamanos[Juego.tamano]["desc"]
 	if not linea_nombre.has_focus():
 		linea_nombre.text = ComunTaller.nombre_melon()
@@ -62,7 +62,7 @@ func refrescar() -> void:
 
 func _crear_tamanos() -> void:
 	for i in Config.tamanos.size():
-		var b := ComunTaller.boton(Config.tamanos[i]["nombre"], 18)
+		var b := ComunTaller.boton(Config.tamanos[i]["nombre"], &"BotonMediano")
 		b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 		b.custom_minimum_size.y = 48
 		b.pressed.connect(_elegir_tamano.bind(i))
@@ -103,7 +103,7 @@ func _agregar_colores() -> void:
 		picker.popup_closed.connect(Juego.guardar)  # se guarda al cerrar, no en cada arrastre
 		fila.add_child(picker)
 		_colores.append(picker)
-	var original := ComunTaller.boton("Original", 15)
+	var original := ComunTaller.boton("Original", &"BotonSecundario")
 	original.tooltip_text = "Usar los colores de la piel"
 	original.pressed.connect(_colores_de_piel)
 	fila.add_child(original)

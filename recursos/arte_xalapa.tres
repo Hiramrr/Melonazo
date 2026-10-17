@@ -1,10 +1,25 @@
 [gd_resource type="Resource" script_class="ArteXalapa" format=3 uid="uid://dehndksavubet"]
 
 [ext_resource type="Script" uid="uid://boqq0ba3sbon" path="res://recursos/arte_xalapa.gd" id="1"]
-[ext_resource type="Texture2D" uid="uid://h0pwjxkao7r" path="res://recursos/fotos/catedral.jpg" id="foto_catedral"]
-[ext_resource type="Texture2D" uid="uid://bu54om8wfffo7" path="res://recursos/fotos/juarez.jpg" id="foto_juarez"]
-[ext_resource type="Texture2D" uid="uid://dqddc25sk3r7n" path="res://recursos/fotos/lagos.jpg" id="foto_lagos"]
-[ext_resource type="Texture2D" uid="uid://bw7ycq2uk6yiq" path="res://recursos/fotos/xallitic.jpg" id="foto_xallitic"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/xallitic.jpg" id="foto_xallitic"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/juarez.jpg" id="foto_juarez"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/lagos.jpg" id="foto_lagos"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/aguila.jpg" id="foto_aguila"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/fei.jpg" id="foto_fei"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/macuiltepetl.jpg" id="foto_macuiltepetl"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/max.jpg" id="foto_max"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/experimental.jpg" id="foto_experimental"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/joya.jpg" id="foto_joya"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/bosques_perote.jpg" id="foto_bosques_perote"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/cofre_perote.jpg" id="foto_cofre_perote"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/pico_orizaba.jpg" id="foto_pico_orizaba"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/estrella_puebla.jpg" id="foto_estrella_puebla"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/escaleras_tlaxcala.jpg" id="foto_escaleras_tlaxcala"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/angel.jpg" id="foto_angel"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/teotihuacan.jpg" id="foto_teotihuacan"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/monarca.jpg" id="foto_monarca"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/costa.jpg" id="foto_costa"]
+[ext_resource type="Texture2D" path="res://recursos/fotos/cucosta.jpg" id="foto_cucosta"]
 
 [resource]
 script = ExtResource("1")
@@ -17,36 +32,194 @@ credito_paisaje = {
 "url_licencia": "https://creativecommons.org/licenses/by-sa/4.0"
 }
 fotografias = {
-"catedral": {
-"autor": "Soundtrckk",
-"fuente": "https://commons.wikimedia.org/wiki/File:Catedral_Metropolitana_de_Xalapa.jpg",
-"licencia": "CC BY-SA 3.0",
-"nombre": "Catedral de Xalapa",
-"textura": ExtResource("foto_catedral"),
-"url_licencia": "https://creativecommons.org/licenses/by-sa/3.0"
-},
-"juarez": {
-"autor": "Burkhard Mücke",
-"fuente": "https://commons.wikimedia.org/wiki/File:Vista_del_Pico_de_Orizaba_desde_Parque_Ju%C3%A1rez_01.jpg",
-"licencia": "CC BY-SA 4.0",
-"nombre": "Vista desde Parque Juárez",
-"textura": ExtResource("foto_juarez"),
-"url_licencia": "https://creativecommons.org/licenses/by-sa/4.0"
-},
-"lagos": {
-"autor": "Adam Jones from Kelowna, BC, Canada",
-"fuente": "https://commons.wikimedia.org/wiki/File:Park_Scene_-_Paseo_de_los_Lagos_-_Xalapa_-_Veracruz_-_Mexico_-_04_(15470840693).jpg",
-"licencia": "CC BY-SA 2.0",
-"nombre": "Paseo de Los Lagos",
-"textura": ExtResource("foto_lagos"),
-"url_licencia": "https://creativecommons.org/licenses/by-sa/2.0"
-},
 "xallitic": {
+"nombre": "Xallitic",
+"dato_curioso": "En 1778 se hicieron obras para conducir agua de este barrio hacia la Plaza del Rey.",
+"fuente_dato": "https://xalapa.gob.mx/blog/2023/08/15/xallitic-mas-de-200-anos-de-patrimonio-cultural/",
 "autor": "Juan Javier Mora-Rivera",
 "fuente": "https://commons.wikimedia.org/wiki/File:Bajos_del_Puente_de_Xallitic,_Xalapa,_Veracruz.jpg",
 "licencia": "CC BY-SA 4.0",
-"nombre": "Puente de Xallitic",
-"textura": ExtResource("foto_xallitic"),
-"url_licencia": "https://creativecommons.org/licenses/by-sa/4.0"
+"url_licencia": "https://creativecommons.org/licenses/by-sa/4.0",
+"textura": ExtResource("foto_xallitic")
+},
+"juarez": {
+"nombre": "Parque Juárez",
+"dato_curioso": "El parque ocupa el lugar donde estuvo un convento franciscano del siglo XVI.",
+"fuente_dato": "https://www.veracruz.gob.mx/turismo/cultura-historia/",
+"autor": "ProtoplasmaKid",
+"fuente": "https://commons.wikimedia.org/wiki/File:Parque_Ju%C3%A1rez%2C_Xalapa_-_1.jpg",
+"licencia": "CC BY-SA 4.0",
+"url_licencia": "https://creativecommons.org/licenses/by-sa/4.0",
+"textura": ExtResource("foto_juarez")
+},
+"lagos": {
+"nombre": "Paseo de los Lagos",
+"dato_curioso": "En 1837 se solicitó construir un dique para aprovechar el agua del río Santiago en una fábrica textil.",
+"fuente_dato": "https://www.uv.mx/cluv/historia-2/",
+"autor": "Adam Jones from Kelowna, BC, Canada",
+"fuente": "https://commons.wikimedia.org/wiki/File:Park_Scene_-_Paseo_de_los_Lagos_-_Xalapa_-_Veracruz_-_Mexico_-_04_(15470840693).jpg",
+"licencia": "CC BY-SA 2.0",
+"url_licencia": "https://creativecommons.org/licenses/by-sa/2.0",
+"textura": ExtResource("foto_lagos")
+},
+"aguila": {
+"nombre": "El Águila",
+"dato_curioso": "La escultura se colocó en 1926, antes de que existiera la Universidad Veracruzana. La UV celebró su centenario en 2026.",
+"fuente_dato": "https://www.uv.mx/prensa/general/uv-conmemora-un-siglo-de-historia-del-aguila-de-xalapa/",
+"autor": "Diario de Xalapa",
+"fuente": "https://oem.com.mx/diariodexalapa/tendencias/atractivos-turisticos-de-xalapa-el-aguila-de-los-lagos-cual-es-su-historia-15228078",
+"licencia": "Créditos",
+"url_licencia": "https://oem.com.mx/diariodexalapa/tendencias/atractivos-turisticos-de-xalapa-el-aguila-de-los-lagos-cual-es-su-historia-15228078",
+"textura": ExtResource("foto_aguila")
+},
+"fei": {
+"nombre": "Facultad de Estadística e Informática",
+"dato_curioso": "La FEI inició en 1966 con Técnico en Estadística. Aquí estudian Ingeniería en Sistemas y Tecnologías de la Información los integrantes de ListiStar.",
+"fuente_dato": "https://www.uv.mx/fei/historia/",
+"autor": "Koffermejia",
+"fuente": "https://commons.wikimedia.org/wiki/File:Entrada_de_la_Facultad_de_Estad%C3%ADstica_e_Inform%C3%A1tica_de_la_universidad_veracruzana_(cropped).jpg",
+"licencia": "CC BY-SA 4.0",
+"url_licencia": "https://creativecommons.org/licenses/by-sa/4.0",
+"textura": ExtResource("foto_fei")
+},
+"macuiltepetl": {
+"nombre": "Cerro de Macuiltépetl",
+"dato_curioso": "Este cerro es un volcán monogenético, formado durante un solo episodio eruptivo.",
+"fuente_dato": "https://oem.com.mx/diariodexalapa/ciencia-y-salud/historia-del-cerro-de-macuiltepetl-en-xalapa-todo-sobre-sus-inicios-15691523",
+"autor": "panza.rayada",
+"fuente": "https://commons.wikimedia.org/wiki/File:Cerro_Macuilt%C3%A9petl_-_panoramio.jpg",
+"licencia": "CC BY-SA 3.0",
+"url_licencia": "https://creativecommons.org/licenses/by-sa/3.0",
+"textura": ExtResource("foto_macuiltepetl")
+},
+"max": {
+"nombre": "Museo de Antropología de Xalapa",
+"dato_curioso": "El MAX tiene antecedentes desde 1937. Su edificio actual se construyó en los años ochenta y conserva esculturas olmecas.",
+"fuente_dato": "https://www.uv.mx/max/historia-del-max/",
+"autor": "ProtoplasmaKid",
+"fuente": "https://commons.wikimedia.org/wiki/File:Fachada_del_Museo_de_Antropolog%C3%ADa_de_Xalapa_02.jpg",
+"licencia": "CC BY-SA 4.0",
+"url_licencia": "https://creativecommons.org/licenses/by-sa/4.0",
+"textura": ExtResource("foto_max")
+},
+"experimental": {
+"nombre": "Bachilleres Experimental",
+"dato_curioso": "Dos integrantes de ListiStar estudiaron en la Escuela de Bachilleres Experimental.",
+"fuente_dato": "https://experimentalmixta.edu.mx/",
+"autor": "Escuela de Bachilleres Experimental",
+"fuente": "https://experimentalmixta.edu.mx/",
+"licencia": "Créditos",
+"url_licencia": "https://experimentalmixta.edu.mx/",
+"textura": ExtResource("foto_experimental")
+},
+"joya": {
+"nombre": "La Joya",
+"dato_curioso": "Esta comunidad de Acajete es conocida por sus quesos artesanales. Elaborarlos y venderlos sostiene a muchas familias de la localidad.",
+"fuente_dato": "https://es.wikipedia.org/wiki/La_Joya_(Veracruz)",
+"autor": "Documento de ListiStar",
+"fuente": "https://www.instagram.com/p/DbLufKEDNr-/",
+"licencia": "Créditos",
+"url_licencia": "https://www.instagram.com/p/DbLufKEDNr-/",
+"textura": ExtResource("foto_joya")
+},
+"bosques_perote": {
+"nombre": "Bosques rumbo a Perote",
+"dato_curioso": "Los bosques de pinos y oyameles de esta región ayudan a captar y conservar el agua que abastece a poblaciones cercanas.",
+"fuente_dato": "https://www.gob.mx/semarnat/articulos/parque-nacional-cofre-de-perote-alberga-una-de-las-montanas-mas-altas-de-mexico",
+"autor": "Documento de ListiStar",
+"fuente": "",
+"licencia": "",
+"url_licencia": "",
+"textura": ExtResource("foto_bosques_perote")
+},
+"cofre_perote": {
+"nombre": "Cofre de Perote",
+"dato_curioso": "También se llama Nauhcampatépetl, Cerro de los Cuatro Costados. Es parque nacional desde el 4 de mayo de 1937.",
+"fuente_dato": "https://descubreanp.conanp.gob.mx/es/conanp/ANP?suri=37",
+"autor": "Lee Siebert, Smithsonian Institution",
+"fuente": "https://commons.wikimedia.org/wiki/File:Cofre_de_Perote.jpg",
+"licencia": "Dominio público",
+"url_licencia": "https://commons.wikimedia.org/wiki/File:Cofre_de_Perote.jpg",
+"textura": ExtResource("foto_cofre_perote")
+},
+"pico_orizaba": {
+"nombre": "Pico de Orizaba",
+"dato_curioso": "Citlaltépetl significa Cerro de la Estrella. Es la montaña más alta de México y conserva una zona glaciar en su parte elevada.",
+"fuente_dato": "https://conanp.gob.mx/conanp/dominios/regiongolfo/pico_orizaba.php",
+"autor": "Andy García García",
+"fuente": "https://commons.wikimedia.org/wiki/File:Pico_de_Orizaba,_Veracruz..JPG",
+"licencia": "CC BY-SA 4.0",
+"url_licencia": "https://creativecommons.org/licenses/by-sa/4.0",
+"textura": ExtResource("foto_pico_orizaba")
+},
+"estrella_puebla": {
+"nombre": "Estrella de Puebla",
+"dato_curioso": "Esta rueda de observación alcanza 80 metros de altura y tiene 54 cabinas. Obtuvo un Récord Guinness por su estructura transportable.",
+"fuente_dato": "https://sendela.mx/index.html",
+"autor": "Koffermejia",
+"fuente": "https://commons.wikimedia.org/wiki/File:Panoramica_Estrella_de_Puebla.jpg",
+"licencia": "CC BY-SA 4.0",
+"url_licencia": "https://creativecommons.org/licenses/by-sa/4.0",
+"textura": ExtResource("foto_estrella_puebla")
+},
+"escaleras_tlaxcala": {
+"nombre": "Escaleras eléctricas de Tlaxcala",
+"dato_curioso": "La inauguración de estas escaleras en Apizaco, en abril de 2017, se volvió viral y provocó memes en todo México.",
+"fuente_dato": "https://www.eluniversal.com.mx/articulo/estados/2017/04/5/llegan-las-primeras-escaleras-electricas-tlaxcala/",
+"autor": "Jesús Lima · El Sol de Tlaxcala",
+"fuente": "https://verne.elpais.com/verne/2017/04/06/mexico/1491513451_431106.html",
+"licencia": "Créditos",
+"url_licencia": "https://verne.elpais.com/verne/2017/04/06/mexico/1491513451_431106.html",
+"textura": ExtResource("foto_escaleras_tlaxcala")
+},
+"angel": {
+"nombre": "Ángel de la Independencia",
+"dato_curioso": "La figura es la Victoria Alada, inspirada en Niké. La columna se inauguró en 1910 para celebrar el centenario de la Independencia.",
+"fuente_dato": "https://www.inah.gob.mx/index.php/foto-del-dia/luz-libertad-e-identidad-la-victoria-alada-de-reforma",
+"autor": "Ulises00",
+"fuente": "https://commons.wikimedia.org/wiki/File:Angel_de_la_independencia_M%C3%A9xico.JPG",
+"licencia": "Dominio público",
+"url_licencia": "https://commons.wikimedia.org/wiki/File:Angel_de_la_independencia_M%C3%A9xico.JPG",
+"textura": ExtResource("foto_angel")
+},
+"teotihuacan": {
+"nombre": "Teotihuacán",
+"dato_curioso": "La Pirámide del Sol mide unos 65 metros de altura. Los mexicas dieron su nombre actual a la ciudad siglos después de su construcción.",
+"fuente_dato": "https://visitateotihuacan.inah.gob.mx/explora/piramide-del-sol/",
+"autor": "Gzzz",
+"fuente": "https://commons.wikimedia.org/wiki/File:Teotihuacan_Pir%C3%A1mide_del_Sol.jpg",
+"licencia": "CC BY-SA 4.0",
+"url_licencia": "https://creativecommons.org/licenses/by-sa/4.0",
+"textura": ExtResource("foto_teotihuacan")
+},
+"monarca": {
+"nombre": "Santuario de la Mariposa Monarca",
+"dato_curioso": "Cada otoño, las monarca viajan hasta 4200 kilómetros para pasar el invierno en México. Su reserva es Patrimonio Mundial desde 2008.",
+"fuente_dato": "https://www.unesco.org/mab/50anniversary/es/mariposa-monarca",
+"autor": "Lunita28mx",
+"fuente": "https://commons.wikimedia.org/wiki/File:Angangueo_bosque_Mariposas_Monarca_Michoacan.jpg",
+"licencia": "CC BY-SA 4.0",
+"url_licencia": "https://creativecommons.org/licenses/by-sa/4.0",
+"textura": ExtResource("foto_monarca")
+},
+"costa": {
+"nombre": "Puerto Vallarta",
+"dato_curioso": "Antes se llamaba Las Peñas. En 1918 recibió el nombre de Puerto Vallarta al convertirse en municipio.",
+"fuente_dato": "https://transparencia.puertovallarta.gob.mx/Ciudad/historia.php",
+"autor": "Stan Shebs",
+"fuente": "https://commons.wikimedia.org/wiki/File:Puerto_Vallarta_panorama_1.jpg",
+"licencia": "CC BY-SA 3.0",
+"url_licencia": "https://creativecommons.org/licenses/by-sa/3.0",
+"textura": ExtResource("foto_costa")
+},
+"cucosta": {
+"nombre": "Centro Universitario de la Costa",
+"dato_curioso": "El CUCosta nació en 1994. Sus primeras carreras fueron Turismo, Administración, Contaduría y Derecho.",
+"fuente_dato": "https://cuc.udg.mx/historia",
+"autor": "Universidad de Guadalajara",
+"fuente": "https://asinea109.cuc.udg.mx/",
+"licencia": "© UdeG",
+"url_licencia": "https://asinea109.cuc.udg.mx/",
+"textura": ExtResource("foto_cucosta")
 }
 }

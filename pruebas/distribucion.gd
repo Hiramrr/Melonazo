@@ -52,7 +52,7 @@ func generar(revisar: bool) -> Dictionary:
 	var monedas_bajas: Array[float] = []
 	var monedas: Array[Vector2] = []
 	var poderes_bajos: Array[float] = []
-	var recargas: Array = []               # [x, tipo]
+	var pajaros: Array[Vector2] = []
 	for tramo in terreno.tramos:
 		suelo.append([tramo.puntos, tramo.empedrado, tramo.casas])
 		for contenedor in ["Obstaculos", "Coleccionables", "Publico"]:
@@ -67,10 +67,7 @@ func generar(revisar: bool) -> Dictionary:
 					if revisar:
 						comprobar(altura >= config.altura_aplausos.x and altura <= config.altura_aplausos.y + 25.0, "Las monedas bajas quedan al alcance de un salto corto")
 				elif nodo.scene_file_path.ends_with("/poder.tscn"):
-					if nodo.tipo in config.orden_recargas:
-						recargas.append([nodo.position.x, nodo.tipo])
-					else:
-						poderes_bajos.append(nodo.position.x)
+					poderes_bajos.append(nodo.position.x)
 					if revisar:
 						comprobar(altura >= config.altura_poderes.x and altura <= config.altura_poderes.y, "Los poderes quedan visibles y requieren saltar")
 		for p in tramo.papalotes:
@@ -83,6 +80,9 @@ func generar(revisar: bool) -> Dictionary:
 				comprobar(altura_papalote >= config.altura_papalotes.x - 0.01 and altura_papalote <= config.altura_papalotes.y + 0.01, "Las ayudas ascienden sin salir del cielo jugable")
 			ultimo_x = p.position.x
 		for nodo in tramo.get_node("Aire").get_children():
+			if nodo.scene_file_path.ends_with("/pajaro.tscn"):
+				pajaros.append(nodo.position)
+				continue
 			var es_poder: bool = nodo.scene_file_path.ends_with("/poder.tscn")
 			if nodo.scene_file_path.ends_with("/aplauso.tscn"):
 				monedas.append(nodo.position)
@@ -114,15 +114,11 @@ func generar(revisar: bool) -> Dictionary:
 			comprobar(monedas_bajas[i] - monedas_bajas[i - 1] < 2000.0, "Las monedas mantienen grupos separados a lo largo de la calle")
 		for i in range(1, poderes_bajos.size()):
 			comprobar(poderes_bajos[i] - poderes_bajos[i - 1] <= config.separacion_poderes.y, "Los poderes mantienen su frecuencia entre tramos")
-		comprobar(recargas.size() > 0 and recargas[0][0] < 2000.0, "La primera recarga aparece antes de doscientos metros")
-		for i in recargas.size():
-			comprobar(recargas[i][1] == config.orden_recargas[i % config.orden_recargas.size()], "Jamaica y miel se alternan")
-			for x in poderes_bajos:
-				comprobar(absf(x - recargas[i][0]) >= 200.0, "Las recargas no quedan encimadas con otros poderes")
-			if i > 0:
-				comprobar(recargas[i][0] - recargas[i - 1][0] <= config.separacion_recargas.y + 250.0, "Las recargas mantienen su frecuencia entre tramos")
+		comprobar(not pajaros.is_empty() and pajaros[0].x >= config.primer_pajaro_x, "Los pájaros aparecen después de la salida")
+		for pajaro in pajaros:
+			comprobar(pajaro.x <= config.meta_m * config.px_por_metro + 200.0, "No hay pájaros después de la meta")
 		comprobar(papalotes.size() < terreno._fin.x / 900.0, "La densidad de papalotes baja respecto a la ruta anterior")
-		comprobar(tipos.size() == config.orden_poderes.size(), "Los cuatro poderes aparecen en el cielo")
+		comprobar(tipos.size() == config.orden_poderes.size(), "Todos los poderes aparecen en el cielo")
 		for ruta in rutas:
 			ruta.sort()
 			comprobar(ruta.size() >= 18, "Todas las alturas tienen puntos a lo largo del recorrido")

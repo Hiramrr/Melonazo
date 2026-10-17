@@ -19,7 +19,7 @@ func _verificar() -> void:
 	juego.tamano = 1
 	juego.accesorios = []
 	assert(config.meta_m > config.costa_m and config.costa_m > config.salida_xalapa_m)
-	assert(config.salida_xalapa_m > 1350.0, "Debe quedar espacio de Xalapa después del Macuiltépetl")
+	assert(config.salida_xalapa_m == float(config.postales[8]["metros"]), "La salida de Xalapa empieza en La Joya")
 	var anterior := -1.0
 	var ids: Array = []
 	for postal in config.postales:
@@ -27,6 +27,8 @@ func _verificar() -> void:
 		assert(not postal["id"] in ids, "Los lugares deben tener identificadores distintos")
 		ids.append(postal["id"])
 		anterior = float(postal["metros"])
+	assert(ids == ["xallitic", "juarez", "lagos", "aguila", "fei", "macuiltepetl", "max", "experimental", "joya", "bosques_perote", "cofre_perote", "pico_orizaba", "estrella_puebla", "escaleras_tlaxcala", "angel", "teotihuacan", "monarca", "costa", "cucosta"], "La ruta debe seguir los 19 lugares elegidos en el PDF")
+	assert(arte.fotografias.keys() == ids.filter(func(id: String) -> bool: return id != "cucosta"), "Cada lugar elegido debe tener una fotografía, salvo la retirada para esta prueba")
 	assert(config.postales[-1]["id"] == "cucosta" and anterior == config.meta_m)
 	change_scene_to_file("res://pantallas/recorrido/recorrido.tscn")
 	await process_frame
@@ -66,17 +68,25 @@ func _verificar() -> void:
 	assert(not juego.ultimo["llegada"], "Un intento corto no cuenta como llegada")
 	juego.registrar_intento(config.meta_m, 0, 0, true)
 	assert(not juego.ultimo["llegada"], "Un melón roto no completa el viaje")
-	for caso in [[0.0, "xallitic"], [99.9, "xallitic"], [100.0, "diamante"], [199.9, "diamante"], [200.0, "catedral"], [450.0, "berros"], [2600.0, "cucosta"]]:
-		juego.ultimo = {"distancia": caso[0]}
-		var panel = load("res://pantallas/resultados/postal_resultados.gd").new()
-		root.add_child(panel)
-		assert(panel.lugar_id == caso[1], "La postal corresponde al lugar de este intento")
-		assert(panel.con_foto == panel.arte.fotografias.has(caso[1]), "Solo se muestra la foto del lugar alcanzado")
-		if panel.con_foto:
-			assert(panel.get_node("MargenFoto/Foto/Imagen").texture == panel.arte.fotografias[caso[1]]["textura"])
-		panel.queue_free()
 	arte.fotografias = fotografias
+	for i in config.postales.size():
+		var lugar: Dictionary = config.postales[i]
+		var datos: Dictionary = fotografias[lugar["id"]]
+		assert(datos["textura"] is Texture2D and not datos["dato_curioso"].is_empty())
+		assert(datos["fuente_dato"].begins_with("https://"))
+		var limite: float = float(config.postales[i + 1]["metros"]) if i + 1 < config.postales.size() else config.meta_m + 100.0
+		for metros in [float(lugar["metros"]), limite - 0.1]:
+			juego.ultimo = {"distancia": metros}
+			var panel = load("res://pantallas/resultados/postal_resultados.gd").new()
+			root.add_child(panel)
+			assert(panel.lugar_id == lugar["id"], "La postal corresponde al lugar de este intento, aunque el récord sea mayor")
+			assert(panel.con_foto and panel.visible, "Todos los destinos tienen foto")
+			assert(panel.get_node("MargenFoto/Foto/Imagen").texture == datos["textura"])
+			assert(panel.get_node("MargenFoto/Foto/DatoCurioso").text == "Dato curioso\n" + datos["dato_curioso"])
+			for enlace in panel.find_children("*", "LinkButton", true, false):
+				assert(enlace.uri.begins_with("https://"), "No deben aparecer enlaces vacíos para las fotos aportadas por el equipo")
+			panel.queue_free()
 	DirAccess.remove_absolute(juego.archivo_guardado)
 	DirAccess.remove_absolute(juego.archivo_guardado + ".tmp")
-	print("OK: ruta ordenada, espacio en Xalapa, llegada aérea, límite de terreno y recompensas únicas.")
+	print("OK: llegada aérea, recompensas únicas y foto con dato curioso en los 19 destinos elegidos y sus límites.")
 	quit()

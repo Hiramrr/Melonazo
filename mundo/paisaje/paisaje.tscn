@@ -5,6 +5,8 @@
 [ext_resource type="Script" path="res://mundo/paisaje/capa_cielo.gd" id="2"]
 
 [node name="Paisaje" type="Node2D"]
+texture_filter = 1
+texture_repeat = 2
 z_index = -50
 script = ExtResource("1")
 

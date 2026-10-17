@@ -1,0 +1,184 @@
+{
+	"frames": {
+		"sombrero": {
+			"frame": {
+				"x": 0,
+				"y": 0,
+				"w": 96,
+				"h": 96
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 96,
+				"h": 96
+			},
+			"sourceSize": {
+				"w": 96,
+				"h": 96
+			},
+			"duration": 100
+		},
+		"llantitas": {
+			"frame": {
+				"x": 98,
+				"y": 0,
+				"w": 96,
+				"h": 96
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 96,
+				"h": 96
+			},
+			"sourceSize": {
+				"w": 96,
+				"h": 96
+			},
+			"duration": 100
+		},
+		"rebozo": {
+			"frame": {
+				"x": 196,
+				"y": 0,
+				"w": 96,
+				"h": 96
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 96,
+				"h": 96
+			},
+			"sourceSize": {
+				"w": 96,
+				"h": 96
+			},
+			"duration": 100
+		},
+		"flor": {
+			"frame": {
+				"x": 294,
+				"y": 0,
+				"w": 96,
+				"h": 96
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 96,
+				"h": 96
+			},
+			"sourceSize": {
+				"w": 96,
+				"h": 96
+			},
+			"duration": 100
+		},
+		"jarana": {
+			"frame": {
+				"x": 392,
+				"y": 0,
+				"w": 96,
+				"h": 96
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 96,
+				"h": 96
+			},
+			"sourceSize": {
+				"w": 96,
+				"h": 96
+			},
+			"duration": 100
+		},
+		"capa": {
+			"frame": {
+				"x": 490,
+				"y": 0,
+				"w": 96,
+				"h": 96
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 96,
+				"h": 96
+			},
+			"sourceSize": {
+				"w": 96,
+				"h": 96
+			},
+			"duration": 100
+		},
+		"casco": {
+			"frame": {
+				"x": 588,
+				"y": 0,
+				"w": 96,
+				"h": 96
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 96,
+				"h": 96
+			},
+			"sourceSize": {
+				"w": 96,
+				"h": 96
+			},
+			"duration": 100
+		},
+		"paraguas": {
+			"frame": {
+				"x": 686,
+				"y": 0,
+				"w": 96,
+				"h": 96
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 96,
+				"h": 96
+			},
+			"sourceSize": {
+				"w": 96,
+				"h": 96
+			},
+			"duration": 100
+		}
+	},
+	"meta": {
+		"app": "https://libresprite.github.io/",
+		"version": "conversion",
+		"image": "accesorios.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 2048,
+			"h": 96
+		},
+		"scale": "1",
+		"frameTags": []
+	}
+}

@@ -1,0 +1,184 @@
+{
+	"frames": {
+		"xallitic": {
+			"frame": {
+				"x": 0,
+				"y": 0,
+				"w": 440,
+				"h": 280
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 440,
+				"h": 280
+			},
+			"sourceSize": {
+				"w": 440,
+				"h": 280
+			},
+			"duration": 100
+		},
+		"catedral": {
+			"frame": {
+				"x": 442,
+				"y": 0,
+				"w": 440,
+				"h": 280
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 440,
+				"h": 280
+			},
+			"sourceSize": {
+				"w": 440,
+				"h": 280
+			},
+			"duration": 100
+		},
+		"juarez": {
+			"frame": {
+				"x": 884,
+				"y": 0,
+				"w": 440,
+				"h": 280
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 440,
+				"h": 280
+			},
+			"sourceSize": {
+				"w": 440,
+				"h": 280
+			},
+			"duration": 100
+		},
+		"diamante": {
+			"frame": {
+				"x": 1326,
+				"y": 0,
+				"w": 440,
+				"h": 280
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 440,
+				"h": 280
+			},
+			"sourceSize": {
+				"w": 440,
+				"h": 280
+			},
+			"duration": 100
+		},
+		"berros": {
+			"frame": {
+				"x": 0,
+				"y": 282,
+				"w": 440,
+				"h": 280
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 440,
+				"h": 280
+			},
+			"sourceSize": {
+				"w": 440,
+				"h": 280
+			},
+			"duration": 100
+		},
+		"lagos": {
+			"frame": {
+				"x": 442,
+				"y": 282,
+				"w": 440,
+				"h": 280
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 440,
+				"h": 280
+			},
+			"sourceSize": {
+				"w": 440,
+				"h": 280
+			},
+			"duration": 100
+		},
+		"usbi": {
+			"frame": {
+				"x": 884,
+				"y": 282,
+				"w": 440,
+				"h": 280
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 440,
+				"h": 280
+			},
+			"sourceSize": {
+				"w": 440,
+				"h": 280
+			},
+			"duration": 100
+		},
+		"macuiltepetl": {
+			"frame": {
+				"x": 1326,
+				"y": 282,
+				"w": 440,
+				"h": 280
+			},
+			"rotated": false,
+			"trimmed": false,
+			"spriteSourceSize": {
+				"x": 0,
+				"y": 0,
+				"w": 440,
+				"h": 280
+			},
+			"sourceSize": {
+				"w": 440,
+				"h": 280
+			},
+			"duration": 100
+		}
+	},
+	"meta": {
+		"app": "https://libresprite.github.io/",
+		"version": "conversion",
+		"image": "postales.png",
+		"format": "RGBA8888",
+		"size": {
+			"w": 2048,
+			"h": 562
+		},
+		"scale": "1",
+		"frameTags": []
+	}
+}

@@ -27,7 +27,7 @@ class Catalogo extends Node2D:
 		juego.patron = 0
 		juego.cara = 0
 		juego.detalle = 0
-		draw_rect(Rect2(0, 0, 1280, 960), Color("f6f0df"))
+		load("res://globales/sprites.gd").rectangulo(self, Rect2(0, 0, 1280, 960), Color("f6f0df"))
 		match pagina:
 			"pieles":
 				for i in config.pieles.size():
@@ -69,7 +69,7 @@ class Catalogo extends Node2D:
 					_texto(Vector2(pos.x - 140, pos.y + 110), config.accesorios[id].nombre)
 					for lado in [28, 44]:
 						var rect := Rect2(pos + Vector2(-68 if lado == 28 else 20, 130), Vector2.ONE * lado)
-						draw_rect(rect, Color("e2e8d8"))
+						load("res://globales/sprites.gd").rectangulo(self, rect, Color("e2e8d8"))
 						config.accesorios[id].dibujar_icono(self, rect)
 			"escala":
 				for columna in 3:

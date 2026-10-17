@@ -26,7 +26,7 @@ var _cuenta: Label
 
 
 func _init() -> void:
-	add_theme_constant_override("separation", 6)
+	theme_type_variation = &"FilaIconos"
 	size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_anterior = _flecha(Iconos.FLECHA_IZQ, -1)
 	add_child(_anterior)
@@ -38,16 +38,14 @@ func _init() -> void:
 	var fila := HBoxContainer.new()
 	centro.add_child(fila)
 	_nombre = Label.new()
-	_nombre.theme_type_variation = &"Subtitulo"
-	_nombre.add_theme_font_size_override("font_size", 17)
+	_nombre.theme_type_variation = &"SubtituloChico"
 	_nombre.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	_nombre.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	_nombre.clip_text = true
 	_nombre.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	fila.add_child(_nombre)
 	_cuenta = Label.new()
-	_cuenta.theme_type_variation = &"Suave"
-	_cuenta.add_theme_font_size_override("font_size", 13)
+	_cuenta.theme_type_variation = &"Detalle"
 	fila.add_child(_cuenta)
 	_siguiente = _flecha(Iconos.FLECHA_DER, 1)
 	add_child(_siguiente)
@@ -64,9 +62,8 @@ func _flecha(textura: Texture2D, paso: int) -> Button:
 	b.icon = textura
 	b.expand_icon = true
 	b.custom_minimum_size = Vector2(44, 40)
-	b.add_theme_constant_override("icon_max_width", 24)
+	b.theme_type_variation = &"FlechaSelector"
 	b.icon_alignment = HORIZONTAL_ALIGNMENT_CENTER
-	b.add_theme_constant_override("h_separation", 0)
 	b.pressed.connect(_mover.bind(paso))
 	b.gui_input.connect(_teclas)
 	return b

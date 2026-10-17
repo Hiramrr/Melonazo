@@ -23,6 +23,15 @@ signal aviso(texto: String)             ## texto flotante para el recorrido
 signal se_rompio                        ## sin resistencia: termina la carrera
 signal danado(cantidad: float)          ## perdió resistencia (1.0 = un golpe completo)
 
+# Imágenes de los poderes sobre el melón. Se cambian en el inspector de melon.tscn
+# (cualquier Texture2D: PNG, WebP o un AtlasTexture de una hoja de sprites).
+## Pizza en la que viaja el melón mientras dura la pizza con yogur.
+@export var textura_pizza: Texture2D
+## Explosión del chile jalapeño. Si es una tira horizontal, indica sus cuadros.
+@export var textura_explosion: Texture2D
+@export_range(1, 32) var cuadros_explosion := 1
+const DURACION_EXPLOSION := 0.45
+
 # --- Estado general ----------------------------------------------------------
 var tamano := 1                         # índice en Config.tamanos
 var slots: Array = [null, null, null]   # accesorio por tecla 1-2-3 (null = usado/perdido)
@@ -58,12 +67,13 @@ var g_paraguas := 1.0
 var v_paraguas := INF                   # velocidad máxima de caída
 var escudo := false                     # la siguiente caída fuerte no cuesta resistencia
 var t_invulnerable := 0.0               # parpadeo tras un golpe
-var t_cafe := 0.0
-var t_chile := 0.0
-var t_niebla := 0.0
+var t_cafe := 0.0                       # saltos sin gastar cargas
+var t_pizza := 0.0                      # avanza sin perder altura
+var y_pizza := 0.0                      # altura que conserva la pizza
+var t_explosion := 0.0                  # dibujo de la explosión del chile
 var t_iman := 0.0                       # atrae aplausos (lo aplica Recorrido)
 const TEMPORIZADORES := ["t_rebote", "t_bloqueo", "t_planeo", "t_embestida", "t_llantas",
-	"t_paraguas", "t_invulnerable", "t_cafe", "t_chile", "t_niebla", "t_iman", "t_slam"]
+	"t_paraguas", "t_invulnerable", "t_cafe", "t_pizza", "t_explosion", "t_iman", "t_slam"]
 
 # --- Cambios de velocidad pedidos desde fuera (se aplican en _integrate_forces) ---
 var _v_prev := Vector2.ZERO             # velocidad del paso anterior (para medir impactos)
@@ -166,8 +176,6 @@ func empujar(dv: Vector2) -> void:
 
 ## Multiplica la velocidad; los melones con más inercia lo resienten menos.
 func frenar(mult: float) -> void:
-	if t_niebla > 0.0 or t_chile > 0.0:
-		return
 	_mult *= lerpf(mult, 1.0, datos()["inercia"])
 
 
@@ -185,7 +193,7 @@ func golpe() -> void:
 ## Resta resistencia, salvo si algo lo protege. Solo un golpe completo da
 ## invulnerabilidad y aviso; los raspones solo bajan la barra.
 func danar(cantidad: float) -> void:
-	if t_invulnerable > 0.0 or t_niebla > 0.0 or t_chile > 0.0 or roto or cantidad <= 0.0:
+	if t_invulnerable > 0.0 or roto or cantidad <= 0.0:
 		return
 	resistencia = maxf(0.0, resistencia - cantidad)
 	danado.emit(cantidad)
@@ -196,6 +204,7 @@ func danar(cantidad: float) -> void:
 		roto = true
 		controlable = false
 		_actualizar_aspecto()
+		Sonidos.muerte(self)
 		se_rompio.emit()
 
 
@@ -263,13 +272,23 @@ func sumar_rebote(n := 1) -> void:
 	rebotes += n
 
 
-## Salto desde el suelo o en el aire. Consume una carga. Devuelve false si no pudo.
+## true si puede saltar o rebotar: le quedan cargas o tiene el café activo.
+func puede_saltar() -> bool:
+	return rebotes > 0 or t_cafe > 0.0
+
+
+## Salto desde el suelo o en el aire. Consume una carga, salvo con el café.
+## Devuelve false si no pudo.
 func saltar() -> bool:
-	if not controlable or roto or slam_activo or rebotes <= 0 or t_bloqueo > 0.0:
+	if not controlable or roto or slam_activo or not puede_saltar() or t_bloqueo > 0.0:
 		return false
-	rebotes -= 1
+	if t_cafe > 0.0:
+		t_bloqueo = Config.cafe_bloqueo
+	else:
+		rebotes -= 1
+		t_bloqueo = Config.bloqueo_rebote
 	t_rebote = 0.0
-	t_bloqueo = Config.bloqueo_rebote
+	t_pizza = 0.0
 	var caida := linear_velocity.y + _dv.y
 	empujar(Vector2(Config.salto_aereo_avance, minf(0.0, -Config.salto_aereo_vel - caida)))
 	aviso.emit("¡Salto aéreo!" if not en_suelo else "¡Arriba!")
@@ -284,6 +303,7 @@ func iniciar_slam() -> bool:
 	origen_slam = global_position
 	t_rebote = 0.0
 	t_planeo = 0.0
+	t_pizza = 0.0
 	t_paraguas = 0.0
 	aviso.emit("¡Slam!")
 	return true
@@ -311,29 +331,46 @@ func recibir_poder(id: String) -> void:
 	if not controlable or roto or not Config.poderes.has(id):
 		return
 	var duracion: float = Config.poderes[id]["duracion"]
-	_dv += Config.poderes[id]["impulso"]
 	match id:
+		"chile":
+			# Explota: el empujón se suma a la velocidad y nunca queda por debajo del mínimo.
+			var impulso: Vector2 = Config.poderes[id]["impulso"]
+			var v := linear_velocity + _dv
+			var destino := Vector2(maxf(v.x + impulso.x, Config.chile_vel_min), minf(v.y, 0.0) + impulso.y)
+			empujar(destino - v)
+			slam_activo = false
+			t_pizza = 0.0
+			t_explosion = DURACION_EXPLOSION
+			t_embestida = maxf(t_embestida, 0.6)
 		"cafe":
 			t_cafe = duracion
-		"chile":
-			t_chile = duracion
-			t_embestida = maxf(t_embestida, duracion)
-		"niebla":
-			t_niebla = duracion
-		"tamal":
-			reparar()
-			if rebotes < Juego.rebotes_max():
-				rebotes += 1
-		"jamaica":
-			rebotes = maxi(rebotes, Juego.rebotes_max())
-		"miel":
-			reparar(Config.miel_recupera)
+		"pizza":
+			t_pizza = duracion
+			y_pizza = global_position.y
+			slam_activo = false
+			t_planeo = 0.0
+			t_paraguas = 0.0
 	aviso.emit("¡%s!" % Config.poderes[id]["nombre"])
+
+
+## Salsa Valentina: vuelve a la carrera con toda la resistencia y sus cargas,
+## un rato invulnerable y con impulso para seguir.
+func revivir() -> void:
+	roto = false
+	controlable = true
+	slam_activo = false
+	resistencia = resistencia_max
+	rebotes = maxi(rebotes, Juego.rebotes_max())
+	t_invulnerable = Config.valentina_invulnerable
+	var v := linear_velocity
+	fijar_velocidad(Vector2(maxf(v.x, Config.valentina_impulso.x), minf(v.y, Config.valentina_impulso.y)))
+	_actualizar_aspecto()
+	aviso.emit("¡Salsa Valentina! Revives")
 
 
 ## Efectos activos para el HUD: [[nombre, segundos restantes], ...].
 func efectos_lista() -> Array:
-	var lista: Array = [["Café", t_cafe], ["Chile", t_chile], ["Niebla", t_niebla], ["Aplausos al vuelo", t_iman], ["Planeo", t_planeo], ["Paraguas", t_paraguas], ["Llantitas", t_llantas]]
+	var lista: Array = [["Café", t_cafe], ["Pizza", t_pizza], ["Aplausos al vuelo", t_iman], ["Planeo", t_planeo], ["Paraguas", t_paraguas], ["Llantitas", t_llantas]]
 	for activo in _activos:
 		lista.append([activo["acc"].nombre, activo["t"]])
 	return lista.filter(func(efecto: Array) -> bool: return efecto[1] > 0.0)
@@ -349,7 +386,9 @@ func _physics_process(delta: float) -> void:
 	for activo in _activos:
 		activo["t"] -= delta
 	_activos = _activos.filter(func(a: Dictionary) -> bool: return a["t"] > 0.0)
-	if t_planeo > 0.0:
+	if t_pizza > 0.0 and controlable:
+		gravity_scale = 0.0
+	elif t_planeo > 0.0:
 		gravity_scale = g_planeo
 	elif t_paraguas > 0.0:
 		gravity_scale = g_paraguas
@@ -359,7 +398,7 @@ func _physics_process(delta: float) -> void:
 		_estimar_impacto()
 		if Input.is_action_just_pressed("slam"):
 			iniciar_slam()
-		if not slam_activo and Input.is_action_just_pressed("rebote") and rebotes > 0 and t_bloqueo <= 0.0:
+		if not slam_activo and Input.is_action_just_pressed("rebote") and puede_saltar() and t_bloqueo <= 0.0:
 			if not en_suelo and t_impacto >= 0.0 and t_impacto <= Config.ventana_rebote:
 				t_rebote = Config.ventana_rebote
 				t_bloqueo = Config.bloqueo_rebote
@@ -431,8 +470,10 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 
 	if t_paraguas > 0.0:
 		v.y = minf(v.y, v_paraguas)
-	if t_cafe > 0.0 and controlable:
-		v.x = maxf(v.x, minf(v.x + Config.cafe_aceleracion * dt, Config.cafe_vel_max))
+	if t_pizza > 0.0 and controlable:
+		# Vuelve con suavidad a la altura en que la tomó y no baja del avance mínimo.
+		v.y = (y_pizza - state.transform.origin.y) * 6.0
+		v.x = maxf(v.x, Config.pizza_vel)
 
 	if en_suelo and llantas_armadas:
 		llantas_armadas = false
@@ -476,8 +517,9 @@ func _aterrizar(state: PhysicsDirectBodyState2D, nrm: Vector2, v: Vector2) -> Ve
 	var tang := vp - nrm * vp.dot(nrm)
 	t_paraguas = 0.0
 
-	if t_rebote > 0.0 and rebotes > 0:
-		rebotes -= 1
+	if t_rebote > 0.0 and puede_saltar():
+		if t_cafe <= 0.0:
+			rebotes -= 1
 		t_rebote = 0.0
 		aviso.emit("¡Rebote impulsado!")
 		var salida := maxf(impacto * Config.rebote_mult_normal, Config.rebote_min)
@@ -510,7 +552,7 @@ func _aterrizar(state: PhysicsDirectBodyState2D, nrm: Vector2, v: Vector2) -> Ve
 		state.angular_velocity = tang.length() / radio * signf(tang.x)
 
 	var umbral: float = datos()["umbral_caida"]
-	if impacto > umbral and t_niebla <= 0.0 and t_chile <= 0.0:
+	if impacto > umbral:
 		if escudo:
 			escudo = false
 			aviso.emit("El escudo amortiguó la caída")
@@ -546,27 +588,41 @@ func _draw() -> void:
 	if not controlable:
 		return
 	if slam_activo:
-		var abajo := Vector2.DOWN.rotated(-global_rotation)
-		var lado := abajo.orthogonal()
-		for i in [-1, 0, 1]:
-			var inicio: Vector2 = -abajo * (radio + 8.0) + lado * i * 12.0
-			draw_line(inicio, inicio - abajo * 36.0, Color("ffc83d"), 3, true)
-		draw_polyline(PackedVector2Array([abajo * radio - lado * 12.0, abajo * (radio + 14.0), abajo * radio + lado * 12.0]), Color("ffc83d"), 4, true)
+		var giro := -global_rotation
+		var escala := radio / 32.0
+		var centro := Vector2(0, -12 * escala).rotated(giro)
+		Sprites.girar(self, "efectos/slam", Transform2D(giro, Vector2.ONE * escala, 0, centro), Color("ffc83d"))
 	if t_embestida > 0.0:
-		draw_arc(Vector2.ZERO, radio + 4, 0.0, TAU, 32, Color(1, 0.55, 0.1, 0.8), 4.0)
+		Sprites.aro(self, Vector2.ZERO, radio + 4, Color(1, 0.55, 0.1, 0.8))
 	if escudo:
-		draw_arc(Vector2.ZERO, radio + 10, 0.0, TAU, 32, Color(0.7, 0.4, 1.0, 0.5), 2.0)
-	if t_niebla > 0.0:
-		draw_arc(Vector2.ZERO, radio + 14, 0, TAU, 40, Color("b5eee7"), 4, true)
+		Sprites.aro(self, Vector2.ZERO, radio + 10, Color(0.7, 0.4, 1, 0.5))
 	if t_cafe > 0.0:
-		draw_line(Vector2(-radio - 8, -6), Vector2(-radio - 24, -6), Color("d6a471"), 3, true)
-		draw_line(Vector2(-radio - 8, 6), Vector2(-radio - 20, 6), Color("d6a471"), 3, true)
-	# Aro del rebote impulsado: se cierra conforme se acerca el suelo; verde = ¡ahora!
-	if rebotes > 0 and not en_suelo and not slam_activo:
+		Sprites.dibujar(self, "efectos/cafe_velocidad", Rect2(-radio - 26, -10, 24, 20), Color("d6a471"))
+	if t_pizza > 0.0 or t_explosion > 0.0:
+		draw_set_transform(Vector2.ZERO, -global_rotation)
+		if t_pizza > 0.0 and textura_pizza != null:
+			var lado := radio * 2.8
+			draw_texture_rect(textura_pizza, Rect2(-lado * 0.5, radio * 0.25, lado, lado), false)
+		if t_explosion > 0.0 and textura_explosion != null:
+			_dibujar_explosion(1.0 - t_explosion / DURACION_EXPLOSION)
+		draw_set_transform(Vector2.ZERO)
+	if puede_saltar() and not en_suelo and not slam_activo:
 		if t_rebote > 0.0:
-			draw_arc(Vector2.ZERO, radio + 8, 0.0, TAU, 40, Color(1, 1, 1, 0.95), 4.0)
+			Sprites.aro(self, Vector2.ZERO, radio + 8, Color(1, 1, 1, 0.95))
 		elif t_impacto >= 0.0:
 			var rr := radio + 6.0 + 60.0 * t_impacto / Config.vista_indicador
-			var col := Color(0.3, 1.0, 0.4, 0.95) if t_impacto <= Config.ventana_rebote else Color(1, 0.85, 0.2, 0.8)
-			draw_arc(Vector2.ZERO, rr, 0.0, TAU, 40, col, 3.0)
+			var col := Color(0.3, 1, 0.4, 0.95) if t_impacto <= Config.ventana_rebote else Color(1, 0.85, 0.2, 0.8)
+			Sprites.aro(self, Vector2.ZERO, rr, col)
 
+
+## Con una sola imagen crece y se desvanece; con una tira avanza sus cuadros.
+func _dibujar_explosion(avance: float) -> void:
+	var centro := Vector2(-radio * 0.6, radio * 0.3)
+	var lado := radio * (5.0 if cuadros_explosion > 1 else lerpf(1.6, 5.0, avance))
+	var destino := Rect2(centro - Vector2.ONE * lado * 0.5, Vector2.ONE * lado)
+	if cuadros_explosion <= 1:
+		draw_texture_rect(textura_explosion, destino, false, Color(1, 1, 1, 1.0 - avance))
+		return
+	var ancho := textura_explosion.get_width() / float(cuadros_explosion)
+	var cuadro := mini(int(avance * cuadros_explosion), cuadros_explosion - 1)
+	draw_texture_rect_region(textura_explosion, destino, Rect2(cuadro * ancho, 0, ancho, textura_explosion.get_height()))

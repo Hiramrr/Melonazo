@@ -38,23 +38,10 @@ func _process(delta: float) -> void:
 
 
 func _draw() -> void:
-	# Piernas, torso y cabeza.
-	var pantalon := color_ropa.darkened(0.5)
-	draw_line(Vector2(-6, 0), Vector2(-5, -28), pantalon, 6.0)
-	draw_line(Vector2(6, 0), Vector2(5, -28), pantalon, 6.0)
-	draw_rect(Rect2(-10, -60, 20, 34), color_ropa)
-	draw_circle(Vector2(0, -70), 10.0, color_piel)
-	# Brazos según la pose: empujando, festejando (ya ayudó) o esperando.
-	if t_empuje > 0.0:
-		draw_line(Vector2(6, -54), Vector2(30, -50), color_piel, 5.0)
-		draw_line(Vector2(6, -46), Vector2(30, -42), color_piel, 5.0)
-	elif usado:
-		draw_line(Vector2(-8, -56), Vector2(-16, -88), color_piel, 5.0)
-		draw_line(Vector2(8, -56), Vector2(16, -88), color_piel, 5.0)
-	else:
-		draw_line(Vector2(-10, -56), Vector2(-14, -32), color_piel, 5.0)
-		draw_line(Vector2(10, -56), Vector2(14, -32), color_piel, 5.0)
+	var pose := 2 if t_empuje > 0.0 else (1 if usado else 0)
+	var rect := Rect2(-24, -96, 64, 100)
+	Sprites.dibujar(self, "ayudas/persona_ropa_%d" % pose, rect, color_ropa)
+	Sprites.dibujar(self, "ayudas/persona_piel_%d" % pose, rect, color_piel)
 	if en_rango and not usado:
-		draw_circle(CENTRO_GLOBO, RADIO_GLOBO, Color(1, 1, 1))
-		draw_arc(CENTRO_GLOBO, RADIO_GLOBO, 0, TAU, 24, TINTA, 2.0)
+		Sprites.poner(self, "ayudas/tecla", CENTRO_GLOBO)
 		draw_string(ThemeDB.fallback_font, CENTRO_GLOBO + Vector2(-16, 7), "E", HORIZONTAL_ALIGNMENT_CENTER, 32, 20, TINTA)

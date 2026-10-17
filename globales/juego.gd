@@ -2,7 +2,7 @@ extends Node
 ## Autoload "Juego": el progreso del jugador, compartido por todas las pantallas.
 ##
 ## Guarda lo que debe sobrevivir al cambiar de escena o cerrar el juego:
-## aplausos, mejoras, accesorios, aspecto del melón, récord y pasaporte.
+## aplausos, mejoras, accesorios, Salsas Valentina, aspecto del melón, récord y pasaporte.
 ## También calcula las recompensas de cada carrera (registrar_intento).
 ##
 ## El progreso se escribe en user://progreso.json (ver guardar() y cargar()).
@@ -24,6 +24,7 @@ var record_m := 0.0
 var niveles := {"fuerza": 0, "resistencia": 0, "rebotes": 0}
 var desbloqueados: Array = []           # ids de accesorios comprados
 var visitados: Array = []               # ids de postales del pasaporte
+var valentinas := 0                     # Salsas Valentina compradas: cada una revive una vez
 var intentos := 0
 var ultimo: Dictionary = {}             # desglose de la última carrera (pantalla Resultados)
 
@@ -156,6 +157,25 @@ func desbloquear(id: String) -> bool:
 	return true
 
 
+## Compra una Salsa Valentina si hay saldo y espacio. Devuelve false si no se pudo.
+func comprar_valentina() -> bool:
+	if valentinas >= Config.valentinas_max or aplausos < Config.valentina_costo:
+		return false
+	aplausos -= Config.valentina_costo
+	valentinas += 1
+	guardar()
+	return true
+
+
+## Gasta una Salsa Valentina durante la carrera. Devuelve false si no queda.
+func usar_valentina() -> bool:
+	if valentinas <= 0:
+		return false
+	valentinas -= 1
+	guardar()
+	return true
+
+
 # --- Valores derivados de las mejoras ----------------------------------------
 
 ## Multiplicador de la velocidad de lanzamiento.
@@ -177,7 +197,7 @@ func rebotes_max() -> int:
 
 ## Calcula y cobra los aplausos de una carrera, marca las postales nuevas,
 ## actualiza el récord y guarda. El desglose queda en "ultimo".
-func registrar_intento(distancia_m: float, carisma: int, recolectados: int, roto: bool, poderes := 0, altura_m := 0.0) -> void:
+func registrar_intento(distancia_m: float, carisma: int, recolectados: int, roto: bool, poderes := 0, altura_m := 0.0, valentinas_usadas := 0) -> void:
 	distancia_m = clampf(distancia_m, 0.0, Config.meta_m)
 	altura_m = maxf(0.0, altura_m)
 	var por_distancia := int(distancia_m * Config.aplausos_por_metro)
@@ -201,7 +221,7 @@ func registrar_intento(distancia_m: float, carisma: int, recolectados: int, roto
 		"recolectados": recolectados, "roto": roto, "por_distancia": por_distancia,
 		"por_carisma": por_carisma, "por_recolectados": por_recolectados, "total": total,
 		"por_visitas": por_visitas, "visitas_nuevas": nuevas, "poderes": poderes,
-		"altura": altura_m, "por_altura": por_altura,
+		"altura": altura_m, "por_altura": por_altura, "valentinas": valentinas_usadas,
 		"llegada": distancia_m >= Config.meta_m and not roto,
 	}
 	guardar()
@@ -216,6 +236,7 @@ func reiniciar_progreso() -> void:
 	niveles = {"fuerza": 0, "resistencia": 0, "rebotes": 0}
 	desbloqueados = Config.accesorios_iniciales.duplicate()
 	visitados = []
+	valentinas = 0
 	intentos = 0
 	ultimo = {}
 	nombre_melon = "Melón"
@@ -244,7 +265,7 @@ func guardar() -> void:
 	var datos := _melon_a_json(datos_melon())
 	datos.merge({"version": 2, "aplausos": aplausos, "record_m": record_m,
 		"niveles": niveles, "desbloqueados": desbloqueados, "visitados": visitados,
-		"intentos": intentos, "melones_guardados": melones_guardados.map(_melon_a_json)})
+		"valentinas": valentinas, "intentos": intentos, "melones_guardados": melones_guardados.map(_melon_a_json)})
 	var temporal := archivo_guardado + ".tmp"
 	var archivo := FileAccess.open(temporal, FileAccess.WRITE)
 	if archivo == null:
@@ -280,6 +301,7 @@ func cargar() -> void:
 	if datos.get("record_m") is float or datos.get("record_m") is int:
 		record_m = clampf(float(datos["record_m"]), 0.0, 10000000.0)
 	intentos = _entero(datos, "intentos", 0, 0, 10000000)
+	valentinas = _entero(datos, "valentinas", 0, 0, Config.valentinas_max)
 	var guardados = datos.get("niveles", {})
 	if guardados is Dictionary:
 		for id in Config.orden_mejoras:

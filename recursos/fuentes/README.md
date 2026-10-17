@@ -7,4 +7,4 @@
 - Licencia: SIL Open Font License 1.1, incluida en `OFL.txt`.
 - Es una fuente variable: el tema (`interfaz/tema_xalapa.tres`) elige el grosor con `FontVariation` (eje `wght`, de 300 a 700).
 
-La fuente no incluye flechas, estrellas ni símbolos de reproducción. Esos dibujos son SVG en `recursos/iconos/`.
+La fuente no incluye flechas, estrellas ni símbolos de reproducción. Esos dibujos son sprites PNG en `recursos/iconos/`.

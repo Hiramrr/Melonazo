@@ -7,7 +7,8 @@ extends CanvasLayer
 ## seguir respondiendo con el juego en pausa.
 ##
 ##   Datos         nombre y récord, distancia grande, barra de resistencia,
-##                 rayos de impulso y fichas de aplausos, carisma y poderes
+##                 rayos de impulso y fichas de aplausos, carisma, poderes
+##                 y Salsas Valentina que quedan
 ##   Lugar         postal actual, barra hasta la siguiente y cuánto falta
 ##   Equipo        tres SlotAccesorio (teclas 1, 2 y 3) y el botón de pausa
 ##   Vuelo         fichas de altura y papalotes usados
@@ -23,9 +24,6 @@ const ESCENA_TALLER := "res://pantallas/taller/taller.tscn"
 const ARTE: ArteXalapa = preload("res://recursos/arte_xalapa.tres")
 const CONTROLES := [["A  D", "Mover y girar"], ["Espacio", "Saltar y rebotar"], ["E", "Papalote o empujón"],
 	["S / Abajo", "Slam sobre otro melón"], ["1  2  3", "Usar accesorios"], ["Esc", "Pausa"]]
-const AMARILLO := Color("ffc83d")
-const VERDE := Color("6cc35f")
-const ROJO := Color("e8553f")
 
 @onready var distancia: Label = %Distancia
 @onready var resistencia: ProgressBar = %Resistencia
@@ -33,6 +31,7 @@ const ROJO := Color("e8553f")
 @onready var ficha_aplausos: Ficha = %Aplausos
 @onready var ficha_carisma: Ficha = %Carisma
 @onready var ficha_poderes: Ficha = %Poderes
+@onready var ficha_valentinas: Ficha = %Valentinas
 @onready var lugar: Control = %Lugar
 @onready var efectos: HBoxContainer = %Efectos
 @onready var aviso: Control = %Aviso
@@ -74,13 +73,12 @@ func _ready() -> void:
 func _agregar_ayuda(parte: Array) -> void:
 	if parte.size() == 1 and parte[0].length() > 3 and parte[0] != "Espacio":
 		var l := Label.new()
-		l.theme_type_variation = &"TextoHUD"
-		l.add_theme_font_size_override("font_size", 15)
+		l.theme_type_variation = &"AyudaHUD"
 		l.text = parte[0] + "   "
 		ayuda.add_child(l)
 		return
 	for t in parte:
-		ayuda.add_child(Iconos.tecla(t, 14))
+		ayuda.add_child(Iconos.tecla(t, &"TeclaAyuda"))
 
 
 # --- Pausa -------------------------------------------------------------------
@@ -121,6 +119,7 @@ func actualizar(r: Recorrido) -> void:
 	_contador("aplausos", ficha_aplausos, r.recolectados * Config.valor_aplauso_suelto)
 	_contador("carisma", ficha_carisma, melon.carisma())
 	_contador("poderes", ficha_poderes, r.poderes_recogidos)
+	_contador("valentinas", ficha_valentinas, Juego.valentinas)
 	_actualizar_equipo(melon)
 	_actualizar_lugar(metros, r.altura_m, r.altura_max_m)
 	_actualizar_efectos(melon)
@@ -128,7 +127,7 @@ func actualizar(r: Recorrido) -> void:
 	ayuda.visible = r.fase == Recorrido.Fase.RECORRIDO
 	medidor.value = r.fuerza * 100.0
 	var en_zona := r.fuerza >= Config.zona_perfecta.x and r.fuerza <= Config.zona_perfecta.y
-	_relleno_fuerza.bg_color = VERDE if en_zona else AMARILLO.lerp(Color("e8553f"), r.fuerza)
+	_relleno_fuerza.bg_color = medidor.get_theme_color("perfecta") if en_zona else medidor.get_theme_color("inicio").lerp(medidor.get_theme_color("fin"), r.fuerza)
 	vuelo.visible = r.fase >= Recorrido.Fase.RECORRIDO
 	%Altura.texto = "%d m" % int(r.altura_m)
 	_contador("papalotes", %Papalotes, r.papalotes_usados)
@@ -158,7 +157,8 @@ func _actualizar_resistencia(melon: Melon) -> void:
 	resistencia.value = valor
 	_resistencia_previa = move_toward(_resistencia_previa, valor, get_process_delta_time() * 1.5)
 	var fraccion := valor / maxf(0.01, melon.resistencia_max)
-	_relleno_resistencia.bg_color = ROJO.lerp(AMARILLO, fraccion * 2.0) if fraccion < 0.5 else AMARILLO.lerp(VERDE, fraccion * 2.0 - 1.0)
+	var media := resistencia.get_theme_color("media")
+	_relleno_resistencia.bg_color = resistencia.get_theme_color("baja").lerp(media, fraccion * 2.0) if fraccion < 0.5 else media.lerp(resistencia.get_theme_color("alta"), fraccion * 2.0 - 1.0)
 	resistencia.queue_redraw()
 
 
@@ -204,7 +204,7 @@ func _actualizar_lugar(metros: float, altura: float, altura_max: float) -> void:
 func _actualizar_efectos(melon: Melon) -> void:
 	var lista := melon.efectos_lista()
 	while efectos.get_child_count() < lista.size():
-		var f := Ficha.crear(Iconos.PODER, "", true, 16)
+		var f := Ficha.crear(Iconos.PODER, "", true, &"ContadorEfecto")
 		f.lado_icono = 20.0
 		efectos.add_child(f)
 		Animacion.aparecer(f, 0.0, 0.5)
@@ -242,8 +242,8 @@ func _actualizar_indicacion(r: Recorrido) -> void:
 			elif is_instance_valid(r.papalote_cercano) and not r.papalote_cercano.usado:
 				_indicar("E", "%s: impulso y escudo" % r.papalote_cercano.nombre())
 				urgente = true
-			elif melon.rebotes <= 0:
-				_indicar("E", "Busca papalotes o corrientes")
+			elif not melon.puede_saltar():
+				_indicar("E", "Busca papalotes, corrientes o café")
 			elif melon.t_bloqueo > 0.0:
 				aviso.visible = false
 			elif not melon.en_suelo and melon.t_impacto >= 0.0 and melon.t_impacto <= Config.ventana_rebote:
@@ -254,7 +254,7 @@ func _actualizar_indicacion(r: Recorrido) -> void:
 	aviso.pivot_offset = aviso.size * 0.5
 	var pulso := 1.0 + 0.06 * absf(sin(Time.get_ticks_msec() * 0.012)) if urgente else 1.0
 	aviso.scale = Vector2.ONE * pulso
-	indicacion.add_theme_color_override("font_color", AMARILLO if urgente else Color("fff9ec"))
+	indicacion.theme_type_variation = &"IndicacionUrgente" if urgente else &"IndicacionHUD"
 
 
 func _hay_melon_debajo(r: Recorrido) -> bool:
@@ -269,25 +269,25 @@ func _indicar(p_tecla: String, texto: String) -> void:
 
 ## Lo recién perdido en claro y una marca por cada golpe completo.
 func _dibujar_resistencia() -> void:
-	var m := 4.0
+	var m := resistencia.get_theme_stylebox("background").get_margin(SIDE_LEFT)
 	var ancho := resistencia.size.x - m * 2.0
 	var alto := resistencia.size.y - m * 2.0
 	var por_golpe := ancho / maxf(1.0, resistencia.max_value)
 	if _resistencia_previa > resistencia.value:
 		var desde := m + resistencia.value * por_golpe
-		resistencia.draw_rect(Rect2(desde, m, (_resistencia_previa - resistencia.value) * por_golpe, alto), Color(1, 0.976, 0.925, 0.7))
+		Sprites.rectangulo(resistencia, Rect2(desde, m, (_resistencia_previa - resistencia.value) * por_golpe, alto), resistencia.get_theme_color("perdida"))
 	for i in range(1, int(ceilf(resistencia.max_value))):
 		var x := m + i * por_golpe
-		resistencia.draw_line(Vector2(x, m), Vector2(x, m + alto), Color(0.09, 0.18, 0.165, 0.6), 2.0)
+		Sprites.rectangulo(resistencia, Rect2(x - 1, m, 2, alto), resistencia.get_theme_color("marca"))
 
 
 ## Franja verde en la barra de fuerza (Config.zona_perfecta) y marcas cada 10 %.
 func _dibujar_zona_perfecta() -> void:
-	var m := 5.0
+	var m := medidor.get_theme_stylebox("background").get_margin(SIDE_LEFT)
 	var ancho := medidor.size.x - m * 2.0
 	var zona := Rect2(m + ancho * Config.zona_perfecta.x, 3, ancho * (Config.zona_perfecta.y - Config.zona_perfecta.x), medidor.size.y - 6)
-	medidor.draw_rect(zona, Color(0.42, 0.76, 0.37, 0.35))
-	medidor.draw_rect(zona, Color("fff9ec"), false, 2.0)
+	Sprites.rectangulo(medidor, zona, medidor.get_theme_color("zona"))
+	Sprites.marco(medidor, zona, medidor.get_theme_color("borde_zona"))
 	for i in range(1, 10):
 		var x := m + ancho * i * 0.1
-		medidor.draw_line(Vector2(x, medidor.size.y - 12), Vector2(x, medidor.size.y - 5), Color(1, 1, 1, 0.5), 2.0)
+		Sprites.rectangulo(medidor, Rect2(x - 1, medidor.size.y - 12, 2, 7), medidor.get_theme_color("marca"))

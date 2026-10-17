@@ -116,7 +116,9 @@ func _verificar() -> void:
 	comprobar(almanaque.seleccionado == 3, "El clic sobre el dibujo de una ficha la selecciona")
 	almanaque.get_node("%Poderes").pressed.emit()
 	almanaque._elegir(3)
-	comprobar(almanaque.nombre.text == "Tamal de hoja" and almanaque.datos.text.contains("instantáneo"), "Poderes muestra el efecto de la ficha elegida")
+	comprobar(almanaque.nombre.text == "Salsa Valentina" and almanaque.datos.text.contains("tiendita"), "Poderes muestra la Salsa Valentina de la tiendita")
+	almanaque._elegir(0)
+	comprobar(almanaque.nombre.text == "Chile jalapeño" and almanaque.datos.text.contains("instantáneo"), "Poderes muestra el efecto de la ficha elegida")
 	comprobar(juego.datos_melon() == antes, "Consultar el almanaque no cambia al melón actual")
 	almanaque.get_node("%MisMelones").pressed.emit()
 	juego.nombre_melon = "Melón actualizado"

@@ -65,15 +65,16 @@ func _verificar() -> void:
 	juego.aplausos = 1000
 	comprobar(juego.desbloquear("flor"), "Desbloqueo de accesorio xalapeño")
 	comprobar(not juego.desbloquear("flor") and juego.aplausos == 760, "No cobrar doble por desbloqueo")
-	juego.registrar_intento(210.0, 3, 2, false, 2)
+	var distancia_tres: float = float(config.postales[2]["metros"]) + 10.0
+	juego.registrar_intento(distancia_tres, 3, 2, false, 2)
 	comprobar(juego.visitados.size() == 3, "Pasaporte registra los tres primeros sitios")
-	var esperado: int = int(210.0 * config.aplausos_por_metro) + 3 * config.aplausos_por_carisma \
+	var esperado: int = int(distancia_tres * config.aplausos_por_metro) + 3 * config.aplausos_por_carisma \
 		+ 2 * config.valor_aplauso_suelto + 3 * config.bonus_postal
 	comprobar(juego.ultimo["por_visitas"] == 3 * config.bonus_postal and juego.ultimo["total"] == esperado, "Desglose de premios")
 	comprobar(juego.ultimo["por_altura"] == 0 and juego.ultimo["altura"] == 0.0, "Registrar sin altura conserva las recompensas anteriores")
 	var saldo_antes_altura: int = juego.aplausos
 	juego.registrar_intento(100.0, 0, 0, false, 0, 175.5)
-	comprobar(juego.ultimo["por_visitas"] == 0 and juego.record_m == 210, "No repetir premios ni bajar récord")
+	comprobar(juego.ultimo["por_visitas"] == 0 and juego.record_m == distancia_tres, "No repetir premios ni bajar récord")
 	var premio_altura := int(175.5 * config.aplausos_por_metro_altura)
 	var total_con_altura := int(100.0 * config.aplausos_por_metro) + premio_altura
 	comprobar(juego.ultimo["altura"] == 175.5 and juego.ultimo["por_altura"] == premio_altura, "La altura máxima añade su bono al desglose")
@@ -161,81 +162,87 @@ func _verificar() -> void:
 	melon.set_physics_process(false)
 	melon.controlable = true
 	melon.resistencia = 2
-	melon.rebotes = juego.rebotes_max() - 1
-	melon.recibir_poder("tamal")
-	comprobar(melon.resistencia == 3 and melon.rebotes == juego.rebotes_max(), "Tamal repara y recupera rebote")
-	melon.recibir_poder("tamal")
-	comprobar(melon.resistencia == 3 and melon.rebotes == juego.rebotes_max(), "Tamal respeta máximos")
-	melon.recibir_poder("niebla")
-	melon.golpe()
-	comprobar(melon.resistencia == 3, "Niebla protege de golpes")
-	melon.t_niebla = 0
+	melon.rebotes = 0
+	melon.recibir_poder("cafe")
+	comprobar(melon.t_cafe == config.poderes["cafe"]["duracion"] and melon.puede_saltar(), "Café permite saltar sin cargas")
+	comprobar(melon.saltar() and melon.rebotes == 0, "Con café saltar no gasta cargas")
+	melon.t_bloqueo = 0
+	comprobar(melon.saltar() and melon.rebotes == 0, "Café deja saltar otra vez sin penalización")
+	melon.t_cafe = 0
+	melon.t_bloqueo = 0
+	comprobar(not melon.saltar(), "Sin café ni cargas no se puede saltar")
+	melon._dv = Vector2.ZERO
 	melon.recibir_poder("chile")
+	var tras_chile: Vector2 = melon.linear_velocity + melon._dv
+	comprobar(tras_chile.x >= config.chile_vel_min and tras_chile.y < 0 and melon.t_explosion > 0, "Chile explota y lanza hacia adelante")
+	melon._dv = Vector2.ZERO
+	melon.recibir_poder("pizza")
+	comprobar(melon.t_pizza == config.poderes["pizza"]["duracion"] and melon.y_pizza == melon.global_position.y, "Pizza guarda la altura en que se toma")
+	melon.t_pizza = 0
 	melon.golpe()
-	comprobar(melon.resistencia == 3 and melon.t_embestida > 0, "Chile protege y embiste")
-	melon.t_chile = 0
-	melon.golpe()
-	comprobar(melon.resistencia == 2, "Sin poderes los golpes dañan")
+	comprobar(melon.resistencia == 1, "Sin protección los golpes dañan")
 	melon.t_invulnerable = 0
 	melon.danar(0.25)
-	comprobar(is_equal_approx(melon.resistencia, 1.75) and melon.t_invulnerable == 0, "Un raspón quita una fracción sin invulnerabilidad")
+	comprobar(is_equal_approx(melon.resistencia, 0.75) and melon.t_invulnerable == 0, "Un raspón quita una fracción sin invulnerabilidad")
 	melon.reparar()
-	comprobar(is_equal_approx(melon.resistencia, 2.75), "Reparar suma un golpe completo")
-	melon.resistencia = 2
-	melon.rebotes = 0
-	melon.recibir_poder("jamaica")
-	comprobar(melon.rebotes == juego.rebotes_max(), "Jamaica recarga los saltos")
-	melon.resistencia = 1
-	melon.recibir_poder("miel")
-	comprobar(is_equal_approx(melon.resistencia, 1.0 + config.miel_recupera), "Miel recupera resistencia")
-	melon.recibir_poder("miel")
-	comprobar(melon.resistencia == melon.resistencia_max, "Miel respeta el máximo")
+	comprobar(is_equal_approx(melon.resistencia, 1.75), "Reparar suma un golpe completo")
 	melon.resistencia = 2
 	melon.rebotes = juego.rebotes_max()
-	melon.recibir_poder("cafe")
-	comprobar(melon.t_cafe == config.poderes["cafe"]["duracion"], "Café inicia duración")
 	melon.usar(0)
 	comprobar(melon.slots[0] == null and melon.escudo and melon.t_planeo == config.accesorios["rebozo"].duracion, "Rebozo se consume y protege")
 	melon.usar(1)
 	comprobar(melon.resistencia == 3 and melon.t_iman > 0, "Flor repara y atrae aplausos")
 	melon.usar(2)
 	comprobar(melon.rebotes == juego.rebotes_max() + 1 and melon.carisma() == 0, "Jarana suma rebote y pierde carisma al usar")
-	melon.recibir_poder("tamal")
-	comprobar(melon.rebotes == juego.rebotes_max() + 1, "Tamal conserva los rebotes extra de la jarana")
+	melon.t_planeo = 0
 	melon.position = Vector2(0, -4000)
 	melon.freeze = false
-	melon.linear_velocity = Vector2(2500, 0)
-	for i in 8:
+	melon.set_physics_process(true)
+	melon.linear_velocity = Vector2(300, 0)
+	await physics_frame
+	melon.recibir_poder("pizza")
+	var y_pizza: float = melon.global_position.y
+	for i in 40:
 		await physics_frame
-	comprobar(melon.linear_velocity.x > 2200, "Café no frena al melón que supera su velocidad objetivo")
+	comprobar(absf(melon.global_position.y - y_pizza) < 12.0 and melon.linear_velocity.x >= config.pizza_vel * 0.95, "Pizza avanza sin perder altura")
+	melon.resistencia = 0.5
+	melon.danar(1.0)
+	comprobar(melon.roto and not melon.controlable, "Sin resistencia el melón se rompe")
+	melon.revivir()
+	comprobar(not melon.roto and melon.controlable and melon.resistencia == melon.resistencia_max and melon.t_invulnerable > 0, "Salsa Valentina revive al melón")
 	melon.queue_free()
 	await process_frame
-	for proteccion in ["niebla", "chile", "ninguna"]:
-		var suelo := StaticBody2D.new()
-		var zona := CollisionShape2D.new()
-		var rect := RectangleShape2D.new()
-		rect.size = Vector2(4000, 40)
-		zona.shape = rect
-		suelo.add_child(zona)
-		suelo.position = Vector2(0, 100)
-		root.add_child(suelo)
-		var caida = load("res://melon/melon.tscn").instantiate()
-		caida.position = Vector2(0, -500)
-		root.add_child(caida)
-		caida.configurar(1, [], 3, 1)
-		caida.escudo = true
-		if proteccion != "ninguna":
-			caida.controlable = true
-			caida.recibir_poder(proteccion)
-			caida._dv = Vector2.ZERO
-		caida.linear_velocity = Vector2(0, 1400)
-		for i in 65:
-			await physics_frame
-		comprobar(caida.resistencia == 3, "Caída fuerte protegida con " + proteccion)
-		comprobar(caida.escudo == (proteccion != "ninguna"), "Escudo se conserva solo si otro poder protege: " + proteccion)
-		caida.queue_free()
-		suelo.queue_free()
-		await process_frame
+	juego.aplausos = config.valentina_costo * (config.valentinas_max + 1)
+	juego.valentinas = 0
+	for i in config.valentinas_max:
+		comprobar(juego.comprar_valentina(), "Se compra una Salsa Valentina")
+	comprobar(not juego.comprar_valentina() and juego.valentinas == config.valentinas_max and juego.aplausos == config.valentina_costo, "Las Salsas Valentina respetan su máximo")
+	juego.cargar()
+	comprobar(juego.valentinas == config.valentinas_max, "Las Salsas Valentina se guardan")
+	comprobar(juego.usar_valentina() and juego.valentinas == config.valentinas_max - 1, "Usar una Salsa Valentina la gasta")
+	juego.valentinas = 0
+	comprobar(not juego.usar_valentina(), "Sin salsas no se revive")
+	juego.guardar()
+	var suelo := StaticBody2D.new()
+	var zona := CollisionShape2D.new()
+	var rect := RectangleShape2D.new()
+	rect.size = Vector2(4000, 40)
+	zona.shape = rect
+	suelo.add_child(zona)
+	suelo.position = Vector2(0, 100)
+	root.add_child(suelo)
+	var caida = load("res://melon/melon.tscn").instantiate()
+	caida.position = Vector2(0, -500)
+	root.add_child(caida)
+	caida.configurar(1, [], 3, 1)
+	caida.escudo = true
+	caida.linear_velocity = Vector2(0, 1400)
+	for i in 65:
+		await physics_frame
+	comprobar(caida.resistencia == 3 and not caida.escudo, "El escudo amortigua una caída fuerte y se gasta")
+	caida.queue_free()
+	suelo.queue_free()
+	await process_frame
 
 	change_scene_to_file("res://pantallas/taller/taller.tscn")
 	await process_frame
@@ -247,7 +254,7 @@ func _verificar() -> void:
 	var titulos: Array = []
 	for i in pestanas.get_tab_count():
 		titulos.append(pestanas.get_tab_title(i))
-	comprobar(titulos == ["Tu melón", "Dibujo", "Accesorios", "Mejoras", "Pasaporte"], "Pestañas del taller en orden y con su título")
+	comprobar(titulos == ["Tu melón", "Dibujo", "Accesorios", "Tiendita", "Pasaporte"], "Pestañas del taller en orden y con su título")
 	comprobar(taller.get_node("%TuMelon").listas.size() == 5, "Taller ofrece piel, patrón, cara, detalle y estela")
 	comprobar(taller.get_node("%BtnReiniciar") != null and taller.get_node("%ConfirmarReinicio") != null, "Taller ofrece reiniciar el progreso con confirmación")
 	juego.aplausos = 999
@@ -297,18 +304,16 @@ func _verificar() -> void:
 	comprobar(recorrido.terreno.tramos.all(func(t: Node) -> bool: return t.get_parent() == recorrido.terreno), "Tramos en contenedor propio")
 	comprobar(recorrido.terreno.tramos[0].get_node("Postales").get_child_count() == 0, "Las postales de lugares solo se muestran al terminar")
 	var consumibles: Array = []
-	var recargas: Array = []
 	for t in recorrido.terreno.tramos:
 		for nodo in t.get_node("Coleccionables").get_children():
 			if nodo is Area2D and nodo.has_signal("recogido"):
-				(recargas if nodo.tipo in config.orden_recargas else consumibles).append(nodo)
+				consumibles.append(nodo)
 	comprobar(consumibles.size() >= 3 and consumibles.size() <= 5, "Los primeros tramos muestran poderes desde el inicio")
-	comprobar(not recargas.is_empty() and recargas[0].tipo == "jamaica", "Los primeros tramos muestran recargas, empezando por la jamaica")
-	comprobar(consumibles[0].tipo == "cafe" and consumibles[1].tipo == "chile", "Poderes alternan de forma reproducible")
+	comprobar(consumibles[0].tipo == "chile" and consumibles[1].tipo == "cafe" and consumibles[2].tipo == "pizza", "Poderes alternan de forma reproducible")
 	var ultimo_x := -1.0
 	for t in recorrido.terreno.tramos:
 		for nodo in t.get_node("Coleccionables").get_children():
-			if nodo is Area2D and nodo.has_signal("recogido") and nodo.tipo not in config.orden_recargas:
+			if nodo is Area2D and nodo.has_signal("recogido"):
 				var altura: float = t.altura(nodo.position.x) - nodo.position.y
 				comprobar(altura >= config.altura_poderes.x - 0.01, "Un poder exige elevarse sobre el suelo")
 				if ultimo_x >= 0:
@@ -336,9 +341,16 @@ func _verificar() -> void:
 	recorrido._al_tocar_obstaculo(recorrido.melon, toldo)
 	comprobar(not toldo.activo and recorrido.melon._v_fijar == salida, "Toldo no relanza al melón al reentrar")
 	comprobar(is_equal_approx(salida.x, 80 + config.toldo_avance) and is_equal_approx(salida.y, -270), "Toldo añade avance y conserva parte de la caída")
+	var pajaro = load("res://mundo/obstaculos/pajaro.tscn").instantiate()
+	root.add_child(pajaro)
+	recorrido._al_tocar_pajaro(pajaro)
+	var freno: float = recorrido.melon._mult
+	recorrido._al_tocar_pajaro(pajaro)
+	comprobar(freno < 1.0 and not pajaro.activo and recorrido.melon._mult == freno, "Un pájaro frena al melón una sola vez")
 	rampa.queue_free()
 	toldo.queue_free()
 	recorrido.melon._dv = Vector2.ZERO
+	recorrido.melon._mult = 1.0
 	recorrido.melon._fijar = false
 
 	recorrido.fase = 0
