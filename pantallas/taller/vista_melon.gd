@@ -30,6 +30,10 @@ var modo_dibujo := false:
 
 
 func _ready() -> void:
+<<<<<<< HEAD
+=======
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	resized.connect(queue_redraw)
 	mouse_exited.connect(_al_salir_raton)
 

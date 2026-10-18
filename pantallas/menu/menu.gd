@@ -12,7 +12,10 @@ extends Node2D
 ##
 ## Cualquier clic o tecla durante la bajada la salta.
 
+<<<<<<< HEAD
 const TALLER := "res://pantallas/taller/taller.tscn"
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 const DURACION_BAJADA := 3.6
 const ALTURA_INICIAL := 3200.0         # px de mundo por encima del encuadre final
 ## Alto del mundo que cabe en pantalla en el encuadre final; el zoom sale de aquí,
@@ -117,4 +120,8 @@ func _unhandled_input(event: InputEvent) -> void:
 func _jugar() -> void:
 	Animacion._sonar_click(btn_jugar)
 	btn_jugar.disabled = true
+<<<<<<< HEAD
 	Animacion.cambiar_escena(TALLER)
+=======
+	Animacion.cambiar_escena(Rutas.TALLER)
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)

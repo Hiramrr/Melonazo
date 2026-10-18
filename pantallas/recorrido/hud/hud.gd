@@ -23,7 +23,10 @@ extends CanvasLayer
 
 signal valentina_elegida(usar: bool)
 
+<<<<<<< HEAD
 const ESCENA_TALLER := "res://pantallas/taller/taller.tscn"
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 const ARTE: ArteXalapa = preload("res://recursos/arte_xalapa.tres")
 const CONTROLES := [["A  D", "Mover y girar"], ["Espacio", "Saltar y rebotar"], ["E", "Papalote o empujón"],
 	["S / Abajo", "Slam sobre otro melón"], ["1  2  3", "Usar accesorios"], ["Esc", "Pausa"]]
@@ -60,11 +63,36 @@ var _t_valentina := 0.0
 func _ready() -> void:
 	%Volver.get_parent().add_child(ARTE.crear_creditos_paisaje())
 	medidor.draw.connect(_dibujar_zona_perfecta)
+<<<<<<< HEAD
 	_relleno_fuerza = (medidor.get_theme_stylebox("fill") as StyleBoxTexture).duplicate()
 	medidor.add_theme_stylebox_override("fill", _relleno_fuerza)
 	resistencia.draw.connect(_dibujar_resistencia)
 	_relleno_resistencia = (resistencia.get_theme_stylebox("fill") as StyleBoxTexture).duplicate()
 	resistencia.add_theme_stylebox_override("fill", _relleno_resistencia)
+=======
+	
+	# --- BARRA DE FUERZA ---
+	var sb_fuerza = medidor.get_theme_stylebox("fill").duplicate()
+	if sb_fuerza:
+		sb_fuerza.expand_margin_left = -3
+		sb_fuerza.expand_margin_right = -3
+		sb_fuerza.expand_margin_top = -2
+		sb_fuerza.expand_margin_bottom = -2
+		medidor.add_theme_stylebox_override("fill", sb_fuerza)
+		_relleno_fuerza = sb_fuerza
+	
+	# --- BARRA DE RESISTENCIA ---
+	resistencia.draw.connect(_dibujar_resistencia)
+	var sb_resistencia = resistencia.get_theme_stylebox("fill").duplicate()
+	if sb_resistencia:
+		sb_resistencia.expand_margin_left = -3
+		sb_resistencia.expand_margin_right = -3
+		sb_resistencia.expand_margin_top = -2
+		sb_resistencia.expand_margin_bottom = -2
+		resistencia.add_theme_stylebox_override("fill", sb_resistencia)
+		_relleno_resistencia = sb_resistencia
+		
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	for parte in [["A", "D"], ["Mover"], ["Espacio"], ["Saltar"], ["S"], ["Slam"], ["E"], ["Papalote"], ["1", "2", "3"], ["Accesorios"]]:
 		_agregar_ayuda(parte)
 	for control in CONTROLES:
@@ -113,7 +141,11 @@ func _alternar_pausa() -> void:
 ## Abandona la carrera sin cobrar recompensas.
 func _volver() -> void:
 	get_tree().paused = false
+<<<<<<< HEAD
 	Animacion.cambiar_escena(ESCENA_TALLER)
+=======
+	Animacion.cambiar_escena(Rutas.TALLER)
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 
 
 # --- Salsa Valentina ---------------------------------------------------------
@@ -341,9 +373,37 @@ func _dibujar_resistencia() -> void:
 func _dibujar_zona_perfecta() -> void:
 	var m := medidor.get_theme_stylebox("background").get_margin(SIDE_LEFT)
 	var ancho := medidor.size.x - m * 2.0
+<<<<<<< HEAD
 	var zona := Rect2(m + ancho * Config.zona_perfecta.x, 3, ancho * (Config.zona_perfecta.y - Config.zona_perfecta.x), medidor.size.y - 6)
 	Sprites.rectangulo(medidor, zona, medidor.get_theme_color("zona"))
 	Sprites.marco(medidor, zona, medidor.get_theme_color("borde_zona"))
 	for i in range(1, 10):
 		var x := m + ancho * i * 0.1
 		Sprites.rectangulo(medidor, Rect2(x - 1, medidor.size.y - 12, 2, 7), medidor.get_theme_color("marca"))
+=======
+	# Ajustamos el alto para que no toque los bordes superior e inferior
+	var zona := Rect2(m + ancho * Config.zona_perfecta.x, 4, ancho * (Config.zona_perfecta.y - Config.zona_perfecta.x), medidor.size.y - 8)
+	
+	var sb := StyleBoxFlat.new()
+	# Usamos el color de la zona pero con un poco de transparencia si quieres que se vea más integrado
+	sb.bg_color = medidor.get_theme_color("zona")
+	sb.border_color = medidor.get_theme_color("borde_zona")
+	sb.set_border_width_all(2)
+	
+	# Por defecto, todas las esquinas rectas
+	sb.corner_radius_top_left = 0
+	sb.corner_radius_bottom_left = 0
+	sb.corner_radius_top_right = 0
+	sb.corner_radius_bottom_right = 0
+	
+	# Si la zona perfecta llega al final de la barra, redondeamos solo la derecha
+	if Config.zona_perfecta.y >= 0.99:
+		sb.corner_radius_top_right = 30
+		sb.corner_radius_bottom_right = 30
+		
+	medidor.draw_style_box(sb, zona)
+	
+	for i in range(1, 10):
+		var x := m + ancho * i * 0.1
+		Sprites.rectangulo(medidor, Rect2(x - 1, medidor.size.y - 12, 2, 6), medidor.get_theme_color("marca"))
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)

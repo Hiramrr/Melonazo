@@ -2,6 +2,7 @@
 
 [ext_resource type="FontFile" uid="uid://qun1v8qx0ome" path="res://recursos/fuentes/Fredoka.ttf" id="fuente"]
 [ext_resource type="Texture2D" uid="uid://c8wnvbndwh7ev" path="res://recursos/iconos/perilla.png" id="perilla"]
+<<<<<<< HEAD
 
 [ext_resource type="Texture2D" path="res://recursos/sprites/interfaz.png" id="sprites_interfaz"]
 [ext_resource type="Texture2D" path="res://recursos/sprites/estilos.png" id="sprites_estilos"]
@@ -291,6 +292,10 @@ expand_margin_left = 1.0
 expand_margin_top = 1.0
 expand_margin_right = 1.0
 expand_margin_bottom = 1.0
+=======
+[ext_resource type="Texture2D" uid="uid://dq8afqjavy3xl" path="res://recursos/sprites/estilos.png" id="sprites_estilos"]
+[ext_resource type="Texture2D" uid="uid://dc8hi6ijsu1jm" path="res://recursos/sprites/interfaz.png" id="sprites_interfaz"]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 
 [sub_resource type="AtlasTexture" id="atlas_panel"]
 atlas = ExtResource("sprites_estilos")
@@ -298,11 +303,18 @@ region = Rect2(0, 0, 50, 70)
 filter_clip = true
 
 [sub_resource type="StyleBoxTexture" id="panel"]
+<<<<<<< HEAD
 texture = SubResource("atlas_panel")
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 content_margin_left = 20.0
 content_margin_top = 18.0
 content_margin_right = 20.0
 content_margin_bottom = 18.0
+<<<<<<< HEAD
+=======
+texture = SubResource("atlas_panel")
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 texture_margin_left = 23.0
 texture_margin_top = 29.0
 texture_margin_right = 23.0
@@ -312,6 +324,7 @@ expand_margin_top = 1.0
 expand_margin_right = 2.0
 expand_margin_bottom = 9.0
 
+<<<<<<< HEAD
 [sub_resource type="AtlasTexture" id="atlas_principal_hover"]
 atlas = ExtResource("sprites_estilos")
 region = Rect2(0, 209, 50, 64)
@@ -738,17 +751,32 @@ expand_margin_top = 1.0
 expand_margin_right = 1.0
 expand_margin_bottom = 1.0
 
+=======
+[sub_resource type="FontVariation" id="Grueso"]
+base_font = ExtResource("fuente")
+variation_opentype = {
+2003265652: 650
+}
+
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 [sub_resource type="AtlasTexture" id="atlas_HUD_Aviso"]
 atlas = ExtResource("sprites_estilos")
 region = Rect2(52, 0, 60, 60)
 filter_clip = true
 
 [sub_resource type="StyleBoxTexture" id="HUD_Aviso"]
+<<<<<<< HEAD
 texture = SubResource("atlas_HUD_Aviso")
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 content_margin_left = 12.0
 content_margin_top = 6.0
 content_margin_right = 20.0
 content_margin_bottom = 8.0
+<<<<<<< HEAD
+=======
+texture = SubResource("atlas_HUD_Aviso")
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 texture_margin_left = 28.0
 texture_margin_top = 28.0
 texture_margin_right = 28.0
@@ -758,6 +786,7 @@ expand_margin_top = 1.0
 expand_margin_right = 1.0
 expand_margin_bottom = 1.0
 
+<<<<<<< HEAD
 [sub_resource type="AtlasTexture" id="atlas_HUD_BarraRuta"]
 atlas = ExtResource("sprites_estilos")
 region = Rect2(254, 0, 18, 18)
@@ -839,17 +868,26 @@ expand_margin_right = 1.0
 expand_margin_bottom = 1.0
 modulate_color = Color(0.4235, 0.7647, 0.3725, 1)
 
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 [sub_resource type="AtlasTexture" id="atlas_HUD_BarraFuerza"]
 atlas = ExtResource("sprites_estilos")
 region = Rect2(114, 0, 44, 44)
 filter_clip = true
 
 [sub_resource type="StyleBoxTexture" id="HUD_BarraFuerza"]
+<<<<<<< HEAD
 texture = SubResource("atlas_HUD_BarraFuerza")
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 content_margin_left = 5.0
 content_margin_top = 5.0
 content_margin_right = 5.0
 content_margin_bottom = 5.0
+<<<<<<< HEAD
+=======
+texture = SubResource("atlas_HUD_BarraFuerza")
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 texture_margin_left = 20.0
 texture_margin_top = 20.0
 texture_margin_right = 20.0
@@ -866,10 +904,13 @@ filter_clip = true
 
 [sub_resource type="StyleBoxTexture" id="HUD_RellenoFuerza"]
 texture = SubResource("atlas_HUD_RellenoFuerza")
+<<<<<<< HEAD
 content_margin_left = 0.0
 content_margin_top = 0.0
 content_margin_right = 0.0
 content_margin_bottom = 0.0
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 texture_margin_left = 14.0
 texture_margin_top = 14.0
 texture_margin_right = 14.0
@@ -880,17 +921,108 @@ expand_margin_right = 1.0
 expand_margin_bottom = 1.0
 modulate_color = Color(1, 0.7843, 0.2392, 1)
 
+<<<<<<< HEAD
+=======
+[sub_resource type="AtlasTexture" id="atlas_HUD_BarraResistencia"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(194, 0, 32, 32)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="HUD_BarraResistencia"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+texture = SubResource("atlas_HUD_BarraResistencia")
+texture_margin_left = 14.0
+texture_margin_top = 14.0
+texture_margin_right = 14.0
+texture_margin_bottom = 14.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_HUD_RellenoResistencia"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(228, 0, 24, 24)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="HUD_RellenoResistencia"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+texture = SubResource("atlas_HUD_RellenoResistencia")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 10.0
+texture_margin_bottom = 10.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+modulate_color = Color(0.4235, 0.7647, 0.3725, 1)
+
+[sub_resource type="AtlasTexture" id="atlas_HUD_BarraRuta"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(254, 0, 18, 18)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="HUD_BarraRuta"]
+content_margin_left = 0.0
+content_margin_top = 3.0
+content_margin_right = 0.0
+content_margin_bottom = 3.0
+texture = SubResource("atlas_HUD_BarraRuta")
+texture_margin_left = 7.0
+texture_margin_top = 7.0
+texture_margin_right = 7.0
+texture_margin_bottom = 7.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_HUD_RellenoRuta"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(274, 0, 18, 18)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="HUD_RellenoRuta"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+texture = SubResource("atlas_HUD_RellenoRuta")
+texture_margin_left = 7.0
+texture_margin_top = 7.0
+texture_margin_right = 7.0
+texture_margin_bottom = 7.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 [sub_resource type="AtlasTexture" id="atlas_HUD_BotonRedondo"]
 atlas = ExtResource("sprites_estilos")
 region = Rect2(294, 0, 68, 68)
 filter_clip = true
 
 [sub_resource type="StyleBoxTexture" id="HUD_BotonRedondo"]
+<<<<<<< HEAD
 texture = SubResource("atlas_HUD_BotonRedondo")
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 content_margin_left = 10.0
 content_margin_top = 8.0
 content_margin_right = 10.0
 content_margin_bottom = 12.0
+<<<<<<< HEAD
+=======
+texture = SubResource("atlas_HUD_BotonRedondo")
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 texture_margin_left = 32.0
 texture_margin_top = 32.0
 texture_margin_right = 32.0
@@ -906,11 +1038,18 @@ region = Rect2(364, 0, 68, 68)
 filter_clip = true
 
 [sub_resource type="StyleBoxTexture" id="HUD_BotonRedondoPulsado"]
+<<<<<<< HEAD
 texture = SubResource("atlas_HUD_BotonRedondoPulsado")
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 content_margin_left = 10.0
 content_margin_top = 12.0
 content_margin_right = 10.0
 content_margin_bottom = 8.0
+<<<<<<< HEAD
+=======
+texture = SubResource("atlas_HUD_BotonRedondoPulsado")
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 texture_margin_left = 32.0
 texture_margin_top = 32.0
 texture_margin_right = 32.0
@@ -920,6 +1059,7 @@ expand_margin_top = -3.0
 expand_margin_right = 1.0
 expand_margin_bottom = 1.0
 
+<<<<<<< HEAD
 [sub_resource type="AtlasTexture" id="atlas_HUD_Cinta"]
 atlas = ExtResource("sprites_estilos")
 region = Rect2(318, 72, 36, 36)
@@ -931,6 +1071,81 @@ content_margin_left = 40.0
 content_margin_top = 4.0
 content_margin_right = 40.0
 content_margin_bottom = 10.0
+=======
+[sub_resource type="AtlasTexture" id="atlas_disabled"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(434, 0, 36, 36)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="disabled"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+texture = SubResource("atlas_disabled")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_58qa3"]
+
+[sub_resource type="AtlasTexture" id="atlas_hover"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(46, 72, 36, 36)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="hover"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+texture = SubResource("atlas_hover")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_pressed"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(84, 72, 36, 36)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="pressed"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+texture = SubResource("atlas_pressed")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+expand_margin_left = 1.0
+expand_margin_top = -3.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_normal"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(122, 72, 36, 36)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="normal"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+texture = SubResource("atlas_normal")
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 texture_margin_left = 16.0
 texture_margin_top = 16.0
 texture_margin_right = 16.0
@@ -946,11 +1161,18 @@ region = Rect2(160, 72, 40, 40)
 filter_clip = true
 
 [sub_resource type="StyleBoxTexture" id="Slot_Casilla"]
+<<<<<<< HEAD
 texture = SubResource("atlas_Slot_Casilla")
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 content_margin_left = 6.0
 content_margin_top = 6.0
 content_margin_right = 6.0
 content_margin_bottom = 8.0
+<<<<<<< HEAD
+=======
+texture = SubResource("atlas_Slot_Casilla")
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 texture_margin_left = 18.0
 texture_margin_top = 18.0
 texture_margin_right = 18.0
@@ -960,6 +1182,7 @@ expand_margin_top = 1.0
 expand_margin_right = 1.0
 expand_margin_bottom = 1.0
 
+<<<<<<< HEAD
 [sub_resource type="AtlasTexture" id="atlas_sello_record"]
 atlas = ExtResource("sprites_estilos")
 region = Rect2(254, 209, 36, 36)
@@ -971,6 +1194,59 @@ content_margin_left = 10.0
 content_margin_top = 10.0
 content_margin_right = 10.0
 content_margin_bottom = 14.0
+=======
+[sub_resource type="AtlasTexture" id="atlas_chip"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(202, 72, 56, 56)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="chip"]
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 14.0
+content_margin_bottom = 4.0
+texture = SubResource("atlas_chip")
+texture_margin_left = 26.0
+texture_margin_top = 26.0
+texture_margin_right = 26.0
+texture_margin_bottom = 26.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_chip_claro"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(260, 72, 56, 56)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="chip_claro"]
+content_margin_left = 10.0
+content_margin_top = 4.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+texture = SubResource("atlas_chip_claro")
+texture_margin_left = 26.0
+texture_margin_top = 26.0
+texture_margin_right = 26.0
+texture_margin_bottom = 26.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_HUD_Cinta"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(318, 72, 36, 36)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="HUD_Cinta"]
+content_margin_left = 40.0
+content_margin_top = 4.0
+content_margin_right = 40.0
+content_margin_bottom = 10.0
+texture = SubResource("atlas_HUD_Cinta")
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 texture_margin_left = 16.0
 texture_margin_top = 16.0
 texture_margin_right = 16.0
@@ -980,17 +1256,227 @@ expand_margin_top = 1.0
 expand_margin_right = 1.0
 expand_margin_bottom = 1.0
 
+<<<<<<< HEAD
+=======
+[sub_resource type="AtlasTexture" id="atlas_Resultados_Cinta"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(356, 72, 42, 56)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="Resultados_Cinta"]
+content_margin_left = 36.0
+content_margin_top = 4.0
+content_margin_right = 36.0
+content_margin_bottom = 12.0
+texture = SubResource("atlas_Resultados_Cinta")
+texture_margin_left = 19.0
+texture_margin_top = 23.0
+texture_margin_right = 19.0
+texture_margin_bottom = 29.0
+expand_margin_left = 2.0
+expand_margin_top = 1.0
+expand_margin_right = 2.0
+expand_margin_bottom = 7.0
+
+[sub_resource type="AtlasTexture" id="atlas_comprar_hover"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(400, 72, 36, 36)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="comprar_hover"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+texture = SubResource("atlas_comprar_hover")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_comprar_pressed"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(438, 72, 36, 36)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="comprar_pressed"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+texture = SubResource("atlas_comprar_pressed")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+expand_margin_left = 1.0
+expand_margin_top = -3.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_comprar"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(476, 72, 36, 36)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="comprar"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+texture = SubResource("atlas_comprar")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_separador"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(0, 130, 12, 12)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="separador"]
+content_margin_left = 0.0
+content_margin_top = 2.0
+content_margin_right = 0.0
+content_margin_bottom = 2.0
+texture = SubResource("atlas_separador")
+texture_margin_left = 4.0
+texture_margin_top = 4.0
+texture_margin_right = 4.0
+texture_margin_bottom = 4.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_riel_lleno"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(14, 130, 20, 20)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="riel_lleno"]
+content_margin_left = 2.0
+content_margin_top = 5.0
+content_margin_right = 2.0
+content_margin_bottom = 5.0
+texture = SubResource("atlas_riel_lleno")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_riel"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(36, 130, 20, 20)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="riel"]
+content_margin_left = 0.0
+content_margin_top = 5.0
+content_margin_right = 0.0
+content_margin_bottom = 5.0
+texture = SubResource("atlas_riel")
+texture_margin_left = 8.0
+texture_margin_top = 8.0
+texture_margin_right = 8.0
+texture_margin_bottom = 8.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_focus"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(0, 72, 44, 44)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="focus"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+texture = SubResource("atlas_focus")
+texture_margin_left = 20.0
+texture_margin_top = 20.0
+texture_margin_right = 20.0
+texture_margin_bottom = 20.0
+expand_margin_left = 6.0
+expand_margin_top = 6.0
+expand_margin_right = 6.0
+expand_margin_bottom = 6.0
+
+[sub_resource type="AtlasTexture" id="atlas_campo"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(58, 130, 32, 32)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="campo"]
+content_margin_left = 14.0
+content_margin_top = 8.0
+content_margin_right = 14.0
+content_margin_bottom = 8.0
+texture = SubResource("atlas_campo")
+texture_margin_left = 14.0
+texture_margin_top = 14.0
+texture_margin_right = 14.0
+texture_margin_bottom = 14.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_Taller_Vista"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(92, 130, 32, 32)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="Taller_Vista"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+texture = SubResource("atlas_Taller_Vista")
+texture_margin_left = 14.0
+texture_margin_top = 14.0
+texture_margin_right = 14.0
+texture_margin_bottom = 14.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 [sub_resource type="AtlasTexture" id="atlas_MuestraColor"]
 atlas = ExtResource("sprites_estilos")
 region = Rect2(126, 130, 50, 50)
 filter_clip = true
 
 [sub_resource type="StyleBoxTexture" id="MuestraColor"]
+<<<<<<< HEAD
 texture = SubResource("atlas_MuestraColor")
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 content_margin_left = 3.0
 content_margin_top = 3.0
 content_margin_right = 3.0
 content_margin_bottom = 6.0
+<<<<<<< HEAD
+=======
+texture = SubResource("atlas_MuestraColor")
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 texture_margin_left = 23.0
 texture_margin_top = 23.0
 texture_margin_right = 23.0
@@ -1006,11 +1492,18 @@ region = Rect2(178, 130, 50, 50)
 filter_clip = true
 
 [sub_resource type="StyleBoxTexture" id="MuestraColor_Borde"]
+<<<<<<< HEAD
 texture = SubResource("atlas_MuestraColor_Borde")
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 content_margin_left = 3.0
 content_margin_top = 3.0
 content_margin_right = 3.0
 content_margin_bottom = 6.0
+<<<<<<< HEAD
+=======
+texture = SubResource("atlas_MuestraColor_Borde")
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 texture_margin_left = 23.0
 texture_margin_top = 23.0
 texture_margin_right = 23.0
@@ -1026,11 +1519,18 @@ region = Rect2(230, 130, 50, 50)
 filter_clip = true
 
 [sub_resource type="StyleBoxTexture" id="MuestraColorElegida"]
+<<<<<<< HEAD
 texture = SubResource("atlas_MuestraColorElegida")
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 content_margin_left = 4.0
 content_margin_top = 4.0
 content_margin_right = 4.0
 content_margin_bottom = 4.0
+<<<<<<< HEAD
+=======
+texture = SubResource("atlas_MuestraColorElegida")
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 texture_margin_left = 23.0
 texture_margin_top = 23.0
 texture_margin_right = 23.0
@@ -1046,11 +1546,18 @@ region = Rect2(282, 130, 50, 50)
 filter_clip = true
 
 [sub_resource type="StyleBoxTexture" id="MuestraColorElegida_Borde"]
+<<<<<<< HEAD
 texture = SubResource("atlas_MuestraColorElegida_Borde")
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 content_margin_left = 4.0
 content_margin_top = 4.0
 content_margin_right = 4.0
 content_margin_bottom = 4.0
+<<<<<<< HEAD
+=======
+texture = SubResource("atlas_MuestraColorElegida_Borde")
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 texture_margin_left = 23.0
 texture_margin_top = 23.0
 texture_margin_right = 23.0
@@ -1060,6 +1567,69 @@ expand_margin_top = 1.0
 expand_margin_right = 1.0
 expand_margin_bottom = 1.0
 
+<<<<<<< HEAD
+=======
+[sub_resource type="AtlasTexture" id="atlas_HUD_Oscuro"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(334, 130, 44, 44)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="HUD_Oscuro"]
+content_margin_left = 14.0
+content_margin_top = 8.0
+content_margin_right = 14.0
+content_margin_bottom = 10.0
+texture = SubResource("atlas_HUD_Oscuro")
+texture_margin_left = 20.0
+texture_margin_top = 20.0
+texture_margin_right = 20.0
+texture_margin_bottom = 20.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_Taller_Previa"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(380, 130, 50, 70)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="Taller_Previa"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 12.0
+texture = SubResource("atlas_Taller_Previa")
+texture_margin_left = 23.0
+texture_margin_top = 29.0
+texture_margin_right = 23.0
+texture_margin_bottom = 37.0
+expand_margin_left = 2.0
+expand_margin_top = 1.0
+expand_margin_right = 2.0
+expand_margin_bottom = 9.0
+
+[sub_resource type="AtlasTexture" id="atlas_Resultados_Tarjeta"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(432, 130, 54, 77)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="Resultados_Tarjeta"]
+content_margin_left = 30.0
+content_margin_top = 34.0
+content_margin_right = 30.0
+content_margin_bottom = 20.0
+texture = SubResource("atlas_Resultados_Tarjeta")
+texture_margin_left = 25.0
+texture_margin_top = 32.0
+texture_margin_right = 25.0
+texture_margin_bottom = 41.0
+expand_margin_left = 2.0
+expand_margin_top = 1.0
+expand_margin_right = 2.0
+expand_margin_bottom = 10.0
+
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 [sub_resource type="AtlasTexture" id="atlas_marco_postal"]
 atlas = ExtResource("sprites_interfaz")
 region = Rect2(0, 642, 60, 60)
@@ -1084,7 +1654,362 @@ texture_margin_top = 6.0
 texture_margin_right = 6.0
 texture_margin_bottom = 6.0
 
+<<<<<<< HEAD
 [resource]
+=======
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_654r5"]
+
+[sub_resource type="AtlasTexture" id="atlas_principal_hover"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(0, 209, 50, 64)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="principal_hover"]
+content_margin_left = 28.0
+content_margin_top = 10.0
+content_margin_right = 28.0
+content_margin_bottom = 16.0
+texture = SubResource("atlas_principal_hover")
+texture_margin_left = 23.0
+texture_margin_top = 27.0
+texture_margin_right = 23.0
+texture_margin_bottom = 33.0
+expand_margin_left = 2.0
+expand_margin_top = 1.0
+expand_margin_right = 2.0
+expand_margin_bottom = 7.0
+
+[sub_resource type="AtlasTexture" id="atlas_principal_pressed"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(52, 209, 48, 48)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="principal_pressed"]
+content_margin_left = 28.0
+content_margin_top = 16.0
+content_margin_right = 28.0
+content_margin_bottom = 10.0
+texture = SubResource("atlas_principal_pressed")
+texture_margin_left = 22.0
+texture_margin_top = 22.0
+texture_margin_right = 22.0
+texture_margin_bottom = 22.0
+expand_margin_left = 1.0
+expand_margin_top = -5.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_principal"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(102, 209, 50, 64)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="principal"]
+content_margin_left = 28.0
+content_margin_top = 10.0
+content_margin_right = 28.0
+content_margin_bottom = 16.0
+texture = SubResource("atlas_principal")
+texture_margin_left = 23.0
+texture_margin_top = 27.0
+texture_margin_right = 23.0
+texture_margin_bottom = 33.0
+expand_margin_left = 2.0
+expand_margin_top = 1.0
+expand_margin_right = 2.0
+expand_margin_bottom = 7.0
+
+[sub_resource type="AtlasTexture" id="atlas_barra_fondo"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(154, 209, 32, 32)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="barra_fondo"]
+content_margin_left = 4.0
+content_margin_top = 4.0
+content_margin_right = 4.0
+content_margin_bottom = 4.0
+texture = SubResource("atlas_barra_fondo")
+texture_margin_left = 14.0
+texture_margin_top = 14.0
+texture_margin_right = 14.0
+texture_margin_bottom = 14.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_barra_relleno"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(188, 209, 26, 26)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="barra_relleno"]
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+texture = SubResource("atlas_barra_relleno")
+texture_margin_left = 11.0
+texture_margin_top = 11.0
+texture_margin_right = 11.0
+texture_margin_bottom = 11.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_seleccion"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(216, 209, 36, 36)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="seleccion"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+texture = SubResource("atlas_seleccion")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_sello_record"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(254, 209, 36, 36)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="sello_record"]
+content_margin_left = 10.0
+content_margin_top = 10.0
+content_margin_right = 10.0
+content_margin_bottom = 14.0
+texture = SubResource("atlas_sello_record")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_panel_pestanas"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(292, 209, 50, 70)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="panel_pestanas"]
+content_margin_left = 18.0
+content_margin_top = 16.0
+content_margin_right = 12.0
+content_margin_bottom = 16.0
+texture = SubResource("atlas_panel_pestanas")
+texture_margin_left = 23.0
+texture_margin_top = 29.0
+texture_margin_right = 23.0
+texture_margin_bottom = 37.0
+expand_margin_left = 2.0
+expand_margin_top = 1.0
+expand_margin_right = 2.0
+expand_margin_bottom = 9.0
+
+[sub_resource type="AtlasTexture" id="atlas_tab_hover"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(344, 209, 36, 22)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="tab_hover"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+texture = SubResource("atlas_tab_hover")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 2.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 3.0
+
+[sub_resource type="AtlasTexture" id="atlas_tab_elegida"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(382, 209, 40, 24)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="tab_elegida"]
+content_margin_left = 18.0
+content_margin_top = 10.0
+content_margin_right = 18.0
+content_margin_bottom = 8.0
+texture = SubResource("atlas_tab_elegida")
+texture_margin_left = 18.0
+texture_margin_top = 18.0
+texture_margin_right = 18.0
+texture_margin_bottom = 2.0
+expand_margin_left = 1.0
+expand_margin_top = 5.0
+expand_margin_right = 1.0
+expand_margin_bottom = 5.0
+
+[sub_resource type="AtlasTexture" id="atlas_tab"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(424, 209, 36, 22)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="tab"]
+content_margin_left = 16.0
+content_margin_top = 8.0
+content_margin_right = 16.0
+content_margin_bottom = 8.0
+texture = SubResource("atlas_tab")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 2.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 3.0
+
+[sub_resource type="AtlasTexture" id="atlas_tarjeta"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(462, 209, 36, 36)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="tarjeta"]
+content_margin_left = 12.0
+content_margin_top = 10.0
+content_margin_right = 12.0
+content_margin_bottom = 14.0
+texture = SubResource("atlas_tarjeta")
+texture_margin_left = 16.0
+texture_margin_top = 16.0
+texture_margin_right = 16.0
+texture_margin_bottom = 16.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_tecla"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(0, 281, 24, 24)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="tecla"]
+content_margin_left = 9.0
+content_margin_top = 1.0
+content_margin_right = 9.0
+content_margin_bottom = 6.0
+texture = SubResource("atlas_tecla")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 10.0
+texture_margin_bottom = 10.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="FontVariation" id="Texto"]
+base_font = ExtResource("fuente")
+variation_opentype = {
+2003265652: 500
+}
+
+[sub_resource type="AtlasTexture" id="atlas_tooltip"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(26, 281, 28, 28)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="tooltip"]
+content_margin_left = 10.0
+content_margin_top = 6.0
+content_margin_right = 10.0
+content_margin_bottom = 6.0
+texture = SubResource("atlas_tooltip")
+texture_margin_left = 12.0
+texture_margin_top = 12.0
+texture_margin_right = 12.0
+texture_margin_bottom = 12.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_grabber"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(56, 281, 24, 24)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="grabber"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = SubResource("atlas_grabber")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 10.0
+texture_margin_bottom = 10.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_grabber_activo"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(82, 281, 24, 24)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="grabber_activo"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = SubResource("atlas_grabber_activo")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 10.0
+texture_margin_bottom = 10.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[sub_resource type="AtlasTexture" id="atlas_scroll"]
+atlas = ExtResource("sprites_estilos")
+region = Rect2(108, 281, 24, 24)
+filter_clip = true
+
+[sub_resource type="StyleBoxTexture" id="scroll"]
+content_margin_left = 5.0
+content_margin_top = 5.0
+content_margin_right = 5.0
+content_margin_bottom = 5.0
+texture = SubResource("atlas_scroll")
+texture_margin_left = 10.0
+texture_margin_top = 10.0
+texture_margin_right = 10.0
+texture_margin_bottom = 10.0
+expand_margin_left = 1.0
+expand_margin_top = 1.0
+expand_margin_right = 1.0
+expand_margin_bottom = 1.0
+
+[resource]
+resource_name = "Xalapa"
+default_font = SubResource("Texto")
+default_font_size = 17
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 AcceptDialog/styles/panel = SubResource("panel")
 AutorPaisaje/base_type = &"Label"
 AutorPaisaje/font_sizes/font_size = 13
@@ -1149,7 +2074,11 @@ Button/constants/h_separation = 8
 Button/constants/icon_max_width = 26
 Button/fonts/font = SubResource("Grueso")
 Button/styles/disabled = SubResource("disabled")
+<<<<<<< HEAD
 Button/styles/focus = SubResource("focus")
+=======
+Button/styles/focus = SubResource("StyleBoxEmpty_58qa3")
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 Button/styles/hover = SubResource("hover")
 Button/styles/hover_pressed = SubResource("pressed")
 Button/styles/normal = SubResource("normal")
@@ -1366,7 +2295,11 @@ Principal/constants/icon_max_width = 34
 Principal/constants/outline_size = 9
 Principal/font_sizes/font_size = 26
 Principal/styles/disabled = SubResource("disabled")
+<<<<<<< HEAD
 Principal/styles/focus = SubResource("focus")
+=======
+Principal/styles/focus = SubResource("StyleBoxEmpty_654r5")
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 Principal/styles/hover = SubResource("principal_hover")
 Principal/styles/hover_pressed = SubResource("principal_pressed")
 Principal/styles/normal = SubResource("principal")
@@ -1478,6 +2411,9 @@ VScrollBar/styles/grabber_pressed = SubResource("grabber_activo")
 VScrollBar/styles/scroll = SubResource("scroll")
 ValorResultado/base_type = &"Subtitulo"
 ValorResultado/font_sizes/font_size = 19
+<<<<<<< HEAD
 default_font = SubResource("Texto")
 default_font_size = 17
 resource_name = "Xalapa"
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)

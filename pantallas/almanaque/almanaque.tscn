@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://pantallas/almanaque/almanaque.gd" id="1"]
@@ -5,6 +6,16 @@
 [ext_resource type="Script" path="res://pantallas/almanaque/ilustracion_ficha.gd" id="ilustracion"]
 
 [node name="Almanaque" type="Control"]
+=======
+[gd_scene format=3 uid="uid://cy6fxqnbtjvfu"]
+
+[ext_resource type="Script" uid="uid://dglqsj3jcbqoh" path="res://pantallas/almanaque/almanaque.gd" id="1"]
+[ext_resource type="Script" uid="uid://bw2s8lrypa2gh" path="res://interfaz/rejilla_tarjetas.gd" id="3_qa2x3"]
+[ext_resource type="Script" uid="uid://b0ucdelewwvv1" path="res://interfaz/fondo_juego.gd" id="fondo"]
+[ext_resource type="Script" uid="uid://cj53gcddtgsf3" path="res://pantallas/almanaque/ilustracion_ficha.gd" id="ilustracion"]
+
+[node name="Almanaque" type="Control" unique_id=1707232676]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -13,17 +24,30 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
 
+<<<<<<< HEAD
 [node name="Fondo" type="Control" parent="."]
 layout_mode = 0
 anchors_preset = 15
+=======
+[node name="Fondo" type="Control" parent="." unique_id=515460391]
+texture_filter = 1
+anchors_preset = 0
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
+<<<<<<< HEAD
 script = ExtResource("fondo")
 
 [node name="Margen" type="MarginContainer" parent="."]
+=======
+theme_type_variation = &"FondoTaller"
+script = ExtResource("fondo")
+
+[node name="Margen" type="MarginContainer" parent="." unique_id=883639214]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -35,6 +59,7 @@ theme_override_constants/margin_top = 32
 theme_override_constants/margin_right = 24
 theme_override_constants/margin_bottom = 16
 
+<<<<<<< HEAD
 [node name="Raiz" type="VBoxContainer" parent="Margen"]
 layout_mode = 2
 theme_override_constants/separation = 12
@@ -44,11 +69,23 @@ layout_mode = 2
 theme_override_constants/separation = 24
 
 [node name="Titulo" type="Label" parent="Margen/Raiz/Cabecera"]
+=======
+[node name="Raiz" type="VBoxContainer" parent="Margen" unique_id=288082852]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Cabecera" type="HBoxContainer" parent="Margen/Raiz" unique_id=484523507]
+layout_mode = 2
+theme_override_constants/separation = 24
+
+[node name="Titulo" type="Label" parent="Margen/Raiz/Cabecera" unique_id=1210445533]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_type_variation = &"TituloPanel"
 text = "Almanaque de melones"
 
+<<<<<<< HEAD
 [node name="Volver" type="Button" parent="Margen/Raiz/Cabecera"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -61,52 +98,99 @@ layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="MisMelones" type="Button" parent="Margen/Raiz/Categorias"]
+=======
+[node name="Volver" type="Button" parent="Margen/Raiz/Cabecera" unique_id=1733853365]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_vertical = 4
+tooltip_text = "Volver al taller. También con Esc."
+text = "Volver al taller"
+
+[node name="Categorias" type="HBoxContainer" parent="Margen/Raiz" unique_id=630027996]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="MisMelones" type="Button" parent="Margen/Raiz/Categorias" unique_id=1638542811]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 text = "Mis melones"
 
+<<<<<<< HEAD
 [node name="Accesorios" type="Button" parent="Margen/Raiz/Categorias"]
+=======
+[node name="Accesorios" type="Button" parent="Margen/Raiz/Categorias" unique_id=1082442019]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 text = "Accesorios"
 
+<<<<<<< HEAD
 [node name="Poderes" type="Button" parent="Margen/Raiz/Categorias"]
+=======
+[node name="Poderes" type="Button" parent="Margen/Raiz/Categorias" unique_id=1759134736]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 text = "Poderes"
 
+<<<<<<< HEAD
 [node name="Resumen" type="Label" parent="Margen/Raiz"]
+=======
+[node name="Resumen" type="Label" parent="Margen/Raiz" unique_id=1211236010]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"DetalleHUD"
 autowrap_mode = 2
 
+<<<<<<< HEAD
 [node name="Paginas" type="HBoxContainer" parent="Margen/Raiz"]
+=======
+[node name="Paginas" type="HBoxContainer" parent="Margen/Raiz" unique_id=2024045616]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 16
 
+<<<<<<< HEAD
 [node name="Coleccion" type="PanelContainer" parent="Margen/Raiz/Paginas"]
+=======
+[node name="Coleccion" type="PanelContainer" parent="Margen/Raiz/Paginas" unique_id=1269593099]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_stretch_ratio = 1.15
 
+<<<<<<< HEAD
 [node name="Caja" type="VBoxContainer" parent="Margen/Raiz/Paginas/Coleccion"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="Guardar" type="Button" parent="Margen/Raiz/Paginas/Coleccion/Caja"]
+=======
+[node name="Caja" type="VBoxContainer" parent="Margen/Raiz/Paginas/Coleccion" unique_id=275494841]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Guardar" type="Button" parent="Margen/Raiz/Paginas/Coleccion/Caja" unique_id=415889977]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 text = "Guardar melón actual"
 
+<<<<<<< HEAD
 [node name="Vacio" type="Label" parent="Margen/Raiz/Paginas/Coleccion/Caja"]
+=======
+[node name="Vacio" type="Label" parent="Margen/Raiz/Paginas/Coleccion/Caja" unique_id=1718946064]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"Suave"
 text = "Aún no tienes melones guardados."
 autowrap_mode = 2
 
+<<<<<<< HEAD
 [node name="Desplazamiento" type="ScrollContainer" parent="Margen/Raiz/Paginas/Coleccion/Caja"]
 layout_mode = 2
 size_flags_vertical = 3
@@ -114,12 +198,22 @@ horizontal_scroll_mode = 0
 follow_focus = true
 
 [node name="Lista" type="GridContainer" parent="Margen/Raiz/Paginas/Coleccion/Caja/Desplazamiento"]
+=======
+[node name="Desplazamiento" type="ScrollContainer" parent="Margen/Raiz/Paginas/Coleccion/Caja" unique_id=700100051]
+layout_mode = 2
+size_flags_vertical = 3
+follow_focus = true
+horizontal_scroll_mode = 0
+
+[node name="Lista" type="GridContainer" parent="Margen/Raiz/Paginas/Coleccion/Caja/Desplazamiento" unique_id=2039212853]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/h_separation = 8
 theme_override_constants/v_separation = 8
 columns = 3
+<<<<<<< HEAD
 
 [node name="Ficha" type="PanelContainer" parent="Margen/Raiz/Paginas"]
 layout_mode = 2
@@ -130,33 +224,65 @@ layout_mode = 2
 theme_override_constants/separation = 8
 
 [node name="Texto" type="ScrollContainer" parent="Margen/Raiz/Paginas/Ficha/Caja"]
+=======
+script = ExtResource("3_qa2x3")
+ancho_minimo = 150.0
+metadata/_custom_type_script = "uid://bw2s8lrypa2gh"
+
+[node name="Ficha" type="PanelContainer" parent="Margen/Raiz/Paginas" unique_id=647745404]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Caja" type="VBoxContainer" parent="Margen/Raiz/Paginas/Ficha" unique_id=2140548724]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Texto" type="ScrollContainer" parent="Margen/Raiz/Paginas/Ficha/Caja" unique_id=1531173219]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 3
 horizontal_scroll_mode = 0
 
+<<<<<<< HEAD
 [node name="Contenido" type="VBoxContainer" parent="Margen/Raiz/Paginas/Ficha/Caja/Texto"]
+=======
+[node name="Contenido" type="VBoxContainer" parent="Margen/Raiz/Paginas/Ficha/Caja/Texto" unique_id=758414905]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
+<<<<<<< HEAD
 [node name="Ilustracion" type="Control" parent="Margen/Raiz/Paginas/Ficha/Caja/Texto/Contenido"]
+=======
+[node name="Ilustracion" type="Control" parent="Margen/Raiz/Paginas/Ficha/Caja/Texto/Contenido" unique_id=287578994]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 164)
 layout_mode = 2
 script = ExtResource("ilustracion")
 
+<<<<<<< HEAD
 [node name="Nombre" type="Label" parent="Margen/Raiz/Paginas/Ficha/Caja/Texto/Contenido"]
+=======
+[node name="Nombre" type="Label" parent="Margen/Raiz/Paginas/Ficha/Caja/Texto/Contenido" unique_id=1041150812]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"NombreFicha"
 autowrap_mode = 2
 
+<<<<<<< HEAD
 [node name="Descripcion" type="Label" parent="Margen/Raiz/Paginas/Ficha/Caja/Texto/Contenido"]
+=======
+[node name="Descripcion" type="Label" parent="Margen/Raiz/Paginas/Ficha/Caja/Texto/Contenido" unique_id=520123861]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 autowrap_mode = 2
 
+<<<<<<< HEAD
 [node name="Separador" type="HSeparator" parent="Margen/Raiz/Paginas/Ficha/Caja/Texto/Contenido"]
 layout_mode = 2
 
@@ -167,11 +293,24 @@ layout_mode = 2
 autowrap_mode = 2
 
 [node name="Usar" type="Button" parent="Margen/Raiz/Paginas/Ficha/Caja"]
+=======
+[node name="Separador" type="HSeparator" parent="Margen/Raiz/Paginas/Ficha/Caja/Texto/Contenido" unique_id=427641141]
+layout_mode = 2
+
+[node name="Datos" type="Label" parent="Margen/Raiz/Paginas/Ficha/Caja/Texto/Contenido" unique_id=314273098]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"TextoFicha"
+autowrap_mode = 2
+
+[node name="Usar" type="Button" parent="Margen/Raiz/Paginas/Ficha/Caja" unique_id=62091359]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"Comprar"
 text = "Usar melón"
 
+<<<<<<< HEAD
 [node name="Acciones" type="HBoxContainer" parent="Margen/Raiz/Paginas/Ficha/Caja"]
 layout_mode = 2
 theme_override_constants/separation = 8
@@ -190,12 +329,36 @@ layout_mode = 2
 text = "Eliminar"
 
 [node name="Aviso" type="Label" parent="Margen/Raiz"]
+=======
+[node name="Acciones" type="HBoxContainer" parent="Margen/Raiz/Paginas/Ficha/Caja" unique_id=1482928999]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="Actualizar" type="Button" parent="Margen/Raiz/Paginas/Ficha/Caja/Acciones" unique_id=1610727991]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_type_variation = &"BotonSecundario"
+text = "Actualizar con el actual"
+
+[node name="Eliminar" type="Button" parent="Margen/Raiz/Paginas/Ficha/Caja/Acciones" unique_id=1329295162]
+unique_name_in_owner = true
+layout_mode = 2
+theme_type_variation = &"BotonSecundario"
+text = "Eliminar"
+
+[node name="Aviso" type="Label" parent="Margen/Raiz" unique_id=1843365637]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"AyudaHUD"
 autowrap_mode = 2
 
+<<<<<<< HEAD
 [node name="Confirmar" type="ConfirmationDialog" parent="."]
+=======
+[node name="Confirmar" type="ConfirmationDialog" parent="." unique_id=787378331]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 size = Vector2i(480, 160)
 dialog_autowrap = true

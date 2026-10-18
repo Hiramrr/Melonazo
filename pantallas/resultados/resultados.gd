@@ -16,7 +16,10 @@ extends Control
 ## sello y al final cuenta el total.
 ## BtnVolver (señal pressed) o la acción "confirmar" llevan de vuelta al Taller.
 
+<<<<<<< HEAD
 const TALLER := "res://pantallas/taller/taller.tscn"
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 const PASO_FILA := 0.12                # segundos entre filas del desglose
 
 @onready var lbl_titulo: Label = %Titulo
@@ -161,4 +164,8 @@ func _unhandled_input(event: InputEvent) -> void:
 
 ## Vuelve al Taller. Conectada a BtnVolver.pressed en la escena.
 func _volver() -> void:
+<<<<<<< HEAD
 	Animacion.cambiar_escena(TALLER)
+=======
+	Animacion.cambiar_escena(Rutas.TALLER)
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)

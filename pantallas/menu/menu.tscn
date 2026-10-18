@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [gd_scene format=3]
 
 [ext_resource type="Script" path="res://pantallas/menu/menu.gd" id="1"]
@@ -38,6 +39,48 @@ unique_name_in_owner = true
 [node name="Interfaz" type="CanvasLayer" parent="."]
 
 [node name="Centro" type="VBoxContainer" parent="Interfaz"]
+=======
+[gd_scene format=3 uid="uid://bf2qv62wf27n7"]
+
+[ext_resource type="Script" uid="uid://ddwmhxny25gv2" path="res://pantallas/menu/menu.gd" id="1"]
+[ext_resource type="Script" uid="uid://b8n8htp7bf0y0" path="res://mundo/terreno/bajada_xallitic.gd" id="bajada"]
+[ext_resource type="Script" uid="uid://b2dsiyku4lg07" path="res://pantallas/menu/cielo_menu.gd" id="cielo"]
+[ext_resource type="Texture2D" uid="uid://dqywg05vdx7wy" path="res://recursos/iconos/jugar.png" id="ico_jugar"]
+[ext_resource type="Script" uid="uid://b4aascsgo3sot" path="res://pantallas/menu/melones_menu.gd" id="melones"]
+[ext_resource type="PackedScene" path="res://mundo/paisaje/paisaje.tscn" id="paisaje"]
+[ext_resource type="Script" uid="uid://bnplek2qxk2d4" path="res://pantallas/menu/titulo_melonazo.gd" id="titulo"]
+[ext_resource type="PackedScene" path="res://mundo/terreno/tramo.tscn" id="tramo"]
+
+[node name="Menu" type="Node2D" unique_id=692679147]
+script = ExtResource("1")
+
+[node name="Paisaje" parent="." unique_id=969699999 instance=ExtResource("paisaje")]
+
+[node name="CieloAlto" type="Node2D" parent="." unique_id=1891001477]
+unique_name_in_owner = true
+texture_filter = 1
+texture_repeat = 2
+script = ExtResource("cielo")
+
+[node name="Mundo" type="Node2D" parent="." unique_id=464422844]
+texture_filter = 1
+texture_repeat = 2
+
+[node name="BajadaXallitic" parent="Mundo" unique_id=1242528578 instance=ExtResource("tramo")]
+unique_name_in_owner = true
+script = ExtResource("bajada")
+
+[node name="Melones" type="Node2D" parent="Mundo" unique_id=1421179428]
+unique_name_in_owner = true
+script = ExtResource("melones")
+
+[node name="Camara" type="Camera2D" parent="." unique_id=189117303]
+unique_name_in_owner = true
+
+[node name="Interfaz" type="CanvasLayer" parent="." unique_id=836982367]
+
+[node name="Centro" type="VBoxContainer" parent="Interfaz" unique_id=306373980]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -47,6 +90,7 @@ grow_vertical = 2
 mouse_filter = 2
 theme_override_constants/separation = 50
 
+<<<<<<< HEAD
 [node name="Titulo" type="Control" parent="Interfaz/Centro"]
 unique_name_in_owner = true
 layout_mode = 2
@@ -54,6 +98,18 @@ size_flags_horizontal = 4
 script = ExtResource("titulo")
 
 [node name="BtnJugar" type="Button" parent="Interfaz/Centro"]
+=======
+[node name="Titulo" type="Control" parent="Interfaz/Centro" unique_id=1718354530]
+unique_name_in_owner = true
+texture_filter = 1
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 1
+theme_type_variation = &"LogoMenu"
+script = ExtResource("titulo")
+
+[node name="BtnJugar" type="Button" parent="Interfaz/Centro" unique_id=1384671417]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(280, 88)
 layout_mode = 2

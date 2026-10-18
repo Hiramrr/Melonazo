@@ -16,11 +16,19 @@ extends ScrollContainer
 signal cambio
 
 const LADO_ICONO := 56.0
+<<<<<<< HEAD
 const ALTO_TARJETA := 182.0
 const ANCHO_MIN_TRES := 480.0          # ancho de la lista a partir del cual van 3 columnas
 
 @onready var lbl_feedback: Label = %FeedbackAcc
 @onready var lista: GridContainer = %ListaAcc
+=======
+const ALTO_TARJETA := 195.0
+# const ANCHO_MIN_TRES := 480.0          # ancho de la lista a partir del cual van 3 columnas
+
+@onready var lbl_feedback: Label = %FeedbackAcc
+@onready var lista: RejillaTarjetas = %ListaAcc
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 
 var filas := {}                         # id -> {boton, tecla, pie, precio, icono, candado}
 var _aviso := ""                        # se muestra una vez en FeedbackAcc
@@ -29,22 +37,36 @@ var _aviso := ""                        # se muestra una vez en FeedbackAcc
 func _ready() -> void:
 	for id in Config.orden_accesorios:
 		_crear_tarjeta(id)
+<<<<<<< HEAD
 	lista.resized.connect(_ajustar_columnas)
 
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 
 ## Pone al día el texto de ayuda y las tarjetas con Juego.
 func refrescar() -> void:
 	var base := "Equipados %d de %d · teclas 1, 2 y 3 en el aire" % [Juego.accesorios.size(), Config.max_accesorios]
 	lbl_feedback.text = base if _aviso == "" else _aviso
+<<<<<<< HEAD
 	lbl_feedback.theme_type_variation = &"AvisoAccesorios" if _aviso != "" else &"SubtituloChico"
+=======
+	lbl_feedback.theme_type_variation = Estilos.AVISO_ACCESORIOS if _aviso != "" else Estilos.SUBTITULO_CHICO
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	_aviso = ""
 	for id in Config.orden_accesorios:
 		var a: Accesorio = Config.accesorios[id]
 		var f: Dictionary = filas[id]
+<<<<<<< HEAD
 		var b: Button = f["boton"]
 		var libre: bool = id in Juego.desbloqueados
 		var pos := Juego.accesorios.find(id)
 		b.theme_type_variation = &"Seleccion" if pos >= 0 else &""
+=======
+		var b: BotonTarjeta = f["boton"]
+		var libre: bool = id in Juego.desbloqueados
+		var pos := Juego.accesorios.find(id)
+		b.seleccionado = pos >= 0                     # ← reemplaza theme_type_variation manual
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 		b.disabled = not libre and Juego.aplausos < a.costo
 		f["tecla"].visible = pos >= 0
 		f["tecla"].text = str(pos + 1)
@@ -56,6 +78,7 @@ func refrescar() -> void:
 		f["precio"].texto = str(a.costo)
 		b.tooltip_text = "%s\n%s" % [a.nombre, a.accion] if libre else "Desbloquear por %d aplausos" % a.costo
 
+<<<<<<< HEAD
 
 func _ajustar_columnas() -> void:
 	var columnas := 3 if lista.size.x >= ANCHO_MIN_TRES else 2
@@ -63,6 +86,8 @@ func _ajustar_columnas() -> void:
 		lista.columns = columnas
 
 
+=======
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 ## Tarjeta de un accesorio:
 ##   [tecla]          [candado]
 ##          (dibujo)
@@ -71,6 +96,7 @@ func _ajustar_columnas() -> void:
 ##        carisma o precio
 func _crear_tarjeta(id: String) -> void:
 	var accesorio: Accesorio = Config.accesorios[id]
+<<<<<<< HEAD
 	var b := Button.new()
 	b.custom_minimum_size = Vector2(0, ALTO_TARJETA)
 	b.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -85,11 +111,19 @@ func _crear_tarjeta(id: String) -> void:
 	caja.offset_right = -10
 	caja.offset_top = 8
 	caja.offset_bottom = -14
+=======
+	var b := BotonTarjeta.new()
+	b.custom_minimum_size = Vector2(0, ALTO_TARJETA)
+	b.pressed.connect(_pulsar.bind(id))
+	lista.add_child(b)
+
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	var icono := Control.new()
 	icono.custom_minimum_size = Vector2(LADO_ICONO, LADO_ICONO)
 	icono.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	icono.draw.connect(accesorio.dibujar_icono.bind(icono, Rect2(0, 0, LADO_ICONO, LADO_ICONO)))
 	icono.size_flags_horizontal = Control.SIZE_SHRINK_CENTER
+<<<<<<< HEAD
 	caja.add_child(icono)
 	var nombre := ComunTaller.titulo_seccion(accesorio.nombre, &"NombreTarjeta")
 	nombre.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
@@ -112,14 +146,44 @@ func _crear_tarjeta(id: String) -> void:
 	precio.lado_icono = 20.0
 	pie.add_child(precio)
 	var tecla := Iconos.tecla("1", &"TeclaTarjeta")
+=======
+	b.cuerpo.add_child(icono)
+
+	var nombre := ComunTaller.titulo_seccion(accesorio.nombre, Estilos.NOMBRE_TARJETA)
+	nombre.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	nombre.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	b.cuerpo.add_child(nombre)
+
+	var info := ComunTaller.etiqueta(accesorio.accion, Estilos.DETALLE)
+	info.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	info.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	info.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	info.size_flags_vertical = Control.SIZE_EXPAND_FILL
+	b.cuerpo.add_child(info)
+
+	var carisma := Ficha.crear(Iconos.CARISMA, "", false, Estilos.CONTADOR_TARJETA)
+	carisma.lado_icono = 20.0
+	b.pie.add_child(carisma)
+	var precio := Ficha.crear(Iconos.APLAUSO, "", false, Estilos.CONTADOR_TARJETA)
+	precio.lado_icono = 20.0
+	b.pie.add_child(precio)
+
+	# Overlays específicos de Accesorios (van al Button, no al contenido)
+	var tecla := Iconos.tecla("1", Estilos.TECLA_TARJETA)
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	tecla.position = Vector2(8, 6)
 	b.add_child(tecla)
 	var candado := Iconos.imagen(Iconos.CANDADO, 28.0)
 	b.add_child(candado)
 	candado.set_anchors_and_offsets_preset(Control.PRESET_TOP_RIGHT)
 	candado.position += Vector2(-36, 8)
+<<<<<<< HEAD
 	filas[id] = {"boton": b, "tecla": tecla, "carisma": carisma, "precio": precio, "icono": icono, "candado": candado}
 
+=======
+
+	filas[id] = {"boton": b, "tecla": tecla, "carisma": carisma, "precio": precio, "icono": icono, "candado": candado}
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 
 ## Equipa, quita o compra según el estado del accesorio.
 func _pulsar(id: String) -> void:

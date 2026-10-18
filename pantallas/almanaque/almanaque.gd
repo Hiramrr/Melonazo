@@ -1,10 +1,15 @@
 extends Control
 ## Colección personal y fichas de consulta. Mirar una ficha no cambia Juego.
 
+<<<<<<< HEAD
 const TALLER := "res://pantallas/taller/taller.tscn"
 
 @onready var categorias: Array[Button] = [%MisMelones, %Accesorios, %Poderes]
 @onready var lista: GridContainer = %Lista
+=======
+@onready var categorias: Array[Button] = [%MisMelones, %Accesorios, %Poderes]
+@onready var lista: RejillaTarjetas = %Lista
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 @onready var resumen: Label = %Resumen
 @onready var vacio: Label = %Vacio
 @onready var ilustracion: IlustracionFicha = %Ilustracion
@@ -22,15 +27,26 @@ const TALLER := "res://pantallas/taller/taller.tscn"
 var categoria := 0
 var seleccionado := -1
 var _entradas: Array = []
+<<<<<<< HEAD
 var _botones: Array[Button] = []
+=======
+var _botones: Array[BotonTarjeta] = []
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 var _operacion := ""
 
 
 func _ready() -> void:
 	Musica.tocar(Musica.TIENDITA)
+<<<<<<< HEAD
 	for i in categorias.size():
 		categorias[i].pressed.connect(_cambiar_categoria.bind(i))
 	lista.resized.connect(_ajustar_columnas)
+=======
+	lista.ancho_minimo = 150.0
+	lista.max_columnas = 4
+	for i in categorias.size():
+		categorias[i].pressed.connect(_cambiar_categoria.bind(i))
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	aviso.text = Juego.guardado_error
 	_refrescar()
 	%Volver.grab_focus()
@@ -43,7 +59,11 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _volver() -> void:
+<<<<<<< HEAD
 	Animacion.cambiar_escena(TALLER)
+=======
+	Animacion.cambiar_escena(Rutas.TALLER)
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 
 
 func _cambiar_categoria(indice: int) -> void:
@@ -55,7 +75,11 @@ func _cambiar_categoria(indice: int) -> void:
 
 func _refrescar() -> void:
 	for i in categorias.size():
+<<<<<<< HEAD
 		categorias[i].theme_type_variation = &"Seleccion" if i == categoria else &""
+=======
+		categorias[i].theme_type_variation = Estilos.SELECCION if i == categoria else Estilos.BOTON
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	for hijo in lista.get_children():
 		lista.remove_child(hijo)
 		hijo.queue_free()
@@ -76,6 +100,7 @@ func _refrescar() -> void:
 	vacio.visible = _entradas.is_empty()
 	for i in _entradas.size():
 		_crear_ficha(i)
+<<<<<<< HEAD
 	_ajustar_columnas()
 	_elegir(clampi(seleccionado, 0, _entradas.size() - 1) if not _entradas.is_empty() else -1)
 
@@ -99,24 +124,52 @@ func _crear_ficha(indice: int) -> void:
 	caja.offset_right = -10
 	caja.offset_top = 4
 	caja.offset_bottom = -14
+=======
+	_elegir(clampi(seleccionado, 0, _entradas.size() - 1) if not _entradas.is_empty() else -1)
+
+func _crear_ficha(indice: int) -> void:
+	var b := BotonTarjeta.new()
+	b.custom_minimum_size = Vector2(138, 180)          # +16 px de alto para BotonTarjeta
+	b.pressed.connect(_elegir.bind(indice))
+	lista.add_child(b)
+	_botones.append(b)
+	
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	var imagen := IlustracionFicha.new()
 	imagen.custom_minimum_size.y = 92
 	imagen.size_flags_vertical = Control.SIZE_EXPAND_FILL
 	_preparar_imagen(imagen, indice)
+<<<<<<< HEAD
 	caja.add_child(imagen)
 	var titulo := ComunTaller.titulo_seccion(_nombre_entrada(indice), &"NombreTarjeta")
 	titulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	titulo.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
 	caja.add_child(titulo)
+=======
+	b.cuerpo.add_child(imagen)
+	
+	var titulo := ComunTaller.titulo_seccion(_nombre_entrada(indice), Estilos.NOMBRE_TARJETA)
+	titulo.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	titulo.text_overrun_behavior = TextServer.OVERRUN_TRIM_ELLIPSIS
+	b.cuerpo.add_child(titulo)
+	
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	var estado := "Melón personalizado"
 	if categoria == 1:
 		estado = "Disponible" if _entradas[indice] in Juego.desbloqueados else "Por desbloquear"
 	elif categoria == 2:
 		estado = "De la tiendita" if Config.poderes_tienda.has(_entradas[indice]) else "Poder del camino"
+<<<<<<< HEAD
 	var nota := ComunTaller.etiqueta(estado, &"Detalle")
 	nota.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
 	caja.add_child(nota)
 	boton.tooltip_text = "%s. %s" % [titulo.text, estado]
+=======
+	var nota := ComunTaller.etiqueta(estado, Estilos.DETALLE)
+	nota.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	b.cuerpo.add_child(nota)
+	b.tooltip_text = "%s. %s" % [titulo.text, estado]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 
 
 func _nombre_entrada(indice: int) -> String:
@@ -138,7 +191,11 @@ func _elegir(indice: int) -> void:
 	seleccionado = indice
 	texto.scroll_vertical = 0
 	for i in _botones.size():
+<<<<<<< HEAD
 		_botones[i].theme_type_variation = &"SeleccionPequena" if i == indice else &"BotonPequeno"
+=======
+		_botones[i].seleccionado = (i == indice)
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	for boton in [btn_usar, btn_actualizar, btn_eliminar]:
 		boton.visible = categoria == 0 and indice >= 0
 	if indice < 0:

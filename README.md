@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # ¡Rueda, Melón!
+=======
+# Melonazo
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 
 Un juego de lanzamiento y rebotes desde Xalapa hasta el Centro Universitario de la Costa de la Universidad de Guadalajara. Preparas tu melón en el taller y eliges la potencia para soltarlo por la bajada de Xallitic. Rueda solo hasta saltar del trampolín del final. Desde ahí puedes rodar por las calles o encadenar saltos y papalotes hasta la meta.
 

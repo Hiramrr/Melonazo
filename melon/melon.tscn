@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 [gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://melon/melon.gd" id="1"]
@@ -14,18 +15,44 @@ continuous_cd = 2
 contact_monitor = true
 max_contacts_reported = 4
 can_sleep = false
+=======
+[gd_scene format=3 uid="uid://m3unmsgep6er"]
+
+[ext_resource type="Script" uid="uid://5mq1ci64n2fu" path="res://melon/melon.gd" id="1"]
+[ext_resource type="Script" uid="uid://b11hx6rwlxav7" path="res://melon/estela.gd" id="2"]
+[ext_resource type="Texture2D" uid="uid://86407rq7jswv" path="res://recursos/poderes/explosion.png" id="tex_explosion"]
+[ext_resource type="Texture2D" uid="uid://cs0t77fnimr6" path="res://recursos/poderes/pizza.png" id="tex_pizza"]
+
+[sub_resource type="CircleShape2D" id="Cuerpo"]
+radius = 22.0
+
+[node name="Melon" type="RigidBody2D" unique_id=1039962029]
+collision_layer = 2
+can_sleep = false
+continuous_cd = 2
+contact_monitor = true
+max_contacts_reported = 4
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 script = ExtResource("1")
 textura_pizza = ExtResource("tex_pizza")
 textura_explosion = ExtResource("tex_explosion")
 
+<<<<<<< HEAD
 [node name="Cuerpo" type="CollisionShape2D" parent="."]
 shape = SubResource("Cuerpo")
 
 [node name="Aspecto" type="Sprite2D" parent="."]
+=======
+[node name="Cuerpo" type="CollisionShape2D" parent="." unique_id=1786919660]
+shape = SubResource("Cuerpo")
+
+[node name="Aspecto" type="Sprite2D" parent="." unique_id=1133103586]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 show_behind_parent = true
 texture_filter = 1
 scale = Vector2(0.5, 0.5)
 
+<<<<<<< HEAD
 [node name="Lienzo" type="SubViewport" parent="."]
 transparent_bg = true
 handle_input_locally = false
@@ -37,6 +64,20 @@ position = Vector2(256, 256)
 scale = Vector2(2, 2)
 
 [node name="Estela" type="Node2D" parent="."]
+=======
+[node name="Lienzo" type="SubViewport" parent="." unique_id=1033081859]
+transparent_bg = true
+handle_input_locally = false
+canvas_item_default_texture_filter = 0
+render_target_update_mode = 0
+
+[node name="Dibujo" type="Node2D" parent="Lienzo" unique_id=234781353]
+texture_filter = 1
+position = Vector2(256, 256)
+scale = Vector2(2, 2)
+
+[node name="Estela" type="Node2D" parent="." unique_id=1626274303]
+>>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 z_index = -1
 script = ExtResource("2")
 
