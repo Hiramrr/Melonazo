@@ -88,7 +88,12 @@ func _verificar() -> void:
 	comprobar(not otro.recibir_slam(m), "Cada objetivo solo da un impulso")
 	comprobar(not m.iniciar_slam(), "La recarga impide otro slam inmediato")
 	m.t_slam = 0.0
+	m.rebotes = 0
 	comprobar(m.iniciar_slam(), "Slam vuelve a estar disponible al terminar su recarga")
+	m.acertar_slam()
+	comprobar(m.rebotes == config.slam_saltos_min, "Acertar sin cargas devuelve un salto para seguir")
+	m.t_slam = 0.0
+	comprobar(m.iniciar_slam(), "Slam disponible otra vez tras devolver el salto")
 	otro = r.terreno.melones[1]
 	otro.anterior = otro.global_position
 	m.origen_slam = otro.global_position + Vector2(-100, 10)

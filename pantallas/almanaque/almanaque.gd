@@ -67,7 +67,7 @@ func _refrescar() -> void:
 			_entradas = Config.orden_accesorios
 			resumen.text = "%d de %d accesorios disponibles. Se equipan en el taller y se usan con 1, 2 y 3." % [Juego.desbloqueados.size(), _entradas.size()]
 		2:
-			_entradas = Config.orden_poderes + Config.poderes_tienda.keys()
+			_entradas = Config.poderes.keys() + Config.poderes_tienda.keys()
 			resumen.text = "Poderes del camino y de la tiendita. Los del camino se activan al recogerlos durante la carrera."
 	btn_guardar.visible = categoria == 0
 	btn_guardar.disabled = Juego.melones_guardados.size() >= Juego.MAX_MELONES

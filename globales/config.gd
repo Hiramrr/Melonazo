@@ -80,6 +80,7 @@ var slam_caida := 1250.0             # velocidad mínima del picado
 var slam_impulso := Vector2(420, -850)
 var slam_conserva := 0.4             # velocidad que queda al fallar contra el suelo
 var slam_recarga := 0.45
+var slam_saltos_min := 1             # un slam acertado deja al menos estas cargas de salto
 var slam_margen := Vector2(16, 40)   # tolerancia lateral mínima y máxima, en píxeles
 var slam_tolerancia := 0.035         # margen según la velocidad relativa, en segundos
 var slam_alcance := 460.0            # altura máxima a la que el picado busca un melón debajo
@@ -91,7 +92,7 @@ var carriles_salida := Vector2(28, 76)
 var ritmo_rivales := Vector2(0.94, 1.16)
 var frenado_melones := 180.0          # px/s² al pasar de su ritmo en el suelo
 var aceleracion_melones := 320.0      # px/s² para recuperar su ritmo
-var velocidad_melones := Vector2(420, 620)   # ritmo de crucero de cada melón
+var velocidad_melones := Vector2(360, 520)   # ritmo de crucero de cada melón
 var salto_melones := Vector2(340, 640)       # velocidad vertical al despegar desde la calle
 var pausa_saltos_melones := Vector2(1.1, 2.8)  # s entre saltos aéreos (× pausa_saltos del tipo)
 var salida_min_melones := 90.0        # por debajo de este rebote se quedan rodando
@@ -115,9 +116,9 @@ var slam_conserva_rival := 0.6        # velocidad horizontal que queda tras un p
 var explosion_rival := 0.55           # s de la explosión al romperse; después se libera
 var aplastado_melones := 0.4          # s achatado y lento tras recibir un slam
 var primer_melon_camino_x := 1000.0
-var separacion_melones := Vector2(1300, 1600)        # px entre rivales del camino al inicio
-var separacion_final_melones := Vector2(800, 1000)   # y cerca de la meta, según la dificultad
-var prob_pareja_melones := 0.12       # se duplica gradualmente al final
+var separacion_melones := Vector2(950, 1200)         # px entre rivales del camino al inicio
+var separacion_final_melones := Vector2(550, 750)    # y cerca de la meta, según la dificultad
+var prob_pareja_melones := 0.2        # se duplica gradualmente al final
 # Carácter de cada rival. peso: qué tan seguido sale (los tontos abundan al inicio y los
 # listos al final, ver GeneradorTerreno._elegir_tipo_melon). cara: índice en caras, solo
 # para los melones del camino. ritmo: multiplica su rapidez. pausa_saltos: multiplica la
@@ -347,11 +348,12 @@ var max_puntos_dibujo := 6000
 # --- Poderes del camino ------------------------------------------------------
 # Se activan al recogerlos (mundo/ayudas/poder.gd). Su efecto está en
 # Melon.recibir_poder(). Los accesorios, en cambio, se usan con 1, 2 y 3.
-var orden_poderes: Array = ["chile", "cafe", "pizza"]
+var orden_poderes: Array = ["chile", "cafe", "pizza"]   # se alternan en el camino y el cielo; el elote va aparte
 var poderes: Dictionary = {
 	"chile": {"nombre": "Chile jalapeño", "descripcion": "Parpadea 1 s, explota y te lanza con una estela de fuego.", "color": Color("4f9a3a"), "duracion": 0.0, "impulso": Vector2(900, -320)},
 	"cafe": {"nombre": "Café de Coatepec", "descripcion": "Saltas sin gastar cargas durante 2 s.", "color": Color("a56d43"), "duracion": 2.0, "impulso": Vector2.ZERO},
 	"pizza": {"nombre": "Pizza con yogur", "descripcion": "Te subes a una pizza que avanza unos metros sin perder altura. Un frenón te tira.", "color": Color("f1ce67"), "duracion": 2.5, "impulso": Vector2.ZERO},
+	"elote": {"nombre": "Elote de feria", "descripcion": "Recupera todos tus saltos.", "color": Color("f2c230"), "duracion": 0.0, "impulso": Vector2.ZERO},
 }
 var chile_vel_min := 1100.0          # px/s hacia adelante tras la explosión, como mínimo
 var cafe_bloqueo := 0.28             # s entre saltos mientras dura el café
@@ -360,6 +362,9 @@ var primer_poder_x := 700.0
 var separacion_poderes := Vector2(1500.0, 2100.0)
 var escasez_poderes := 1.6            # con dificultad 1 los poderes quedan 60 % más separados
 var altura_poderes := Vector2(140.0, 220.0)   # hay que saltar para recogerlos
+# Elote de feria: recarga los saltos. Tiene su propia separación, fuera de la rotación.
+var primer_elote_x := 2600.0
+var separacion_elotes := Vector2(2600.0, 3600.0)
 var bonus_postal := 60
 
 # --- Postales (pasaporte) -----------------------------------------------------

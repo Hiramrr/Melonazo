@@ -196,6 +196,11 @@ func _verificar() -> void:
 	comprobar(melon.resistencia == 3 and melon.t_iman > 0, "Flor repara y atrae aplausos")
 	melon.usar(2)
 	comprobar(melon.rebotes == juego.rebotes_max() + 1 and melon.carisma() == 0, "Jarana suma rebote y pierde carisma al usar")
+	melon.recibir_poder("elote")
+	comprobar(melon.rebotes == juego.rebotes_max() + 1, "El elote no quita la carga extra de la jarana")
+	melon.rebotes = 0
+	melon.recibir_poder("elote")
+	comprobar(melon.rebotes == juego.rebotes_max(), "El elote recupera todos los saltos")
 	melon.t_planeo = 0
 	melon.position = Vector2(0, -4000)
 	melon.freeze = false
@@ -310,6 +315,9 @@ func _verificar() -> void:
 		for nodo in t.get_node("Coleccionables").get_children():
 			if nodo is Area2D and nodo.has_signal("recogido"):
 				consumibles.append(nodo)
+	var elotes := consumibles.filter(func(p) -> bool: return p.tipo == "elote")
+	consumibles = consumibles.filter(func(p) -> bool: return p.tipo != "elote")
+	comprobar(elotes.size() >= 1 and elotes[0].position.x == config.primer_elote_x, "El primer elote para recargar saltos sale al inicio")
 	comprobar(consumibles.size() >= 3 and consumibles.size() <= 5, "Los primeros tramos muestran poderes desde el inicio")
 	comprobar(consumibles[0].tipo == "chile" and consumibles[1].tipo == "cafe" and consumibles[2].tipo == "pizza", "Poderes alternan de forma reproducible")
 	var ultimo_x := -1.0
@@ -318,6 +326,8 @@ func _verificar() -> void:
 			if nodo is Area2D and nodo.has_signal("recogido"):
 				var altura: float = t.altura(nodo.position.x) - nodo.position.y
 				comprobar(altura >= config.altura_poderes.x - 0.01, "Un poder exige elevarse sobre el suelo")
+				if nodo.tipo == "elote":
+					continue                     # tiene su propia separación
 				if ultimo_x >= 0:
 					var distancia: float = nodo.position.x - ultimo_x
 					var holgura: float = lerpf(1.0, config.escasez_poderes, recorrido.terreno.dificultad(ultimo_x))

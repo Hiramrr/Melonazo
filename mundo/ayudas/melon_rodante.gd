@@ -573,6 +573,8 @@ func recibir_poder(id: String) -> void:
 			if en_suelo:
 				en_suelo = false
 				velocidad.y = minf(velocidad.y, -300.0)
+		"elote":
+			cargas = maxi(cargas, Config.cargas_max_rival)
 	_insignia = id
 	_t_insignia = maxf(duracion, 0.8)
 	_objetivo = null

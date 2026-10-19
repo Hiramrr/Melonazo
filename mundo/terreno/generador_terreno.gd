@@ -46,7 +46,7 @@ const OBSTACULOS := {
 # Avisos de los rivales. Solo "papalote" llega por MelonRodante.maniobra; los demás tipos
 # de maniobra no se anuncian (rebotes y saltos serían spam; "slam" sale al empezar el
 # picado y el aviso se da al acertar; "poder" no dice cuál, se avisa en _tocar_poder).
-const AVISOS_RIVAL := {"slam": "¡Slam!", "chile": "¡Chile!", "cafe": "¡Café!", "pizza": "¡Pizza!",
+const AVISOS_RIVAL := {"slam": "¡Slam!", "chile": "¡Chile!", "cafe": "¡Café!", "pizza": "¡Pizza!", "elote": "¡Elote!",
 	"papalote": "¡Al cielo!"}
 const COLORES_CASAS: Array = [
 	Color("e3b96f"), Color("ce8879"), Color("9fbab4"), Color("e9dfbf"),
@@ -65,6 +65,7 @@ var rng_melones := RandomNumberGenerator.new()
 var rng_pajaros := RandomNumberGenerator.new()   # pájaros; no cambian la ruta del suelo
 var rng_aspecto := RandomNumberGenerator.new()   # diseños de los rivales sin ficha guardada
 var rng_relevos := RandomNumberGenerator.new()   # relevos de rivales rotos; no cambian la ruta
+var rng_elotes := RandomNumberGenerator.new()    # elotes; no cambian la ruta
 var melones: Array[MelonRodante] = []
 var _siguiente_melon_x := 0.0
 var _pos_jugador := Vector2(NAN, NAN)  # para filtrar avisos y colocar relevos
@@ -74,6 +75,7 @@ var _fin := Vector2.ZERO               # último punto del último tramo
 var _n_tramos := 0
 var _poderes_generados := 0
 var _siguiente_poder_x := 0.0          # los poderes siguen su propia separación entre tramos
+var _siguiente_elote_x := 0.0
 var _siguiente_pajaro_x := 0.0
 var _papalotes_generados := 0
 var _siguiente_papalote_x := 0.0
@@ -87,6 +89,7 @@ var _patrones_premios: Array[int] = []
 func iniciar() -> void:
 	_siguiente_melon_x = Config.primer_melon_camino_x
 	_siguiente_poder_x = Config.primer_poder_x
+	_siguiente_elote_x = Config.primer_elote_x
 	_siguiente_pajaro_x = Config.primer_pajaro_x
 	_siguiente_papalote_x = Config.primer_papalote_x
 	_altura_papalote = Config.altura_papalotes.x
@@ -100,6 +103,7 @@ func iniciar() -> void:
 	rng_pajaros.seed = rng.seed + 3511
 	rng_aspecto.seed = rng.seed + 4153
 	rng_relevos.seed = rng.seed + 5297
+	rng_elotes.seed = rng.seed + 6481
 	for i in Config.franjas_premios_aire.size():
 		_siguientes_premios.append(900.0 + i * 320.0 + rng_premios.randf_range(0.0, 400.0))
 		_grupos_premios.append(0)
@@ -544,7 +548,8 @@ func _poner_aplausos(t: Tramo, inicio: float) -> void:
 
 
 ## Los poderes alternan en el orden de Config.orden_poderes. La separación sigue
-## entre tramos: cambiar de tramo no hace aparecer otro poder.
+## entre tramos: cambiar de tramo no hace aparecer otro poder. Los elotes tienen
+## su propia separación (Config.separacion_elotes) y su propio azar.
 func _poner_poderes(t: Tramo) -> void:
 	while _siguiente_poder_x < t.x1:
 		var x := _siguiente_poder_x
@@ -554,6 +559,11 @@ func _poner_poderes(t: Tramo) -> void:
 		_poderes_generados += 1
 		_siguiente_poder_x += rng.randf_range(Config.separacion_poderes.x, Config.separacion_poderes.y) \
 			* lerpf(1.0, Config.escasez_poderes, dificultad(x))
+	while _siguiente_elote_x < t.x1:
+		var x := _siguiente_elote_x
+		var alto := rng_elotes.randf_range(Config.altura_poderes.x, Config.altura_poderes.y)
+		t.get_node("Coleccionables").add_child(_crear_poder("elote", Vector2(x, t.altura(x) - alto)))
+		_siguiente_elote_x += rng_elotes.randf_range(Config.separacion_elotes.x, Config.separacion_elotes.y)
 
 
 func _crear_poder(tipo: String, posicion: Vector2) -> Poder:

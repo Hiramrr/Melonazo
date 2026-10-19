@@ -52,6 +52,7 @@ func generar(revisar: bool) -> Dictionary:
 	var monedas_bajas: Array[float] = []
 	var monedas: Array[Vector2] = []
 	var poderes_bajos: Array[float] = []
+	var elotes: Array[float] = []
 	var pajaros: Array[Vector2] = []
 	for tramo in terreno.tramos:
 		suelo.append([tramo.puntos, tramo.empedrado, tramo.casas])
@@ -67,7 +68,10 @@ func generar(revisar: bool) -> Dictionary:
 					if revisar:
 						comprobar(altura >= config.altura_aplausos.x and altura <= config.altura_aplausos.y + 25.0, "Las monedas bajas quedan al alcance de un salto corto")
 				elif nodo.scene_file_path.ends_with("/poder.tscn"):
-					poderes_bajos.append(nodo.position.x)
+					if nodo.tipo == "elote":
+						elotes.append(nodo.position.x)
+					else:
+						poderes_bajos.append(nodo.position.x)
 					if revisar:
 						comprobar(altura >= config.altura_poderes.x and altura <= config.altura_poderes.y, "Los poderes quedan visibles y requieren saltar")
 		for p in tramo.papalotes:
@@ -117,6 +121,10 @@ func generar(revisar: bool) -> Dictionary:
 			var holgura: float = lerpf(1.0, config.escasez_poderes, terreno.dificultad(anterior))
 			var separacion := poderes_bajos[i] - anterior
 			comprobar(separacion >= config.separacion_poderes.x * holgura - 0.01 and separacion <= config.separacion_poderes.y * holgura + 0.01, "Los poderes se espacian gradualmente sin huecos extra entre tramos")
+		comprobar(elotes.size() > 0 and elotes[0] == config.primer_elote_x, "El primer elote aparece al inicio")
+		for i in range(1, elotes.size()):
+			var separacion := elotes[i] - elotes[i - 1]
+			comprobar(separacion >= config.separacion_elotes.x - 0.01 and separacion <= config.separacion_elotes.y + 0.01, "Los elotes recargan saltos a lo largo de toda la ruta")
 		comprobar(not pajaros.is_empty() and pajaros[0].x >= config.primer_pajaro_x, "Los pájaros aparecen después de la salida")
 		for pajaro in pajaros:
 			comprobar(pajaro.x <= config.meta_m * config.px_por_metro + 200.0, "No hay pájaros después de la meta")

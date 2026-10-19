@@ -301,6 +301,7 @@ func acertar_slam() -> void:
 	fijar_velocidad(Vector2(_impulso_hasta_crucero(vx, Config.slam_impulso.x), Config.slam_impulso.y))
 	_dv = Vector2.ZERO
 	_mult = 1.0
+	rebotes = maxi(rebotes, Config.slam_saltos_min)
 	aviso.emit("¡Slam acertado! Más velocidad")
 	maniobra.emit("slams")
 
@@ -333,6 +334,10 @@ func recibir_poder(id: String) -> void:
 			slam_activo = false
 			t_planeo = 0.0
 			t_paraguas = 0.0
+		"elote":
+			rebotes = maxi(rebotes, Juego.rebotes_max())   # conserva las cargas extra de la jarana
+			aviso.emit("¡%s! Saltos recargados" % Config.poderes[id]["nombre"])
+			return
 	aviso.emit("¡%s!" % Config.poderes[id]["nombre"])
 
 

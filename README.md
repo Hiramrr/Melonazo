@@ -69,11 +69,11 @@ E conserva una pulsación hasta 0.18 segundos antes de entrar en el alcance de u
 
 ## Slam y melones rodantes
 
-Además de los seis rivales de la salida, aparecen grupos de melones medianos y grandes desde los 100 metros, separados entre 100 y 150 metros. Algunos llevan una pareja entre 20 y 30 metros detrás. La probabilidad de pareja aumenta del 30 % al inicio al 60 % cerca de la meta. Se generan por delante del jugador y dejan de ocupar memoria al quedar lejos. Cada melón permite un único slam.
+Además de los cuatro rivales de la salida, aparecen melones desde los 100 metros, separados entre 95 y 120 metros al inicio y entre 55 y 75 metros cerca de la meta. Algunos llevan una pareja entre 20 y 30 metros detrás. La probabilidad de pareja aumenta del 20 % al inicio al 40 % cerca de la meta. Se generan por delante del jugador y dejan de ocupar memoria al quedar lejos. Cada melón permite un único slam.
 
-Los rivales corren como tu melón: aceleran en las bajadas, frenan en las subidas, despegan en las crestas, rebotan al caer y saltan cada uno o tres segundos. Cada uno tiene su ritmo de crucero, entre 420 y 620 px/s, y lo mantiene: no te esperan si te quedas atrás ni te siguen al aire. Si caes, los pierdes de vista y tendrás que alcanzar al siguiente. En el camino aparece uno cada 130 a 160 metros al inicio, y cada 80 a 100 metros cerca de la meta; a veces llega otro justo detrás.
+Los rivales corren como tu melón: aceleran en las bajadas, frenan en las subidas, despegan en las crestas, rebotan al caer y saltan cada uno o tres segundos. Cada uno tiene su ritmo de crucero, entre 360 y 520 px/s, y lo mantiene: no te esperan si te quedas atrás ni te siguen al aire. Si caes, los pierdes de vista y tendrás que alcanzar al siguiente. Van más despacio que tu melón en vuelo, así que con buen ritmo los alcanzas uno tras otro.
 
-Pulsa S o flecha abajo en el aire para caer en picado. Golpear uno desde arriba te impulsa hacia arriba y añade velocidad hacia delante. El rival queda achatado un momento, frena y sigue corriendo, pero ya no sirve para otro slam. Si caes al suelo sin acertar, conservas el 40 % de tu velocidad horizontal. El slam no consume saltos, tiene una recarga de 0.45 segundos tras resolverse y bloquea el salto y los papalotes mientras caes.
+Pulsa S o flecha abajo en el aire para caer en picado. Golpear uno desde arriba te impulsa hacia arriba y añade velocidad hacia delante. El rival queda achatado un momento, frena y sigue corriendo, pero ya no sirve para otro slam. Si caes al suelo sin acertar, conservas el 40 % de tu velocidad horizontal. El slam no consume saltos y, si acertarlo te encuentra sin cargas, te devuelve una para seguir. Tiene una recarga de 0.45 segundos tras resolverse y bloquea el salto y los papalotes mientras caes.
 
 Los slams y los rebotes impulsados recuperan velocidad hasta el ritmo de crucero del melón. Las mejoras de fuerza aumentan ese ritmo. Si otro impulso ya lo hizo ir más rápido, conservan esa velocidad sin añadir más. Acertar un slam tampoco borra un frenón recibido en el mismo paso de física.
 
@@ -100,8 +100,11 @@ Se activan al recogerlos y tienen siluetas diferentes. El primero aparece a los 
 | Chile jalapeño | Parpadea durante 1 segundo; después explota con audio y partículas, lanza al melón hacia adelante (mínimo 110 m/s) y hacia arriba, y deja fuego rojo durante 2,5 segundos |
 | Café de Coatepec | Durante 2 segundos saltas y rebotas sin gastar cargas, con al menos 0.28 s entre saltos |
 | Pizza con yogur | El melón se sube a una pizza que avanza 2.5 segundos sin perder altura. Saltar, hacer slam o chocar con algo que frene lo baja |
+| Elote de feria | Recupera todas tus cargas de salto. Si la jarana te dio una extra, la conservas |
 
-Los poderes flotan entre 14 y 22 metros sobre la calle: hay que saltar para recogerlos. Si te quedas lento y sin cargas, nada aparece a salvarte.
+El elote no entra en la alternancia: aparece por su cuenta cada 260 a 360 metros, desde los 260 metros hasta la meta. Los rivales también pueden ganártelo.
+
+Los poderes flotan entre 14 y 22 metros sobre la calle: hay que saltar para recogerlos. Guarda un salto para alcanzar el siguiente elote: si te quedas lento y sin cargas, nada aparece a salvarte.
 
 ## Salsa Valentina
 

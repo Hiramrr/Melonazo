@@ -1,7 +1,7 @@
 @tool
 class_name Poder
 extends Area2D
-## Consumible de la ruta (chile jalapeño, café de Coatepec o pizza con yogur), con imagen propia.
+## Consumible de la ruta (chile jalapeño, café de Coatepec, pizza con yogur o elote de feria), con imagen propia.
 ##
 ## Escena: mundo/ayudas/poder.tscn (Area2D en la capa 4; detecta la capa 2, la del melón)
 ##   AreaDeRecogida   CollisionShape2D circular, un poco más grande que el dibujo
@@ -26,11 +26,12 @@ const TEXTURAS := {
 	"chile": preload("res://recursos/poderes/chile.png"),
 	"cafe": preload("res://recursos/poderes/cafe.png"),
 	"pizza": preload("res://recursos/poderes/pizza.png"),
+	"elote": preload("res://recursos/poderes/elote.png"),
 	"valentina": preload("res://recursos/poderes/valentina.png"),   # solo en taller y almanaque
 }
 
 ## Qué poder es; elige el dibujo y el nombre. Clave de Config.poderes.
-@export_enum("chile", "cafe", "pizza") var tipo := "chile":
+@export_enum("chile", "cafe", "pizza", "elote") var tipo := "chile":
 	set(valor):
 		tipo = valor
 		queue_redraw()
