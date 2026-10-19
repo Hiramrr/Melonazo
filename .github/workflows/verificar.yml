@@ -1,0 +1,63 @@
+# Revisa cada push y Pull Request: que no queden conflictos de git sin resolver,
+# que Godot pueda importar el proyecto y que pasen las pruebas rápidas.
+name: Verificar
+
+on:
+  push:
+  pull_request:
+
+env:
+  GODOT_VERSION: 4.6.1
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Sin marcadores de conflicto
+        run: |
+          if git grep -nE '^(<<<<<<< |=======$|>>>>>>> )' -- ':!*.png' ':!*.wav' ':!*.ttf'; then
+            echo "::error::Hay marcadores de conflicto de git sin resolver (arriba se listan los archivos)."
+            exit 1
+          fi
+
+      - name: Cache de Godot
+        id: cache-godot
+        uses: actions/cache@v4
+        with:
+          path: ~/godot
+          key: godot-${{ env.GODOT_VERSION }}
+
+      - name: Descargar Godot
+        if: steps.cache-godot.outputs.cache-hit != 'true'
+        run: |
+          mkdir -p ~/godot
+          curl -sSL -o godot.zip "https://github.com/godotengine/godot/releases/download/${GODOT_VERSION}-stable/Godot_v${GODOT_VERSION}-stable_linux.x86_64.zip"
+          unzip -q godot.zip -d ~/godot
+          mv ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 ~/godot/godot
+          chmod +x ~/godot/godot
+
+      - name: Importar proyecto
+        run: |
+          ~/godot/godot --headless --path . --import 2>&1 | tee importar.log
+          if grep -E "Parse Error|Error parsing|Failed loading|File might be corrupted" importar.log; then
+            echo "::error::Godot no pudo importar el proyecto."
+            exit 1
+          fi
+
+      - name: Pruebas
+        run: |
+          fallos=0
+          for prueba in verificar temas sprites almanaque chile cuenta_salida sonidos_interfaz; do
+            echo "::group::$prueba"
+            ~/godot/godot --headless --path . --script res://pruebas/$prueba.gd 2>&1 | tee prueba.log
+            codigo=${PIPESTATUS[0]}
+            echo "::endgroup::"
+            if [ "$codigo" -ne 0 ] || grep -qE "SCRIPT ERROR|Parse Error|FALLO" prueba.log; then
+              echo "::error::Falló pruebas/$prueba.gd"
+              fallos=1
+            fi
+          done
+          exit $fallos
