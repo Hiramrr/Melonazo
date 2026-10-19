@@ -39,8 +39,11 @@ jobs:
           mv ~/godot/Godot_v${GODOT_VERSION}-stable_linux.x86_64 ~/godot/godot
           chmod +x ~/godot/godot
 
+      # La primera importación en una copia limpia avisa de recursos que aún no
+      # se importan; la segunda ya debe salir sin errores.
       - name: Importar proyecto
         run: |
+          ~/godot/godot --headless --path . --import > /dev/null 2>&1 || true
           ~/godot/godot --headless --path . --import 2>&1 | tee importar.log
           if grep -E "Parse Error|Error parsing|Failed loading|File might be corrupted" importar.log; then
             echo "::error::Godot no pudo importar el proyecto."
