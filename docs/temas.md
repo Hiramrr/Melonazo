@@ -71,15 +71,6 @@ Los dibujos del melón, sus accesorios y el paisaje siguen usando los PNG de `re
 
 Usa un control nativo y selecciona su variación en `Theme > Type Variation`. Evita añadir Theme Overrides de colores, fuentes o estilos al nodo, porque tienen prioridad sobre el Theme.
 
-<<<<<<< HEAD
-Los helpers reciben el nombre de la variación.
-
-```gdscript
-var nombre := ComunTaller.titulo_seccion("Sombrero", &"NombreTarjeta")
-var boton := ComunTaller.boton("Comprar", &"ComprarMediano")
-var contador := Ficha.crear(Iconos.APLAUSO, "120", false, &"ContadorTarjeta")
-var tecla := Iconos.tecla("E", &"TeclaAyuda")
-=======
 **A partir de ahora, las variaciones se referencian por `Estilos.NOMBRE`.** El catálogo `interfaz/estilos.gd` es la única fuente de verdad para nombres de variación:
 
 ```gdscript
@@ -87,7 +78,6 @@ var nombre := ComunTaller.titulo_seccion("Sombrero", Estilos.NOMBRE_TARJETA)
 var boton := ComunTaller.boton("Comprar", Estilos.COMPRAR_MEDIANO)
 var contador := Ficha.crear(Iconos.APLAUSO, "120", false, Estilos.CONTADOR_TARJETA)
 var tecla := Iconos.tecla("E", Estilos.TECLA_AYUDA)
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 ```
 
 `Ficha.estilo_texto` permite elegir la variante de su etiqueta desde el inspector. Si está vacío, usa `TextoFichaOscura` o `TextoFichaClara` según `oscura`.

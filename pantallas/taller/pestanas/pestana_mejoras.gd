@@ -24,33 +24,13 @@ var texto_reto: Label
 
 
 func _ready() -> void:
-<<<<<<< HEAD
-	texto_reto = ComunTaller.etiqueta("", &"TextoBreve")
-=======
 	texto_reto = ComunTaller.etiqueta("", Estilos.TEXTO_BREVE)
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	texto_reto.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	lista.add_child(texto_reto)
 	for id in Config.orden_mejoras:
 		_crear_tarjeta(id, ICONOS.get(id, Iconos.PODER), CUADRO_NIVEL)
 	_crear_tarjeta(VALENTINA, Poder.TEXTURAS[VALENTINA], Poder.TEXTURAS[VALENTINA])
 
-<<<<<<< HEAD
-
-func _crear_tarjeta(id: String, icono: Texture2D, cuadro: Texture2D) -> void:
-	var tarjeta := PanelContainer.new()
-	tarjeta.theme_type_variation = &"Tarjeta"
-	lista.add_child(tarjeta)
-	var fila := HBoxContainer.new()
-	fila.theme_type_variation = &"FilaAmplia"
-	tarjeta.add_child(fila)
-	fila.add_child(Iconos.imagen(icono, 52.0))
-	var columna := VBoxContainer.new()
-	columna.theme_type_variation = &"ColumnaCompacta"
-	columna.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	fila.add_child(columna)
-	var nombre := ComunTaller.titulo_seccion("", &"SubtituloMediano")
-=======
 func _crear_tarjeta(id: String, icono: Texture2D, cuadro: Texture2D) -> void:
 	var tarjeta := Tarjeta.new()
 	lista.add_child(tarjeta)
@@ -63,27 +43,17 @@ func _crear_tarjeta(id: String, icono: Texture2D, cuadro: Texture2D) -> void:
 	columna.size_flags_horizontal = Control.SIZE_EXPAND_FILL
 	fila.add_child(columna)
 	var nombre := ComunTaller.titulo_seccion("", Estilos.SUBTITULO_MEDIANO)
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	nombre.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	columna.add_child(nombre)
 	var niveles := Pips.new()
 	niveles.icono = cuadro
 	niveles.lado = 20.0
-<<<<<<< HEAD
-	niveles.theme_type_variation = &"NivelesMejora"
-	columna.add_child(niveles)
-	var texto := ComunTaller.etiqueta("", &"Nota")
-	texto.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	columna.add_child(texto)
-	var b := ComunTaller.boton("", &"BotonMediano")
-=======
 	niveles.theme_type_variation = Estilos.NIVELES_MEJORA
 	columna.add_child(niveles)
 	var texto := ComunTaller.etiqueta("", Estilos.NOTA)
 	texto.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	columna.add_child(texto)
 	var b := ComunTaller.boton("", Estilos.BOTON_MEDIANO)
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	b.custom_minimum_size = Vector2(150, 56)
 	b.size_flags_vertical = Control.SIZE_SHRINK_CENTER
 	b.icon = Iconos.APLAUSO
@@ -110,22 +80,14 @@ func refrescar() -> void:
 			b.text = "¡Máximo!"
 			b.icon = null
 			b.disabled = true
-<<<<<<< HEAD
-			b.theme_type_variation = &"BotonMediano"
-=======
 			b.theme_type_variation = Estilos.BOTON_MEDIANO
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 		else:
 			if Juego.aplausos < Juego.costo_mejora(id):
 				f["texto"].text += "\nFaltan %d aplausos" % (Juego.costo_mejora(id) - Juego.aplausos)
 			b.text = str(Juego.costo_mejora(id))
 			b.icon = Iconos.APLAUSO
 			b.disabled = Juego.aplausos < Juego.costo_mejora(id)
-<<<<<<< HEAD
-			b.theme_type_variation = &"BotonMediano" if b.disabled else &"ComprarMediano"
-=======
 			b.theme_type_variation = Estilos.BOTON_MEDIANO if b.disabled else Estilos.COMPRAR_MEDIANO
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	_refrescar_valentina()
 
 
@@ -141,11 +103,7 @@ func _refrescar_valentina() -> void:
 	b.text = "¡Lleno!" if lleno else str(Config.valentina_costo)
 	b.icon = null if lleno else Iconos.APLAUSO
 	b.disabled = lleno or Juego.aplausos < Config.valentina_costo
-<<<<<<< HEAD
-	b.theme_type_variation = &"BotonMediano" if b.disabled else &"ComprarMediano"
-=======
 	b.theme_type_variation = Estilos.BOTON_MEDIANO if b.disabled else Estilos.COMPRAR_MEDIANO
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 
 
 ## Qué da el nivel actual de la mejora, en palabras ("" si no hay descripción).

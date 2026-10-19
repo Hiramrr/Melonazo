@@ -45,11 +45,7 @@ func _ready() -> void:
 	grosor.max_value = Config.grosor_dibujo.y
 	for c in Config.colores_dibujo:
 		var b := Button.new()
-<<<<<<< HEAD
-		b.theme_type_variation = &"MuestraColor"
-=======
 		b.theme_type_variation = Estilos.MUESTRA_COLOR
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 		b.custom_minimum_size = Vector2(42, 42)
 		b.tooltip_text = "#" + (c as Color).to_html(false)
 		b.focus_mode = Control.FOCUS_NONE
@@ -74,11 +70,7 @@ func refrescar() -> void:
 		var elegido: bool = m[1] == color and not es_goma()
 		for estado in ["normal", "hover", "pressed", "focus"]:
 			b.add_theme_stylebox_override(estado, _estilo_muestra(m[1], elegido))
-<<<<<<< HEAD
-		(b.get_child(0) as Panel).theme_type_variation = &"MuestraColorElegidaBorde" if elegido else &"MuestraColorBorde"
-=======
 		(b.get_child(0) as Panel).theme_type_variation = Estilos.MUESTRA_COLOR_ELEGIDA_BORDE if elegido else Estilos.MUESTRA_COLOR_BORDE
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	var n := Juego.dibujo.size()
 	btn_deshacer.disabled = n == 0
 	btn_borrar.disabled = n == 0
@@ -95,11 +87,7 @@ func refrescar() -> void:
 ## Solo el relleno depende del color elegido por el jugador: el sprite blanco se
 ## tiñe y el borde va encima, en un Panel con su propio sprite.
 func _estilo_muestra(c: Color, elegido: bool) -> StyleBoxTexture:
-<<<<<<< HEAD
-	var tipo := &"MuestraColorElegida" if elegido else &"MuestraColor"
-=======
 	var tipo := Estilos.MUESTRA_COLOR_ELEGIDA if elegido else Estilos.MUESTRA_COLOR
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	var s: StyleBoxTexture = get_theme_stylebox("normal", tipo).duplicate()
 	s.modulate_color = c
 	return s

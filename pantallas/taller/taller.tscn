@@ -1,22 +1,5 @@
 [gd_scene format=3 uid="uid://cglka1g045k5q"]
 
-<<<<<<< HEAD
-[ext_resource type="Script" path="res://pantallas/taller/taller.gd" id="1"]
-[ext_resource type="Script" path="res://pantallas/taller/vista_melon.gd" id="vista_melon"]
-[ext_resource type="Script" path="res://pantallas/taller/pestanas/pestana_melon.gd" id="pestana_melon"]
-[ext_resource type="PackedScene" path="res://pantallas/taller/pestanas/pestana_dibujo.tscn" id="pestana_dibujo"]
-[ext_resource type="Script" path="res://pantallas/taller/pestanas/pestana_accesorios.gd" id="pestana_accesorios"]
-[ext_resource type="Script" path="res://pantallas/taller/pestanas/pestana_mejoras.gd" id="pestana_mejoras"]
-[ext_resource type="Script" path="res://pantallas/taller/pestanas/pestana_pasaporte.gd" id="pestana_pasaporte"]
-[ext_resource type="Script" path="res://interfaz/fondo_juego.gd" id="fondo"]
-[ext_resource type="Script" path="res://interfaz/ficha.gd" id="ficha"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/aplauso.png" id="ico_aplauso"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/trofeo.png" id="ico_trofeo"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/carisma.png" id="ico_carisma"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/jugar.png" id="ico_jugar"]
-
-[node name="Taller" type="Control"]
-=======
 [ext_resource type="Script" uid="uid://cm2g8pwtfsi35" path="res://pantallas/taller/taller.gd" id="1"]
 [ext_resource type="Script" uid="uid://bw2s8lrypa2gh" path="res://interfaz/rejilla_tarjetas.gd" id="11_58qa3"]
 [ext_resource type="Script" uid="uid://dpqx8iljfabgy" path="res://interfaz/ficha.gd" id="ficha"]
@@ -34,7 +17,6 @@
 
 [node name="Taller" type="Control" unique_id=2044861595]
 layout_mode = 3
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -42,33 +24,19 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
 
-<<<<<<< HEAD
-[node name="Fondo" type="Control" parent="."]
-anchors_preset = 15
-=======
 [node name="Fondo" type="Control" parent="." unique_id=106194508]
 texture_filter = 1
 anchors_preset = 0
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
-<<<<<<< HEAD
-script = ExtResource("fondo")
-ancho_bandera = 30.0
-caida = 6.0
-
-[node name="Margen" type="MarginContainer" parent="."]
-anchors_preset = 15
-=======
 theme_type_variation = &"FondoTaller"
 script = ExtResource("fondo")
 
 [node name="Margen" type="MarginContainer" parent="." unique_id=188652381]
 layout_mode = 0
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
@@ -78,17 +46,6 @@ theme_override_constants/margin_top = 40
 theme_override_constants/margin_right = 28
 theme_override_constants/margin_bottom = 18
 
-<<<<<<< HEAD
-[node name="Raiz" type="VBoxContainer" parent="Margen"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="Cabecera" type="HBoxContainer" parent="Margen/Raiz"]
-layout_mode = 2
-theme_override_constants/separation = 14
-
-[node name="Logo" type="VBoxContainer" parent="Margen/Raiz/Cabecera"]
-=======
 [node name="Raiz" type="VBoxContainer" parent="Margen" unique_id=286379830]
 layout_mode = 2
 theme_override_constants/separation = 12
@@ -98,38 +55,23 @@ layout_mode = 2
 theme_override_constants/separation = 14
 
 [node name="Logo" type="VBoxContainer" parent="Margen/Raiz/Cabecera" unique_id=1769405390]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = -6
 
-<<<<<<< HEAD
-[node name="Titulo" type="Label" parent="Margen/Raiz/Cabecera/Logo"]
-=======
 [node name="Titulo" type="Label" parent="Margen/Raiz/Cabecera/Logo" unique_id=228196155]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 0
 theme_type_variation = &"TituloTaller"
-<<<<<<< HEAD
-text = "¡Rueda, Melón!"
-
-[node name="Subtitulo" type="Label" parent="Margen/Raiz/Cabecera/Logo"]
-=======
 text = "Melonazo"
 
 [node name="Subtitulo" type="Label" parent="Margen/Raiz/Cabecera/Logo" unique_id=1578677584]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 theme_type_variation = &"AyudaHUD"
 text = "De Xalapa al CUCosta · Universidad de Guadalajara"
 
-<<<<<<< HEAD
-[node name="BtnAlmanaque" type="Button" parent="Margen/Raiz/Cabecera"]
-=======
 [node name="BtnAlmanaque" type="Button" parent="Margen/Raiz/Cabecera" unique_id=913563593]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(120, 44)
 layout_mode = 2
@@ -137,43 +79,26 @@ size_flags_vertical = 4
 tooltip_text = "Consultar tus melones guardados, accesorios y poderes"
 text = "Almanaque"
 
-<<<<<<< HEAD
-[node name="Balance" type="PanelContainer" parent="Margen/Raiz/Cabecera"]
-=======
 [node name="Balance" type="PanelContainer" parent="Margen/Raiz/Cabecera" unique_id=119130301]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 tooltip_text = "Aplausos para gastar en el taller"
-<<<<<<< HEAD
-script = ExtResource("ficha")
-icono = ExtResource("ico_aplauso")
-texto = "0"
-=======
 mouse_filter = 2
 theme_type_variation = &"ChipClaro"
 script = ExtResource("ficha")
 icono = ExtResource("ico_aplauso")
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 oscura = false
 estilo_texto = &"ContadorPrincipal"
 lado_icono = 34.0
 
-<<<<<<< HEAD
-[node name="Record" type="PanelContainer" parent="Margen/Raiz/Cabecera"]
-=======
 [node name="Record" type="PanelContainer" parent="Margen/Raiz/Cabecera" unique_id=2031138049]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_vertical = 4
 tooltip_text = "Tu mejor distancia"
-<<<<<<< HEAD
-=======
 mouse_filter = 2
 theme_type_variation = &"ChipClaro"
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 script = ExtResource("ficha")
 icono = ExtResource("ico_trofeo")
 texto = "0 m"
@@ -181,39 +106,16 @@ oscura = false
 estilo_texto = &"ContadorPrincipal"
 lado_icono = 34.0
 
-<<<<<<< HEAD
-[node name="Medio" type="HBoxContainer" parent="Margen/Raiz"]
-=======
 [node name="Medio" type="HBoxContainer" parent="Margen/Raiz" unique_id=620823124]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 size_flags_vertical = 3
 theme_override_constants/separation = 22
 
-<<<<<<< HEAD
-[node name="Previa" type="PanelContainer" parent="Margen/Raiz/Medio"]
-theme_type_variation = &"PanelPrevia"
-=======
 [node name="Previa" type="PanelContainer" parent="Margen/Raiz/Medio" unique_id=2032203378]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(340, 0)
 layout_mode = 2
 size_flags_horizontal = 3
-<<<<<<< HEAD
-
-[node name="CajaPrevia" type="VBoxContainer" parent="Margen/Raiz/Medio/Previa"]
-layout_mode = 2
-theme_override_constants/separation = 4
-
-[node name="MarcoVista" type="PanelContainer" parent="Margen/Raiz/Medio/Previa/CajaPrevia"]
-theme_type_variation = &"MarcoVista"
-clip_children = 2
-layout_mode = 2
-size_flags_vertical = 3
-
-[node name="Vista" type="Control" parent="Margen/Raiz/Medio/Previa/CajaPrevia/MarcoVista"]
-=======
 theme_type_variation = &"PanelPrevia"
 
 [node name="CajaPrevia" type="VBoxContainer" parent="Margen/Raiz/Medio/Previa" unique_id=1720581505]
@@ -227,18 +129,13 @@ size_flags_vertical = 3
 theme_type_variation = &"MarcoVista"
 
 [node name="Vista" type="Control" parent="Margen/Raiz/Medio/Previa/CajaPrevia/MarcoVista" unique_id=358277647]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(300, 240)
 clip_contents = true
 layout_mode = 2
 script = ExtResource("vista_melon")
 
-<<<<<<< HEAD
-[node name="NombreVista" type="Label" parent="Margen/Raiz/Medio/Previa/CajaPrevia"]
-=======
 [node name="NombreVista" type="Label" parent="Margen/Raiz/Medio/Previa/CajaPrevia" unique_id=2095317042]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"TituloPanel"
@@ -246,14 +143,6 @@ text = "Melón"
 horizontal_alignment = 1
 text_overrun_behavior = 3
 
-<<<<<<< HEAD
-[node name="Info" type="HBoxContainer" parent="Margen/Raiz/Medio/Previa/CajaPrevia"]
-layout_mode = 2
-alignment = 1
-theme_override_constants/separation = 10
-
-[node name="Tamano" type="Label" parent="Margen/Raiz/Medio/Previa/CajaPrevia/Info"]
-=======
 [node name="Info" type="HBoxContainer" parent="Margen/Raiz/Medio/Previa/CajaPrevia" unique_id=1199158996]
 layout_mode = 2
 size_flags_vertical = 4
@@ -261,25 +150,11 @@ theme_override_constants/separation = 10
 alignment = 1
 
 [node name="Tamano" type="Label" parent="Margen/Raiz/Medio/Previa/CajaPrevia/Info" unique_id=1656418994]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SubtituloMediano"
 text = "Mediano"
 
-<<<<<<< HEAD
-[node name="Carisma" type="PanelContainer" parent="Margen/Raiz/Medio/Previa/CajaPrevia/Info"]
-unique_name_in_owner = true
-layout_mode = 2
-tooltip_text = "Carisma de los accesorios equipados"
-script = ExtResource("ficha")
-icono = ExtResource("ico_carisma")
-texto = "0"
-oscura = false
-lado_icono = 24.0
-
-[node name="Pestanas" type="TabContainer" parent="Margen/Raiz/Medio"]
-=======
 [node name="Carisma" type="PanelContainer" parent="Margen/Raiz/Medio/Previa/CajaPrevia/Info" unique_id=1876811912]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 54)
@@ -294,64 +169,34 @@ oscura = false
 lado_icono = 24.0
 
 [node name="Pestanas" type="TabContainer" parent="Margen/Raiz/Medio" unique_id=960393426]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 size_flags_stretch_ratio = 1.2
-<<<<<<< HEAD
-
-[node name="TuMelon" type="ScrollContainer" parent="Margen/Raiz/Medio/Pestanas"]
-=======
 current_tab = 0
 
 [node name="TuMelon" type="ScrollContainer" parent="Margen/Raiz/Medio/Pestanas" unique_id=784278720]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 horizontal_scroll_mode = 0
 script = ExtResource("pestana_melon")
-<<<<<<< HEAD
-
-[node name="CajaMelon" type="VBoxContainer" parent="Margen/Raiz/Medio/Pestanas/TuMelon"]
-=======
 metadata/_tab_index = 0
 
 [node name="CajaMelon" type="VBoxContainer" parent="Margen/Raiz/Medio/Pestanas/TuMelon" unique_id=1821889007]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 10
 
-<<<<<<< HEAD
-[node name="FilaNombre" type="HBoxContainer" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon"]
-layout_mode = 2
-theme_override_constants/separation = 12
-
-[node name="EtiNombre" type="Label" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon/FilaNombre"]
-=======
 [node name="FilaNombre" type="HBoxContainer" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon" unique_id=1140389251]
 layout_mode = 2
 theme_override_constants/separation = 12
 
 [node name="EtiNombre" type="Label" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon/FilaNombre" unique_id=2015953212]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 theme_type_variation = &"Subtitulo"
 text = "Nombre"
 
-<<<<<<< HEAD
-[node name="LineaNombre" type="LineEdit" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon/FilaNombre"]
-theme_type_variation = &"CampoNombre"
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 3
-max_length = 24
-text = "Melón"
-
-[node name="BtnGuardarMelon" type="Button" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon"]
-=======
 [node name="LineaNombre" type="LineEdit" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon/FilaNombre" unique_id=1483044926]
 unique_name_in_owner = true
 layout_mode = 2
@@ -361,36 +206,23 @@ text = "Melón"
 max_length = 24
 
 [node name="BtnGuardarMelon" type="Button" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon" unique_id=886612883]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 42)
 layout_mode = 2
 tooltip_text = "Conservar el nombre, dibujo, colores y equipo de este melón"
 text = "Guardar melón en el almanaque"
 
-<<<<<<< HEAD
-[node name="EtiTamano" type="Label" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon"]
-=======
 [node name="EtiTamano" type="Label" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon" unique_id=113165583]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 theme_type_variation = &"Subtitulo"
 text = "Tamaño"
 
-<<<<<<< HEAD
-[node name="FilaTamanos" type="HBoxContainer" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon"]
-=======
 [node name="FilaTamanos" type="HBoxContainer" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon" unique_id=847408957]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 8
 
-<<<<<<< HEAD
-[node name="DescTamano" type="Label" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon"]
-=======
 [node name="DescTamano" type="Label" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon" unique_id=362700452]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
@@ -398,38 +230,17 @@ theme_type_variation = &"Suave"
 text = "Equilibrado."
 autowrap_mode = 2
 
-<<<<<<< HEAD
-[node name="CajaListas" type="VBoxContainer" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon"]
-=======
 [node name="CajaListas" type="VBoxContainer" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon" unique_id=1679158958]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 8
 
-<<<<<<< HEAD
-[node name="NotaListas" type="Label" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon"]
-=======
 [node name="NotaListas" type="Label" parent="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon" unique_id=903951272]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 theme_type_variation = &"Suave"
 text = "Hazlo tuyo. Cambiar de aspecto es gratis."
 autowrap_mode = 2
 
-<<<<<<< HEAD
-[node name="Dibujo" parent="Margen/Raiz/Medio/Pestanas" instance=ExtResource("pestana_dibujo")]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="Accesorios" type="ScrollContainer" parent="Margen/Raiz/Medio/Pestanas"]
-unique_name_in_owner = true
-layout_mode = 2
-horizontal_scroll_mode = 0
-script = ExtResource("pestana_accesorios")
-
-[node name="CajaAcc" type="VBoxContainer" parent="Margen/Raiz/Medio/Pestanas/Accesorios"]
-=======
 [node name="Dibujo" parent="Margen/Raiz/Medio/Pestanas" unique_id=1541075468 instance=ExtResource("pestana_dibujo")]
 unique_name_in_owner = true
 visible = false
@@ -445,42 +256,23 @@ script = ExtResource("pestana_accesorios")
 metadata/_tab_index = 2
 
 [node name="CajaAcc" type="VBoxContainer" parent="Margen/Raiz/Medio/Pestanas/Accesorios" unique_id=352502686]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 8
 
-<<<<<<< HEAD
-[node name="FeedbackAcc" type="Label" parent="Margen/Raiz/Medio/Pestanas/Accesorios/CajaAcc"]
-=======
 [node name="FeedbackAcc" type="Label" parent="Margen/Raiz/Medio/Pestanas/Accesorios/CajaAcc" unique_id=2024301756]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SubtituloChico"
 text = "Equípate con hasta 3 accesorios."
 autowrap_mode = 2
 
-<<<<<<< HEAD
-[node name="ListaAcc" type="GridContainer" parent="Margen/Raiz/Medio/Pestanas/Accesorios/CajaAcc"]
-=======
 [node name="ListaAcc" type="GridContainer" parent="Margen/Raiz/Medio/Pestanas/Accesorios/CajaAcc" unique_id=853405823]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 10
 columns = 3
-<<<<<<< HEAD
-
-[node name="Mejoras" type="ScrollContainer" parent="Margen/Raiz/Medio/Pestanas"]
-unique_name_in_owner = true
-layout_mode = 2
-horizontal_scroll_mode = 0
-script = ExtResource("pestana_mejoras")
-
-[node name="ListaMejoras" type="VBoxContainer" parent="Margen/Raiz/Medio/Pestanas/Mejoras"]
-=======
 script = ExtResource("11_58qa3")
 ancho_minimo = 160.0
 max_columnas = 3
@@ -495,21 +287,11 @@ script = ExtResource("pestana_mejoras")
 metadata/_tab_index = 3
 
 [node name="ListaMejoras" type="VBoxContainer" parent="Margen/Raiz/Medio/Pestanas/Mejoras" unique_id=1488697337]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 12
 
-<<<<<<< HEAD
-[node name="Pasaporte" type="ScrollContainer" parent="Margen/Raiz/Medio/Pestanas"]
-unique_name_in_owner = true
-layout_mode = 2
-horizontal_scroll_mode = 0
-script = ExtResource("pestana_pasaporte")
-
-[node name="ListaPasaporte" type="VBoxContainer" parent="Margen/Raiz/Medio/Pestanas/Pasaporte"]
-=======
 [node name="Pasaporte" type="ScrollContainer" parent="Margen/Raiz/Medio/Pestanas" unique_id=1582941208]
 unique_name_in_owner = true
 visible = false
@@ -519,25 +301,16 @@ script = ExtResource("pestana_pasaporte")
 metadata/_tab_index = 4
 
 [node name="ListaPasaporte" type="VBoxContainer" parent="Margen/Raiz/Medio/Pestanas/Pasaporte" unique_id=1535386825]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_constants/separation = 12
 
-<<<<<<< HEAD
-[node name="Pie" type="HBoxContainer" parent="Margen/Raiz"]
-layout_mode = 2
-theme_override_constants/separation = 16
-
-[node name="ErrorGuardo" type="Label" parent="Margen/Raiz/Pie"]
-=======
 [node name="Pie" type="HBoxContainer" parent="Margen/Raiz" unique_id=1007518186]
 layout_mode = 2
 theme_override_constants/separation = 16
 
 [node name="ErrorGuardo" type="Label" parent="Margen/Raiz/Pie" unique_id=609121172]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -545,36 +318,21 @@ theme_type_variation = &"ErrorGuardado"
 vertical_alignment = 1
 clip_text = true
 
-<<<<<<< HEAD
-[node name="Ayuda" type="HBoxContainer" parent="Margen/Raiz/Pie"]
-=======
 [node name="Ayuda" type="HBoxContainer" parent="Margen/Raiz/Pie" unique_id=1110121060]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = 8
 
-<<<<<<< HEAD
-[node name="BtnReiniciar" type="Button" parent="Margen/Raiz/Pie"]
-theme_type_variation = &"BotonPequeno"
-=======
 [node name="BtnReiniciar" type="Button" parent="Margen/Raiz/Pie" unique_id=1981975192]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(196, 48)
 layout_mode = 2
 size_flags_vertical = 4
 tooltip_text = "Borrar aplausos, mejoras, accesorios, postales y aspecto para empezar desde cero"
-<<<<<<< HEAD
-text = "Reiniciar progreso"
-
-[node name="BtnPuente" type="Button" parent="Margen/Raiz/Pie"]
-=======
 theme_type_variation = &"BotonPequeno"
 text = "Reiniciar progreso"
 
 [node name="BtnPuente" type="Button" parent="Margen/Raiz/Pie" unique_id=123557976]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(290, 70)
 layout_mode = 2
@@ -585,23 +343,6 @@ icon = ExtResource("ico_jugar")
 icon_alignment = 2
 expand_icon = true
 
-<<<<<<< HEAD
-[node name="ConfirmarReinicio" type="ConfirmationDialog" parent="."]
-unique_name_in_owner = true
-title = "¿Reiniciar el progreso?"
-ok_button_text = "Sí, reiniciar"
-cancel_button_text = "Cancelar"
-dialog_text = "Se borrarán los aplausos, el récord, las mejoras, los accesorios comprados, las postales, los intentos, el aspecto del melón y los melones del almanaque. Esto no se puede deshacer."
-
-[connection signal="text_changed" from="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon/FilaNombre/LineaNombre" to="Margen/Raiz/Medio/Pestanas/TuMelon" method="_cambiar_nombre"]
-[connection signal="text_submitted" from="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon/FilaNombre/LineaNombre" to="Margen/Raiz/Medio/Pestanas/TuMelon" method="_nombre_listo"]
-[connection signal="pressed" from="Margen/Raiz/Pie/BtnPuente" to="." method="_ir"]
-[connection signal="pressed" from="Margen/Raiz/Pie/BtnReiniciar" to="." method="_pedir_reinicio"]
-[connection signal="confirmed" from="ConfirmarReinicio" to="." method="_reiniciar_progreso"]
-
-[connection signal="pressed" from="Margen/Raiz/Cabecera/BtnAlmanaque" to="." method="_abrir_almanaque"]
-[connection signal="pressed" from="Margen/Raiz/Medio/Pestanas/TuMelon/CajaMelon/BtnGuardarMelon" to="." method="_guardar_melon"]
-=======
 [node name="ConfirmarReinicio" type="ConfirmationDialog" parent="." unique_id=150083857]
 unique_name_in_owner = true
 title = "¿Reiniciar el progreso?"
@@ -616,4 +357,3 @@ cancel_button_text = "Cancelar"
 [connection signal="pressed" from="Margen/Raiz/Pie/BtnReiniciar" to="." method="_pedir_reinicio"]
 [connection signal="pressed" from="Margen/Raiz/Pie/BtnPuente" to="." method="_ir"]
 [connection signal="confirmed" from="ConfirmarReinicio" to="." method="_reiniciar_progreso"]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)

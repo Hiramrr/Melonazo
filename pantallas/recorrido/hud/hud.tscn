@@ -1,27 +1,3 @@
-<<<<<<< HEAD
-[gd_scene format=3]
-
-[ext_resource type="Script" path="res://pantallas/recorrido/hud/hud.gd" id="1"]
-[ext_resource type="PackedScene" path="res://pantallas/recorrido/hud/slot_accesorio.tscn" id="3"]
-[ext_resource type="Script" path="res://interfaz/ficha.gd" id="ficha"]
-[ext_resource type="Script" path="res://interfaz/pips.gd" id="pips"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/aplauso.png" id="ico_aplauso"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/carisma.png" id="ico_carisma"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/poder.png" id="ico_poder"]
-[ext_resource type="Texture2D" path="res://recursos/poderes/valentina.png" id="ico_valentina"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/impulso.png" id="ico_impulso"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/altura.png" id="ico_altura"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/papalote.png" id="ico_papalote"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/pausa.png" id="ico_pausa"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/jugar.png" id="ico_jugar"]
-[ext_resource type="Texture2D" path="res://recursos/iconos/lugar.png" id="ico_lugar"]
-
-[node name="HUD" type="CanvasLayer"]
-process_mode = 3
-script = ExtResource("1")
-
-[node name="Pantalla" type="Control" parent="."]
-=======
 [gd_scene format=3 uid="uid://bd68wu17wiqvh"]
 
 [ext_resource type="Script" uid="uid://cudba5dt45w6" path="res://pantallas/recorrido/hud/hud.gd" id="1"]
@@ -44,7 +20,6 @@ process_mode = 3
 script = ExtResource("1")
 
 [node name="Pantalla" type="Control" parent="." unique_id=862129914]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -53,12 +28,8 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-<<<<<<< HEAD
-[node name="Datos" type="VBoxContainer" parent="Pantalla"]
-=======
 [node name="Datos" type="VBoxContainer" parent="Pantalla" unique_id=1127120044]
 layout_mode = 0
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 offset_left = 22.0
 offset_top = 10.0
 offset_right = 402.0
@@ -66,70 +37,37 @@ offset_bottom = 200.0
 mouse_filter = 2
 theme_override_constants/separation = 4
 
-<<<<<<< HEAD
-[node name="Nombre" type="Label" parent="Pantalla/Datos"]
-=======
 [node name="Nombre" type="Label" parent="Pantalla/Datos" unique_id=259925730]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"NombreHUD"
 text = "Melón · Récord 0 m"
 clip_text = true
 
-<<<<<<< HEAD
-[node name="Distancia" type="Label" parent="Pantalla/Datos"]
-=======
 [node name="Distancia" type="Label" parent="Pantalla/Datos" unique_id=2143585118]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"DistanciaHUD"
 text = "0 m"
 
-<<<<<<< HEAD
-[node name="Resistencia" type="ProgressBar" parent="Pantalla/Datos"]
-theme_type_variation = &"BarraResistencia"
-=======
 [node name="Resistencia" type="ProgressBar" parent="Pantalla/Datos" unique_id=311833037]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(240, 26)
 layout_mode = 2
 size_flags_horizontal = 0
 mouse_filter = 2
-<<<<<<< HEAD
-=======
 theme_type_variation = &"BarraResistencia"
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 max_value = 3.0
 step = 0.0
 value = 3.0
 show_percentage = false
 
-<<<<<<< HEAD
-[node name="Velocidad" type="Label" parent="Pantalla/Datos"]
-=======
 [node name="Velocidad" type="Label" parent="Pantalla/Datos" unique_id=454704264]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"DetalleHUD"
 text = "0 m/s"
 
-<<<<<<< HEAD
-[node name="Impulsos" type="Control" parent="Pantalla/Datos"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_horizontal = 0
-mouse_filter = 2
-script = ExtResource("pips")
-icono = ExtResource("ico_impulso")
-lado = 26.0
-theme_type_variation = &"ImpulsosHUD"
-
-[node name="Contadores" type="HBoxContainer" parent="Pantalla/Datos"]
-=======
 [node name="Impulsos" type="Control" parent="Pantalla/Datos" unique_id=325267002]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(84, 26)
@@ -143,85 +81,52 @@ lado = 26.0
 
 [node name="Contadores" type="HBoxContainer" parent="Pantalla/Datos" unique_id=81573892]
 custom_minimum_size = Vector2(0, 54)
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 6
 
-<<<<<<< HEAD
-[node name="Aplausos" type="PanelContainer" parent="Pantalla/Datos/Contadores"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-=======
 [node name="Aplausos" type="PanelContainer" parent="Pantalla/Datos/Contadores" unique_id=1525012302]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_type_variation = &"Chip"
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 script = ExtResource("ficha")
 icono = ExtResource("ico_aplauso")
 estilo_texto = &"ContadorHUD"
 lado_icono = 24.0
 
-<<<<<<< HEAD
-[node name="Carisma" type="PanelContainer" parent="Pantalla/Datos/Contadores"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-=======
 [node name="Carisma" type="PanelContainer" parent="Pantalla/Datos/Contadores" unique_id=197399471]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_type_variation = &"Chip"
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 script = ExtResource("ficha")
 icono = ExtResource("ico_carisma")
 estilo_texto = &"ContadorHUD"
 lado_icono = 24.0
 
-<<<<<<< HEAD
-[node name="Poderes" type="PanelContainer" parent="Pantalla/Datos/Contadores"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-=======
 [node name="Poderes" type="PanelContainer" parent="Pantalla/Datos/Contadores" unique_id=72886649]
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 2
 theme_type_variation = &"Chip"
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 script = ExtResource("ficha")
 icono = ExtResource("ico_poder")
 estilo_texto = &"ContadorHUD"
 lado_icono = 24.0
 
-<<<<<<< HEAD
-[node name="Valentinas" type="PanelContainer" parent="Pantalla/Datos/Contadores"]
-=======
 [node name="Valentinas" type="PanelContainer" parent="Pantalla/Datos/Contadores" unique_id=2033139045]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Salsas Valentina: reviven al melón"
 mouse_filter = 2
-<<<<<<< HEAD
-=======
 theme_type_variation = &"Chip"
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 script = ExtResource("ficha")
 icono = ExtResource("ico_valentina")
 estilo_texto = &"ContadorHUD"
 lado_icono = 24.0
 
-<<<<<<< HEAD
-[node name="Reto" type="Label" parent="Pantalla/Datos"]
-=======
 [node name="Reto" type="Label" parent="Pantalla/Datos" unique_id=703166253]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(250, 0)
 layout_mode = 2
@@ -229,16 +134,9 @@ size_flags_horizontal = 0
 theme_type_variation = &"DetalleHUD"
 autowrap_mode = 3
 
-<<<<<<< HEAD
-[node name="Lugar" type="PanelContainer" parent="Pantalla"]
-theme_type_variation = &"PanelHUD"
-unique_name_in_owner = true
-anchors_preset = 5
-=======
 [node name="Lugar" type="PanelContainer" parent="Pantalla" unique_id=15786642]
 unique_name_in_owner = true
 layout_mode = 0
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 anchor_left = 0.5
 anchor_right = 0.5
 offset_left = -190.0
@@ -247,23 +145,14 @@ offset_right = 190.0
 offset_bottom = 112.0
 grow_horizontal = 2
 mouse_filter = 2
-<<<<<<< HEAD
-
-[node name="Caja" type="VBoxContainer" parent="Pantalla/Lugar"]
-=======
 theme_type_variation = &"PanelHUD"
 
 [node name="Caja" type="VBoxContainer" parent="Pantalla/Lugar" unique_id=1774698350]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 4
 
-<<<<<<< HEAD
-[node name="Destino" type="Label" parent="Pantalla/Lugar/Caja"]
-=======
 [node name="Destino" type="Label" parent="Pantalla/Lugar/Caja" unique_id=685684760]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 mouse_filter = 1
@@ -271,31 +160,19 @@ theme_type_variation = &"DetalleHUD"
 text = "Meta CUCosta · faltan 2600 m"
 horizontal_alignment = 1
 
-<<<<<<< HEAD
-[node name="Etapa" type="Label" parent="Pantalla/Lugar/Caja"]
-=======
 [node name="Etapa" type="Label" parent="Pantalla/Lugar/Caja" unique_id=1278213461]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"DetalleHUD"
 text = "1/4 · Xalapa"
 horizontal_alignment = 1
 
-<<<<<<< HEAD
-[node name="Fila" type="HBoxContainer" parent="Pantalla/Lugar/Caja"]
-=======
 [node name="Fila" type="HBoxContainer" parent="Pantalla/Lugar/Caja" unique_id=36002316]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 mouse_filter = 2
 alignment = 1
 
-<<<<<<< HEAD
-[node name="Pin" type="TextureRect" parent="Pantalla/Lugar/Caja/Fila"]
-=======
 [node name="Pin" type="TextureRect" parent="Pantalla/Lugar/Caja/Fila" unique_id=405083774]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 custom_minimum_size = Vector2(24, 24)
 layout_mode = 2
 mouse_filter = 2
@@ -303,11 +180,7 @@ texture = ExtResource("ico_lugar")
 expand_mode = 1
 stretch_mode = 5
 
-<<<<<<< HEAD
-[node name="LugarActual" type="Label" parent="Pantalla/Lugar/Caja/Fila"]
-=======
 [node name="LugarActual" type="Label" parent="Pantalla/Lugar/Caja/Fila" unique_id=303591557]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 3
@@ -316,29 +189,17 @@ text = "Barrio de Xallitic"
 horizontal_alignment = 1
 text_overrun_behavior = 3
 
-<<<<<<< HEAD
-[node name="Ruta" type="ProgressBar" parent="Pantalla/Lugar/Caja"]
-theme_type_variation = &"BarraRuta"
-=======
 [node name="Ruta" type="ProgressBar" parent="Pantalla/Lugar/Caja" unique_id=35137177]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 12)
 layout_mode = 2
 mouse_filter = 1
-<<<<<<< HEAD
-=======
 theme_type_variation = &"BarraRuta"
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 max_value = 1.0
 step = 0.0
 show_percentage = false
 
-<<<<<<< HEAD
-[node name="Siguiente" type="Label" parent="Pantalla/Lugar/Caja"]
-=======
 [node name="Siguiente" type="Label" parent="Pantalla/Lugar/Caja" unique_id=287333831]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"SiguienteHUD"
@@ -346,15 +207,9 @@ text = "Siguiente: Callejón del Diamante · 100 m"
 horizontal_alignment = 1
 clip_text = true
 
-<<<<<<< HEAD
-[node name="Equipo" type="HBoxContainer" parent="Pantalla"]
-unique_name_in_owner = true
-anchors_preset = 1
-=======
 [node name="Equipo" type="HBoxContainer" parent="Pantalla" unique_id=216914319]
 unique_name_in_owner = true
 layout_mode = 0
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -350.0
@@ -365,42 +220,23 @@ grow_horizontal = 0
 mouse_filter = 2
 theme_override_constants/separation = 8
 
-<<<<<<< HEAD
-[node name="Slot1" parent="Pantalla/Equipo" instance=ExtResource("3")]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="Slot2" parent="Pantalla/Equipo" instance=ExtResource("3")]
-=======
 [node name="Slot1" parent="Pantalla/Equipo" unique_id=1878700711 instance=ExtResource("3")]
 unique_name_in_owner = true
 layout_mode = 2
 
 [node name="Slot2" parent="Pantalla/Equipo" unique_id=1471727246 instance=ExtResource("3")]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 tecla = 2
 
-<<<<<<< HEAD
-[node name="Slot3" parent="Pantalla/Equipo" instance=ExtResource("3")]
-=======
 [node name="Slot3" parent="Pantalla/Equipo" unique_id=649041627 instance=ExtResource("3")]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 tecla = 3
 
-<<<<<<< HEAD
-[node name="BotonPausa" type="Button" parent="Pantalla"]
-theme_type_variation = &"BotonPausa"
-unique_name_in_owner = true
-anchors_preset = 1
-=======
 [node name="BotonPausa" type="Button" parent="Pantalla" unique_id=1376359955]
 unique_name_in_owner = true
 layout_mode = 0
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -82.0
@@ -410,26 +246,16 @@ offset_bottom = 78.0
 grow_horizontal = 0
 tooltip_text = "Pausa (Esc)"
 focus_mode = 0
-<<<<<<< HEAD
-=======
 theme_type_variation = &"BotonPausa"
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 theme_override_constants/icon_max_width = 26
 icon = ExtResource("ico_pausa")
 icon_alignment = 1
 expand_icon = true
 
-<<<<<<< HEAD
-[node name="Vuelo" type="HBoxContainer" parent="Pantalla"]
-unique_name_in_owner = true
-visible = false
-anchors_preset = 1
-=======
 [node name="Vuelo" type="HBoxContainer" parent="Pantalla" unique_id=711304283]
 unique_name_in_owner = true
 visible = false
 layout_mode = 0
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 anchor_left = 1.0
 anchor_right = 1.0
 offset_left = -350.0
@@ -441,54 +267,32 @@ mouse_filter = 2
 theme_override_constants/separation = 8
 alignment = 2
 
-<<<<<<< HEAD
-[node name="Altura" type="PanelContainer" parent="Pantalla/Vuelo"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 1
-tooltip_text = "Altura sobre la calle"
-=======
 [node name="Altura" type="PanelContainer" parent="Pantalla/Vuelo" unique_id=58861562]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Altura sobre la calle"
 mouse_filter = 2
 theme_type_variation = &"Chip"
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 script = ExtResource("ficha")
 icono = ExtResource("ico_altura")
 texto = "0 m"
 estilo_texto = &"ContadorHUD"
 lado_icono = 24.0
 
-<<<<<<< HEAD
-[node name="Papalotes" type="PanelContainer" parent="Pantalla/Vuelo"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-tooltip_text = "Papalotes usados"
-=======
 [node name="Papalotes" type="PanelContainer" parent="Pantalla/Vuelo" unique_id=2038215100]
 unique_name_in_owner = true
 layout_mode = 2
 tooltip_text = "Papalotes usados"
 mouse_filter = 2
 theme_type_variation = &"Chip"
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 script = ExtResource("ficha")
 icono = ExtResource("ico_papalote")
 estilo_texto = &"ContadorHUD"
 lado_icono = 24.0
 
-<<<<<<< HEAD
-[node name="Efectos" type="HBoxContainer" parent="Pantalla"]
-unique_name_in_owner = true
-anchors_preset = 12
-=======
 [node name="Efectos" type="HBoxContainer" parent="Pantalla" unique_id=1758291508]
 unique_name_in_owner = true
 layout_mode = 0
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
@@ -502,15 +306,9 @@ mouse_filter = 2
 theme_override_constants/separation = 8
 alignment = 1
 
-<<<<<<< HEAD
-[node name="Lanzamiento" type="VBoxContainer" parent="Pantalla"]
-unique_name_in_owner = true
-anchors_preset = 7
-=======
 [node name="Lanzamiento" type="VBoxContainer" parent="Pantalla" unique_id=674211476]
 unique_name_in_owner = true
 layout_mode = 0
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
@@ -524,62 +322,36 @@ grow_vertical = 0
 mouse_filter = 2
 theme_override_constants/separation = 2
 
-<<<<<<< HEAD
-[node name="TituloPotencia" type="Label" parent="Pantalla/Lanzamiento"]
-=======
 [node name="TituloPotencia" type="Label" parent="Pantalla/Lanzamiento" unique_id=156807946]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 theme_type_variation = &"TituloPotencia"
 text = "Elige la potencia del lanzamiento"
 horizontal_alignment = 1
 
-<<<<<<< HEAD
-[node name="ZonaPerfecta" type="Label" parent="Pantalla/Lanzamiento"]
-=======
 [node name="ZonaPerfecta" type="Label" parent="Pantalla/Lanzamiento" unique_id=1779759926]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"TextoHUD"
 text = "ZONA PERFECTA"
 horizontal_alignment = 2
 
-<<<<<<< HEAD
-[node name="Fuerza" type="ProgressBar" parent="Pantalla/Lanzamiento"]
-theme_type_variation = &"BarraFuerza"
-=======
 [node name="Fuerza" type="ProgressBar" parent="Pantalla/Lanzamiento" unique_id=385270503]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 40)
 layout_mode = 2
 mouse_filter = 2
-<<<<<<< HEAD
-show_percentage = false
-
-[node name="InstruccionBajada" type="Label" parent="Pantalla/Lanzamiento"]
-=======
 theme_type_variation = &"BarraFuerza"
 show_percentage = false
 
 [node name="InstruccionBajada" type="Label" parent="Pantalla/Lanzamiento" unique_id=690302373]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 theme_type_variation = &"DetalleHUD"
 text = "Más potencia, más distancia. Controles después del trampolín."
 horizontal_alignment = 1
 
-<<<<<<< HEAD
-[node name="Aviso" type="PanelContainer" parent="Pantalla"]
-theme_type_variation = &"AvisoHUD"
-unique_name_in_owner = true
-anchors_preset = 7
-=======
 [node name="Aviso" type="PanelContainer" parent="Pantalla" unique_id=493195312]
 unique_name_in_owner = true
 layout_mode = 0
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
@@ -591,29 +363,14 @@ offset_bottom = -54.0
 grow_horizontal = 2
 grow_vertical = 0
 mouse_filter = 2
-<<<<<<< HEAD
-
-[node name="Fila" type="HBoxContainer" parent="Pantalla/Aviso"]
-=======
 theme_type_variation = &"AvisoHUD"
 
 [node name="Fila" type="HBoxContainer" parent="Pantalla/Aviso" unique_id=1662285800]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 mouse_filter = 2
 theme_override_constants/separation = 10
 alignment = 1
 
-<<<<<<< HEAD
-[node name="Tecla" type="Label" parent="Pantalla/Aviso/Fila"]
-unique_name_in_owner = true
-layout_mode = 2
-size_flags_vertical = 4
-theme_type_variation = &"TeclaAviso"
-text = "Espacio"
-
-[node name="Indicacion" type="Label" parent="Pantalla/Aviso/Fila"]
-=======
 [node name="Tecla" type="Label" parent="Pantalla/Aviso/Fila" unique_id=773217847]
 unique_name_in_owner = true
 layout_mode = 2
@@ -621,22 +378,15 @@ theme_type_variation = &"TeclaAviso"
 text = "Espacio"
 
 [node name="Indicacion" type="Label" parent="Pantalla/Aviso/Fila" unique_id=241481706]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"IndicacionHUD"
 text = "Elegir la fuerza"
 vertical_alignment = 1
 
-<<<<<<< HEAD
-[node name="Ayuda" type="HBoxContainer" parent="Pantalla"]
-unique_name_in_owner = true
-anchors_preset = 7
-=======
 [node name="Ayuda" type="HBoxContainer" parent="Pantalla" unique_id=1672015326]
 unique_name_in_owner = true
 layout_mode = 0
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 anchor_left = 0.5
 anchor_top = 1.0
 anchor_right = 0.5
@@ -651,11 +401,7 @@ mouse_filter = 2
 theme_override_constants/separation = 6
 alignment = 1
 
-<<<<<<< HEAD
-[node name="Pausa" type="ColorRect" parent="Pantalla"]
-=======
 [node name="Pausa" type="ColorRect" parent="Pantalla" unique_id=1878041211]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
@@ -666,11 +412,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.06, 0.13, 0.12, 0.8)
 
-<<<<<<< HEAD
-[node name="Centro" type="CenterContainer" parent="Pantalla/Pausa"]
-=======
 [node name="Centro" type="CenterContainer" parent="Pantalla/Pausa" unique_id=1772808209]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -678,24 +420,11 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-<<<<<<< HEAD
-[node name="Columna" type="VBoxContainer" parent="Pantalla/Pausa/Centro"]
-=======
 [node name="Columna" type="VBoxContainer" parent="Pantalla/Pausa/Centro" unique_id=647381405]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_override_constants/separation = -22
 
-<<<<<<< HEAD
-[node name="Cinta" type="PanelContainer" parent="Pantalla/Pausa/Centro/Columna"]
-theme_type_variation = &"CintaPausa"
-z_index = 1
-layout_mode = 2
-size_flags_horizontal = 4
-
-[node name="Titulo" type="Label" parent="Pantalla/Pausa/Centro/Columna/Cinta"]
-=======
 [node name="Cinta" type="PanelContainer" parent="Pantalla/Pausa/Centro/Columna" unique_id=1324121583]
 z_index = 1
 layout_mode = 2
@@ -703,32 +432,20 @@ size_flags_horizontal = 4
 theme_type_variation = &"CintaPausa"
 
 [node name="Titulo" type="Label" parent="Pantalla/Pausa/Centro/Columna/Cinta" unique_id=1032228002]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 theme_type_variation = &"TituloPausa"
 text = "PAUSA"
 horizontal_alignment = 1
 
-<<<<<<< HEAD
-[node name="Panel" type="PanelContainer" parent="Pantalla/Pausa/Centro/Columna"]
-layout_mode = 2
-
-[node name="Opciones" type="VBoxContainer" parent="Pantalla/Pausa/Centro/Columna/Panel"]
-=======
 [node name="Panel" type="PanelContainer" parent="Pantalla/Pausa/Centro/Columna" unique_id=1619592438]
 layout_mode = 2
 
 [node name="Opciones" type="VBoxContainer" parent="Pantalla/Pausa/Centro/Columna/Panel" unique_id=1260526444]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 custom_minimum_size = Vector2(440, 0)
 layout_mode = 2
 theme_override_constants/separation = 14
 
-<<<<<<< HEAD
-[node name="Respiro" type="Label" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones"]
-=======
 [node name="Respiro" type="Label" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones" unique_id=709213377]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 custom_minimum_size = Vector2(0, 30)
 layout_mode = 2
 theme_type_variation = &"Subtitulo"
@@ -736,11 +453,7 @@ text = "De Xalapa al CUCosta"
 horizontal_alignment = 1
 vertical_alignment = 2
 
-<<<<<<< HEAD
-[node name="Continuar" type="Button" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones"]
-=======
 [node name="Continuar" type="Button" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones" unique_id=538951500]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 64)
 layout_mode = 2
@@ -749,16 +462,6 @@ text = "Seguir rodando"
 icon = ExtResource("ico_jugar")
 expand_icon = true
 
-<<<<<<< HEAD
-[node name="Volver" type="Button" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones"]
-theme_type_variation = &"BotonVolver"
-unique_name_in_owner = true
-custom_minimum_size = Vector2(0, 54)
-layout_mode = 2
-text = "Volver al taller"
-
-[node name="Aviso" type="Label" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones"]
-=======
 [node name="Volver" type="Button" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones" unique_id=22907540]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 54)
@@ -767,23 +470,15 @@ theme_type_variation = &"BotonVolver"
 text = "Volver al taller"
 
 [node name="Aviso" type="Label" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones" unique_id=1637309888]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 theme_type_variation = &"Suave"
 text = "Volver al taller abandona esta carrera."
 horizontal_alignment = 1
 
-<<<<<<< HEAD
-[node name="Separador" type="HSeparator" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones"]
-layout_mode = 2
-
-[node name="Controles" type="GridContainer" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones"]
-=======
 [node name="Separador" type="HSeparator" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones" unique_id=129074175]
 layout_mode = 2
 
 [node name="Controles" type="GridContainer" parent="Pantalla/Pausa/Centro/Columna/Panel/Opciones" unique_id=2106839508]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 size_flags_horizontal = 4
@@ -791,11 +486,7 @@ theme_override_constants/h_separation = 10
 theme_override_constants/v_separation = 6
 columns = 2
 
-<<<<<<< HEAD
-[node name="Revivir" type="ColorRect" parent="Pantalla"]
-=======
 [node name="Revivir" type="ColorRect" parent="Pantalla" unique_id=2018532377]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 visible = false
 layout_mode = 1
@@ -806,11 +497,7 @@ grow_horizontal = 2
 grow_vertical = 2
 color = Color(0.06, 0.13, 0.12, 0.8)
 
-<<<<<<< HEAD
-[node name="Centro" type="CenterContainer" parent="Pantalla/Revivir"]
-=======
 [node name="Centro" type="CenterContainer" parent="Pantalla/Revivir" unique_id=1165008749]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -818,28 +505,16 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-<<<<<<< HEAD
-[node name="PanelValentina" type="PanelContainer" parent="Pantalla/Revivir/Centro"]
-unique_name_in_owner = true
-layout_mode = 2
-
-[node name="Opciones" type="VBoxContainer" parent="Pantalla/Revivir/Centro/PanelValentina"]
-=======
 [node name="PanelValentina" type="PanelContainer" parent="Pantalla/Revivir/Centro" unique_id=2012632002]
 unique_name_in_owner = true
 layout_mode = 2
 
 [node name="Opciones" type="VBoxContainer" parent="Pantalla/Revivir/Centro/PanelValentina" unique_id=1210254516]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 custom_minimum_size = Vector2(480, 0)
 layout_mode = 2
 theme_override_constants/separation = 16
 
-<<<<<<< HEAD
-[node name="Icono" type="TextureRect" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones"]
-=======
 [node name="Icono" type="TextureRect" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones" unique_id=449764671]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 custom_minimum_size = Vector2(64, 64)
 layout_mode = 2
 size_flags_horizontal = 4
@@ -847,79 +522,47 @@ texture = ExtResource("ico_valentina")
 expand_mode = 1
 stretch_mode = 5
 
-<<<<<<< HEAD
-[node name="Titulo" type="Label" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones"]
-=======
 [node name="Titulo" type="Label" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones" unique_id=2121768233]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 theme_type_variation = &"Subtitulo"
 text = "¿Usar Salsa Valentina?"
 horizontal_alignment = 1
 
-<<<<<<< HEAD
-[node name="Descripcion" type="Label" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones"]
-=======
 [node name="Descripcion" type="Label" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones" unique_id=1637576091]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 layout_mode = 2
 text = "Recupera tu resistencia y tus saltos."
 horizontal_alignment = 1
 
-<<<<<<< HEAD
-[node name="ExistenciasValentina" type="Label" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones"]
-=======
 [node name="ExistenciasValentina" type="Label" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones" unique_id=2091321940]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"Suave"
 text = "Salsas disponibles: 1 · Usas 1 al revivir"
 horizontal_alignment = 1
 
-<<<<<<< HEAD
-[node name="CuentaValentina" type="Label" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones"]
-=======
 [node name="CuentaValentina" type="Label" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones" unique_id=1570391773]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 layout_mode = 2
 theme_type_variation = &"Subtitulo"
 text = "El intento termina en 5 s"
 horizontal_alignment = 1
 
-<<<<<<< HEAD
-[node name="UsarValentina" type="Button" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones"]
-=======
 [node name="UsarValentina" type="Button" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones" unique_id=1487248179]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 theme_type_variation = &"Continuar"
 text = "Usar salsa y revivir"
 
-<<<<<<< HEAD
-[node name="TerminarIntento" type="Button" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones"]
-=======
 [node name="TerminarIntento" type="Button" parent="Pantalla/Revivir/Centro/PanelValentina/Opciones" unique_id=43067722]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 unique_name_in_owner = true
 custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
 theme_type_variation = &"BotonVolver"
 text = "Terminar intento"
 
-<<<<<<< HEAD
-[connection signal="pressed" from="Pantalla/Revivir/Centro/PanelValentina/Opciones/UsarValentina" to="." method="_elegir_valentina" binds= [true]]
-[connection signal="pressed" from="Pantalla/Revivir/Centro/PanelValentina/Opciones/TerminarIntento" to="." method="_elegir_valentina" binds= [false]]
-[connection signal="pressed" from="Pantalla/BotonPausa" to="." method="_alternar_pausa"]
-[connection signal="pressed" from="Pantalla/Pausa/Centro/Columna/Panel/Opciones/Continuar" to="." method="_alternar_pausa"]
-[connection signal="pressed" from="Pantalla/Pausa/Centro/Columna/Panel/Opciones/Volver" to="." method="_volver"]
-=======
 [connection signal="pressed" from="Pantalla/BotonPausa" to="." method="_alternar_pausa"]
 [connection signal="pressed" from="Pantalla/Pausa/Centro/Columna/Panel/Opciones/Continuar" to="." method="_alternar_pausa"]
 [connection signal="pressed" from="Pantalla/Pausa/Centro/Columna/Panel/Opciones/Volver" to="." method="_volver"]
 [connection signal="pressed" from="Pantalla/Revivir/Centro/PanelValentina/Opciones/UsarValentina" to="." method="_elegir_valentina" binds= [true]]
 [connection signal="pressed" from="Pantalla/Revivir/Centro/PanelValentina/Opciones/TerminarIntento" to="." method="_elegir_valentina" binds= [false]]
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)

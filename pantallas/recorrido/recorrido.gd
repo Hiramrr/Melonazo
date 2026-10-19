@@ -27,10 +27,6 @@ enum Fase { FUERZA, BAJADA, RECORRIDO, FIN, REVIVIR, CUENTA }
 const CUENTA_SALIDA := preload("res://pantallas/recorrido/cuenta_salida.gd")
 var cuenta_salida: CanvasLayer
 
-<<<<<<< HEAD
-const ESCENA_RESULTADOS := "res://pantallas/resultados/resultados.tscn"
-=======
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 const RADIO_IMAN := 240.0              # la flor atrae aplausos a esta distancia
 const VELOCIDAD_IMAN := 460.0
 const MARGEN_INTERACCION := 400.0      # solo se revisan tramos a esta distancia del melón
@@ -144,11 +140,7 @@ func _process(delta: float) -> void:
 			if _t_fin <= 0.0:
 				_t_fin = INF
 				Juego.registrar_intento(maxf(0.0, mejor_x) / Config.px_por_metro, melon.carisma(), recolectados, melon.roto, poderes_recogidos, altura_max_m, valentinas_usadas, estadisticas())
-<<<<<<< HEAD
-				Animacion.cambiar_escena(ESCENA_RESULTADOS)
-=======
 				Animacion.cambiar_escena(Rutas.RESULTADOS)
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	var apuntando := fase == Fase.FUERZA
 	efectos.mostrar_flecha = apuntando
 	efectos.origen_flecha = melon.global_position

@@ -55,7 +55,7 @@ func _verificar() -> void:
 	juego.estela = 0
 	juego.rayas_propio = ""
 	juego.nombre_melon = "Prueba xalapeña"
-	comprobar(ProjectSettings.get_setting("application/config/name") == "¡Rueda, Melón!", "Nombre del proyecto")
+	comprobar(ProjectSettings.get_setting("application/config/name") == "Melonazo", "Nombre del proyecto")
 	for accion in ["izquierda", "derecha", "rebote", "slam", "acc_1", "acc_2", "acc_3", "empujon", "confirmar", "pausar"]:
 		comprobar(InputMap.has_action(accion), "Entrada configurada: " + accion)
 	comprobar(juego.comprar_mejora("fuerza"), "Compra con saldo")
@@ -256,7 +256,7 @@ func _verificar() -> void:
 	var titulos: Array = []
 	for i in pestanas.get_tab_count():
 		titulos.append(pestanas.get_tab_title(i))
-	comprobar(titulos == ["Tu melón", "Dibujo", "Accesorios", "Tiendita", "Pasaporte"], "Pestañas del taller en orden y con su título")
+	comprobar(titulos == ["Tu melón", "Dibujo", "Accesorios", "Tienda", "Pasaporte"], "Pestañas del taller en orden y con su título")
 	comprobar(taller.get_node("%TuMelon").listas.size() == 5, "Taller ofrece piel, patrón, cara, detalle y estela")
 	comprobar(taller.get_node("%BtnReiniciar") != null and taller.get_node("%ConfirmarReinicio") != null, "Taller ofrece reiniciar el progreso con confirmación")
 	juego.aplausos = 999

@@ -30,7 +30,9 @@ extends Control
 
 
 func _init() -> void:
-	theme_type_variation = &"Pips"
+	# La escena puede asignar la variación antes que el script; no la pisamos.
+	if theme_type_variation == &"":
+		theme_type_variation = &"Pips"
 
 
 func _ready() -> void:

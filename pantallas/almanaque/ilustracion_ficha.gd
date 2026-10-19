@@ -8,10 +8,7 @@ var id := ""
 
 
 func _ready() -> void:
-<<<<<<< HEAD
-=======
 	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST 
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	resized.connect(queue_redraw)
 

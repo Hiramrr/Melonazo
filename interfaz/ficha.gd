@@ -50,11 +50,8 @@ static func crear(p_icono: Texture2D, p_texto: String, p_oscura := true, p_estil
 
 func _init() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
-<<<<<<< HEAD
-=======
 	custom_minimum_size.y = 54.0
 	
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	var fila := HBoxContainer.new()
 	fila.theme_type_variation = &"FilaIconos"
 	fila.mouse_filter = Control.MOUSE_FILTER_IGNORE

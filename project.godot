@@ -10,13 +10,6 @@ config_version=5
 
 [application]
 
-<<<<<<< HEAD
-config/name="¡Rueda, Melón!"
-config/description="Viaja desde Xalapa hasta el Centro Universitario de la Costa de la Universidad de Guadalajara. Prepara tu melón, descubre lugares y encadena rebotes hasta la meta."
-run/main_scene="res://pantallas/menu/menu.tscn"
-config/use_custom_user_dir=true
-config/custom_user_dir_name="RuedaMelon"
-=======
 config/name="Melonazo"
 config/description="!!! La gran carrera de melones de Xalapa está a punto de comenzar.!!!
 
@@ -25,7 +18,6 @@ config/version="1.2"
 run/main_scene="res://pantallas/menu/menu.tscn"
 config/use_custom_user_dir=true
 config/custom_user_dir_name="Melonazo"
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 config/features=PackedStringArray("4.7")
 config/icon="res://recursos/icono.png"
 
@@ -40,10 +32,7 @@ Musica="*res://globales/musica.gd"
 
 window/size/viewport_width=1280
 window/size/viewport_height=720
-<<<<<<< HEAD
-=======
 window/size/mode=2
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 window/size/window_width_override=1280
 window/size/window_height_override=720
 window/stretch/mode="canvas_items"

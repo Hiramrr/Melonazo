@@ -23,12 +23,6 @@ extends Control
 ## Las señales internas de cada pestaña se conectan en la escena; las que unen
 ## nodos distintos, aquí en _ready().
 
-<<<<<<< HEAD
-const RECORRIDO := "res://pantallas/recorrido/recorrido.tscn"
-const ALMANAQUE := "res://pantallas/almanaque/almanaque.tscn"
-
-=======
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 # --- Vista previa ------------------------------------------------------------
 @onready var vista: VistaMelon = %Vista
 @onready var lbl_nombre_vista: Label = %NombreVista
@@ -61,11 +55,7 @@ func _ready() -> void:
 	Musica.tocar(Musica.TIENDITA)
 	# El nodo se llama TuMelon (sin acento ni espacio); el título lleva los dos.
 	pestanas.set_tab_title(pestanas.get_tab_idx_from_control(pestana_melon), "Tu melón")
-<<<<<<< HEAD
-	pestanas.set_tab_title(pestanas.get_tab_idx_from_control(pestana_mejoras), "Tiendita")
-=======
 	pestanas.set_tab_title(pestanas.get_tab_idx_from_control(pestana_mejoras), "Tienda")
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	pestanas.tab_changed.connect(_al_cambiar_pestana)
 	Animacion.conectar_pestanas(pestanas)
 	vista.pestana_dibujo = pestana_dibujo
@@ -76,11 +66,7 @@ func _ready() -> void:
 	pestana_dibujo.cambio.connect(vista.queue_redraw)
 	for parte in [["Tab", "Elegir"], ["Enter", "Rodar"]]:
 		ayuda.add_child(Iconos.tecla(parte[0]))
-<<<<<<< HEAD
-		var l := ComunTaller.etiqueta(parte[1], &"AyudaHUD")
-=======
 		var l := ComunTaller.etiqueta(parte[1], Estilos.AYUDA_HUD)
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 		ayuda.add_child(l)
 	_refrescar()
 	btn_puente.grab_focus()
@@ -113,21 +99,13 @@ func _unhandled_input(event: InputEvent) -> void:
 func _ir() -> void:
 	Juego.nombre_melon = ComunTaller.nombre_melon()
 	Juego.guardar()
-<<<<<<< HEAD
-	Animacion.cambiar_escena(RECORRIDO)
-=======
 	Animacion.cambiar_escena(Rutas.RECORRIDO)
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 
 
 func _abrir_almanaque() -> void:
 	pestana_dibujo.salir_vista()
 	Juego.guardar()
-<<<<<<< HEAD
-	Animacion.cambiar_escena(ALMANAQUE)
-=======
 	Animacion.cambiar_escena(Rutas.ALMANAQUE)
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 
 
 func _guardar_melon() -> void:
@@ -164,10 +142,7 @@ func _refrescar() -> void:
 	pestana_melon.refrescar()
 	pestana_accesorios.refrescar()
 	pestana_mejoras.refrescar()
-<<<<<<< HEAD
-=======
 	pestana_dibujo.refrescar()
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 	ficha_balance.texto = str(Juego.aplausos)
 	ficha_record.texto = "%d m" % int(Juego.record_m)
 	if _aplausos_mostrados >= 0 and _aplausos_mostrados != Juego.aplausos:

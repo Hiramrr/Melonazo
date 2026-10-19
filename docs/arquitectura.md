@@ -1,8 +1,4 @@
-<<<<<<< HEAD
-# Arquitectura de ¡Rueda, Melón!
-=======
 # Arquitectura de Melonazo
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 
 Este documento explica cómo está organizado el proyecto en Godot: qué hace cada escena, cómo se comunican los nodos y dónde tocar para cambiar o añadir cosas. Para jugar, controles y créditos, consulta el [README](../README.md).
 
@@ -28,13 +24,8 @@ Las seis pistas están en `recursos/musica/`, comprimidas en Ogg Vorbis estéreo
 
 ```text
 Menú ──"Jugar"──▶ Taller ──"¡A rodar!"──▶ Recorrido ──fin de carrera──▶ Resultados ──▶ Taller
-<<<<<<< HEAD
-                                             │
-                                             └──Pausa ▸ "Volver al taller" (sin cobrar)──▶ Taller
-=======
 											 │
 											 └──Pausa ▸ "Volver al taller" (sin cobrar)──▶ Taller
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 ```
 
 Las pantallas no se pasan datos directamente: el Taller escribe la elección del jugador en `Juego`, el Recorrido la lee, y al terminar llama a `Juego.registrar_intento()`. Resultados lee `Juego.ultimo`.
@@ -66,8 +57,6 @@ Los botones tienen "labio": el borde inferior es más grueso y, al presionarlos,
 | `Pips` | `interfaz/pips.gd` | Fila de íconos que se llenan: impulsos, niveles |
 | `Selector` | `interfaz/selector.gd` | Elegir de una lista con flechas, como en un vestidor |
 | `FondoJuego` | `interfaz/fondo_juego.gd` | Fondo animado con rayos y papel picado (Taller y Resultados) |
-<<<<<<< HEAD
-=======
 | `Tarjeta` | `interfaz/tarjeta.gd` | Tarjeta visual (no clicable): cabecera, estado, cuerpo, descripción y pie opcionales |
 | `BotonTarjeta` | `interfaz/boton_tarjeta.gd` | Como `Tarjeta` pero clicable; añade `seleccionado` para marcar la elegida |
 | `RejillaTarjetas` | `interfaz/rejilla_tarjetas.gd` | `GridContainer` que ajusta columnas al ancho del `ScrollContainer` o del viewport |
@@ -84,7 +73,6 @@ Después de la refactorización de la jam (días 1-3), las pantallas siguen esta
 - **Toda ruta de escena** se referencia como `Rutas.NOMBRE`, nunca como `"res://..."` inline.
 - **Toda pestaña del taller** expone `signal cambio` y `func refrescar()`, y `Taller._refrescar()` invoca `refrescar()` en todas ellas.
 - **El nombre de nodo** de una pestaña es ASCII sin espacios (`TuMelon`, `Mejoras`, `Dibujo`); el título visible se fija en `Taller._ready()` con `set_tab_title()`.
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 
 El autoload `Animacion` hace que cada botón crezca un poco con el ratón y se aplaste al pulsarlo. Se conecta solo a todos los botones. Dentro de listas con scroll no crece, porque el borde se cortaría. También ofrece `aparecer()`, `rebotar()`, `latir()`, `sellar()` y `contar()` para animar las entradas de pantalla, los contadores del HUD y el desglose de resultados.
 
@@ -100,13 +88,8 @@ Menu (menu.gd)                     Bajada de la cámara, entrada del título y b
 ├─ Camara
 └─ Interfaz (CanvasLayer)
    └─ Centro
-<<<<<<< HEAD
-      ├─ Titulo (titulo_melonazo.gd)  Logo "MELONAZO"; la última O es un melón que gira
-      └─ BtnJugar                     Va al taller
-=======
 	  ├─ Titulo (titulo_melonazo.gd)  Logo "MELONAZO"; la última O es un melón que gira
 	  └─ BtnJugar                     Va al taller
->>>>>>> 744a767 (Refactorización completa de interfaces, UI y nombres)
 ```
 
 Al entrar, `Menu` baja la cámara desde 3200 px sobre la calle. `CieloAlto` tapa las montañas mientras la cámara está alta y se desvanece al llegar; sus nubes están ancladas al mundo, así la cámara las atraviesa. Cualquier clic o tecla salta la bajada. Después cae el título y aparece el botón.
