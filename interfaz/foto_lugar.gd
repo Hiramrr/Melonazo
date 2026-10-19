@@ -7,14 +7,14 @@ extends VBoxContainer
 ##   var foto := FotoLugar.new()
 ##   foto.configurar(arte.fotografias[id])   # ArteXalapa (recursos/arte_xalapa.tres)
 ##   contenedor.add_child(foto)
-## La usa exclusivamente la postal de Resultados (pantallas/resultados/postal_resultados.gd).
+## La usan las postales de Resultados y del Pasaporte del taller.
 ##
 ## Hijos que crea configurar(), en orden:
 ##   Imagen     TextureRect con la foto (las pruebas de capturas lo buscan por nombre)
 ##   (Label)    nombre del lugar (si con_titulo)
 ##   DatoCurioso texto del lugar, si está asignado
 ##   (Label)    autor de la foto
-##   (HBox)     enlaces a la foto original, sus derechos y la fuente del dato
+##   (HFlow)    enlaces a la foto original, sus derechos y la fuente del dato
 
 
 ## Crea los hijos a partir de una entrada de ArteXalapa.fotografias:
@@ -51,7 +51,7 @@ func configurar(datos: Dictionary, alto := 200.0, con_titulo := true) -> void:
 	credito.theme_type_variation = &"Credito"
 	credito.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	add_child(credito)
-	var enlaces := HBoxContainer.new()
+	var enlaces := HFlowContainer.new()
 	enlaces.theme_type_variation = &"FilaEnlaces"
 	add_child(enlaces)
 	var destinos := [["Foto original", datos["fuente"]], [datos["licencia"], datos["url_licencia"]]]

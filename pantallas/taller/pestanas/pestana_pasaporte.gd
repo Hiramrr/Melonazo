@@ -6,11 +6,12 @@ extends ScrollContainer
 ##   ListaPasaporte          todo el contenido; se crea aquí con refrescar():
 ##                           resumen, una tarjeta por postal y una por poder
 ##
-## Solo lee Juego (visitados, intentos, récord) y Config (postales, poderes), así
+## Solo lee Juego (visitados, intentos, récord), Config y las fotos de ArteXalapa, así
 ## que no emite señales. Nada del taller cambia esos datos: el contenido se arma
 ## una vez en _ready() y Taller no necesita refrescarlo en cada cambio.
 
 const LADO_PODER := 48.0
+const ARTE := preload("res://recursos/arte_xalapa.tres")
 
 @onready var lista: VBoxContainer = %ListaPasaporte
 
@@ -47,8 +48,8 @@ func refrescar() -> void:
 
 # --- Secciones ---------------------------------------------------------------
 
-## Una tarjeta por postal: nombre, sello de visitado (o cuántos metros faltan),
-## y nota. Las fotos solo se muestran al terminar el intento.
+## Una tarjeta por postal: nombre, foto con créditos, sello de visitado
+## o metros pendientes, y nota al visitar el lugar.
 func _agregar_postales(visitados: Array) -> bool:
 	var postales: Variant = Config.postales
 	if not (postales is Array) or (postales as Array).is_empty():
@@ -74,6 +75,13 @@ func _agregar_postales(visitados: Array) -> bool:
 			t.estado = "A %d m · faltan %d m" % [metros, maxi(0, metros - record_m)]
 			t.estado_estilo = Estilos.POSTAL_PENDIENTE
 			t.estado_alignment = HORIZONTAL_ALIGNMENT_CENTER
+		var datos: Dictionary = ARTE.fotografias.get(pid, {}).duplicate()
+		if datos.get("textura") is Texture2D:
+			# La nota ya aparece bajo la foto cuando el lugar está visitado.
+			datos.erase("dato_curioso")
+			var foto := FotoLugar.new()
+			foto.configurar(datos, 140.0, false)
+			t.cuerpo.add_child(foto)
 		rejilla.add_child(t)
 	return true
 

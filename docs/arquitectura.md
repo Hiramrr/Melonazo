@@ -215,7 +215,7 @@ La ruta aérea asciende desde `Config.altura_papalotes.x` hasta `Config.altura_p
 
 ## Resultados (`pantallas/resultados/`)
 
-`resultados.gd` rellena los textos con `Juego.ultimo` y los anima. `ultimo.llegada` indica si el melón cruzó la meta sin romperse. El panel `Postal` de `postal_resultados.gd` busca el lugar más lejano alcanzado en ese intento y muestra exclusivamente su fotografía. Si ese lugar no tiene imagen, oculta la postal. No usa imágenes de otros lugares ni dibujos como sustitutos. El pasaporte conserva solo nombres y sellos. El recorrido asigna sus imágenes por separado en `ArteXalapa.lugares_mapa`.
+`resultados.gd` rellena los textos con `Juego.ultimo` y los anima. `ultimo.llegada` indica si el melón cruzó la meta sin romperse. El panel `Postal` de `postal_resultados.gd` busca el lugar más lejano alcanzado en ese intento y muestra exclusivamente su fotografía. Si ese lugar no tiene imagen, oculta la postal. No usa imágenes de otros lugares ni dibujos como sustitutos. El pasaporte muestra las mismas fotografías con sus créditos, conserva los sellos y las distancias pendientes, y revela la nota al visitar el lugar. Si falta una fotografía, conserva la tarjeta sin imagen. El recorrido asigna sus imágenes por separado en `ArteXalapa.lugares_mapa`.
 
 ## Cómo añadir cosas
 

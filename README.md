@@ -147,6 +147,8 @@ El arte dibujado del juego usa hojas PNG con JSON Hash compatible con LibreSprit
 
 Las postales de resultados muestran una fotografía del lugar alcanzado y un dato curioso para los 19 destinos elegidos, incluida la entrada del CUCosta. Las imágenes están en `recursos/fotos/` y funcionan sin conexión. Los autores, las fuentes y los derechos de cada fotografía están en [recursos/fotos/README.md](recursos/fotos/README.md). El juego muestra estos créditos y el enlace a la fuente del dato.
 
+El pasaporte del taller muestra las fotos de los 19 lugares con sus créditos, los sellos de visita y las distancias pendientes. La nota de cada lugar aparece al visitarlo. Si se retira una foto de `fotografias`, su tarjeta conserva el nombre y el estado sin sustituir la imagen por la de otro lugar.
+
 Las entradas de `fotografias` en `recursos/arte_xalapa.tres` permiten sustituir o quitar las fotos sin tocar los scripts. Al vaciar ese diccionario, los resultados ocultan la postal y conservan el resumen del intento.
 
 `lugares_mapa` en ese mismo recurso asigna una textura a cada uno de los 19 puntos del mapa. Por ahora usa sus fotos. Para poner un sprite, sustituye la textura de su `id` por el PNG o `AtlasTexture` correspondiente. La fotografía y el dato curioso de resultados se conservan. Al quitar una entrada, desaparece su imagen del mapa y permanece el letrero.
@@ -185,6 +187,7 @@ Si un archivo no se puede leer, el juego lo respalda con sufijo `.danado` antes 
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/ruta.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/progresion.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/lugares.gd
+/Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/pasaporte.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/almanaque.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/slam.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/rivales.gd
@@ -206,6 +209,8 @@ La segunda orden comprueba entradas, compras, desbloqueos, premios sin duplicado
 `valentina.gd` comprueba la elección al romperse o detenerse, la pausa, el consumo único al aceptar, el rechazo, Esc y el vencimiento sin gastar la salsa. Usa un guardado separado. Sin `--headless` también comprueba los límites del diálogo y guarda capturas a 1280 × 720 y 960 × 540 en `user://revision_grafica/`.
 
 `lugares.gd` comprueba que los 19 puntos tengan su imagen en la posición correcta, sin duplicados en los límites de tramo ni colisiones. También verifica que cambiar una imagen del mapa por un sprite conserve la foto de resultados.
+
+`pasaporte.gd` comprueba las fotos de los 19 lugares, los sellos y las distancias pendientes, los créditos a ambas resoluciones y las tarjetas sin foto. Usa un guardado separado. Sin `--headless`, guarda capturas del pasaporte en `/tmp/`.
 
 `almanaque.gd` comprueba la colección, la independencia de los dibujos guardados, el límite de fichas, la carga de partidas anteriores y la validación de datos dañados. También recorre los botones de guardar, consultar, actualizar, eliminar y usar un melón. Usa un archivo separado y lo borra al terminar. La revisión gráfica incluye el almanaque vacío, la colección, accesorios, poderes y la confirmación de eliminación a ambas resoluciones.
 

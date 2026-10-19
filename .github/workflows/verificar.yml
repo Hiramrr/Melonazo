@@ -53,7 +53,7 @@ jobs:
       - name: Pruebas
         run: |
           fallos=0
-          for prueba in verificar temas sprites almanaque chile cuenta_salida sonidos_interfaz; do
+          for prueba in verificar temas sprites almanaque chile cuenta_salida sonidos_interfaz pasaporte; do
             echo "::group::$prueba"
             ~/godot/godot --headless --path . --script res://pruebas/$prueba.gd 2>&1 | tee prueba.log
             codigo=${PIPESTATUS[0]}

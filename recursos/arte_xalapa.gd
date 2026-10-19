@@ -6,7 +6,8 @@ extends Resource
 ## Quién lo usa (todos con preload del .tres):
 ##   Paisaje            dibujar() pinta la foto panorámica como fondo del recorrido
 ##   HUD                crear_creditos_paisaje() agrega la atribución de esa foto
-##   PostalResultados   fotografias, mostradas con FotoLugar solo al terminar
+##   PostalResultados   fotografias, mostradas con FotoLugar al terminar
+##   PestanaPasaporte   fotografias, mostradas con FotoLugar en cada postal
 ##   Postal             lugares_mapa, imágenes provisionales del recorrido
 ##
 ## Vacía `paisaje` en el .tres para usar solamente los dibujos del juego.
