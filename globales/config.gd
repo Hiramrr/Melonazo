@@ -321,8 +321,8 @@ var patrones: Array = [
 var caras: Array = [
 	{"id": "sonrisa", "nombre": "Contento"}, {"id": "usagi", "nombre": "Usagi"},
 	{"id": "kirby", "nombre": "Kirby"}, {"id": "verity", "nombre": "Verity"},
-	{"id": "man", "nombre": "Man"}, {"id": "guino", "nombre": "Guiño"},
-	{"id": "lengua", "nombre": "Travieso"}, {"id": "enamorado", "nombre": "Enamorado"},
+	{"id": "man", "nombre": "Man"}, {"id": "colosal", "nombre": "Cabeza Olmeca"},
+	{"id": "jack", "nombre": "Jack Skeleton"}, {"id": "frijolito", "nombre": "Frijolito"},
 	{"id": "sin_cara", "nombre": "Sin cara"},
 ]
 var detalles: Array = [
