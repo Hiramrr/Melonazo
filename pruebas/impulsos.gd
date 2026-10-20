@@ -4,6 +4,8 @@ extends "res://pruebas/balance.gd"
 
 func _verificar() -> void:
 	config = root.get_node("Config")
+	# Compara los impulsos sin que un pájaro cambie la trayectoria de una sola variante.
+	config.primer_pajaro_x = INF
 	juego = root.get_node("Juego")
 	juego.archivo_guardado = "user://prueba_impulsos_%d.json" % OS.get_process_id()
 	aislar_progreso()

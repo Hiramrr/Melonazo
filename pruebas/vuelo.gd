@@ -21,6 +21,8 @@ func comprobar(condicion: bool, mensaje: String) -> void:
 func _verificar() -> void:
 	juego = root.get_node("Juego")
 	config = root.get_node("Config")
+	# Aísla el encadenado de ayudas; penalizaciones.gd comprueba los frenones de pájaros.
+	config.primer_pajaro_x = INF
 	juego.archivo_guardado = "user://prueba_vuelo_%d.json" % OS.get_process_id()
 	juego.melones_guardados.clear()
 	juego.tamano = 1

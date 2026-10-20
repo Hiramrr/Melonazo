@@ -102,7 +102,7 @@ Se activan al recogerlos y tienen siluetas diferentes. El primero aparece a los 
 | Pizza con yogur | Una pizza ovni eleva al melón durante 3 segundos conservando su velocidad horizontal. Saltar, hacer slam o un frenón interrumpen la abducción |
 | Elote de feria | Recupera todas tus cargas de salto. Si la jarana te dio una extra, la conservas |
 
-El elote no entra en la alternancia: aparece por su cuenta cada 260 a 360 metros, desde los 260 metros hasta la meta. Los rivales también pueden ganártelo.
+El elote no entra en la alternancia: aparece por su cuenta cada 260 a 360 metros, desde los 260 metros hasta la meta. Cada rival puede usarlo una vez sin gastarlo para el jugador. Lo mismo ocurre con los demás poderes y los papalotes.
 
 Los poderes flotan entre 14 y 22 metros sobre la calle: hay que saltar para recogerlos. Guarda un salto para alcanzar el siguiente elote: si te quedas lento y sin cargas, nada aparece a salvarte.
 
@@ -164,7 +164,7 @@ El personaje se compone en `melon/aspecto.gd`; los accesorios son sprites PNG de
 
 Los estilos de todas las pantallas, incluidos paneles, tipografía, colores de estado y barras del HUD, se editan en ese recurso desde el editor de Godot. La [guía de temas](docs/temas.md) indica qué variación controla cada parte. Los márgenes y la distribución de cada pantalla se editan en su escena.
 
-Los poderes, la Salsa Valentina, la explosión del chile y los pájaros usan imágenes PNG provisionales en `recursos/poderes/`, algunas de Microsoft Fluent Emoji con licencia MIT. Para cambiarlas basta con sobrescribir el PNG o elegir otra textura en el inspector. La tabla de archivos y la forma de cambiarlos están en [recursos/poderes/README.md](recursos/poderes/README.md).
+Los poderes, la Salsa Valentina y los pájaros usan sprites PNG de 64 × 64 en `recursos/poderes/`. La explosión del chile conserva su imagen propia. Para cambiarlas basta con sobrescribir el PNG o elegir otra textura en el inspector. La tabla de archivos y la forma de cambiarlos están en [recursos/poderes/README.md](recursos/poderes/README.md). Los obstáculos y las ayudas usan las imágenes de `recursos/objetos/`.
 
 La revisión gráfica usa una ventana con render real y no modifica el progreso. Comprueba los límites de los controles y guarda capturas de todas las pestañas y pantallas en `user://revision_grafica/`, a 1280 × 720 y a 960 × 540. Incluye la fuerza de lanzamiento, los espacios de accesorios vacíos, un resultado con todas las recompensas y el modo sin fotografías.
 
@@ -197,6 +197,9 @@ Si un archivo no se puede leer, el juego lo respalda con sufijo `.danado` antes 
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/lanzamiento.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/balance.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/penalizaciones.gd
+/Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/pizza_ovni.gd
+/Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/objetos_compartidos.gd
+/Applications/Godot.app/Contents/MacOS/Godot --headless --path . --script res://pruebas/sprites.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/impulsos.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/vuelo.gd
 /Applications/Godot.app/Contents/MacOS/Godot --headless --path . --fixed-fps 120 --script res://pruebas/ritmo.gd
@@ -223,9 +226,11 @@ La segunda orden comprueba entradas, compras, desbloqueos, premios sin duplicado
 
 `balance.gd` comprueba 54 carreras sin input después del lanzamiento, con tres tamaños, tres fuerzas, tres semillas y mejoras iniciales o al máximo. Todas deben terminar en menos de 30 segundos y recoger como máximo tres chiles. Sin mejoras deben terminar antes de la mitad de Xalapa; con mejoras tampoco deben salir de la ciudad. También compara una carrera sin controles con otra que usa rebotes, accesorios y empujones. Comprueba que un lanzamiento al 70 %, con equipo inicial y controles, avance al menos 300 metros sin mejoras. Por último, mide la progresión media con tres semillas. Sin mejoras, las carreras con controles básicos deben promediar menos de novecientos metros. Las mejoras deben superar el alcance inicial y, al máximo, permitir un promedio de al menos mil metros. Las carreras activas pueden durar hasta 120 segundos. Una prueba adicional exige llegar al CUCosta con equipo, mejoras y slams. Utiliza su propio archivo de prueba.
 
-`impulsos.gd` revisa que todo el terreno sea plano, la separación de los melones, el límite de generación y la retirada de los que quedan atrás. Compara 18 carreras con las ayudas adicionales activas o desactivadas, con las mismas semillas y controles. Comprueba que apuntar los slams permita llegar con menos mejoras. Otras tres carreras verifican que pulsar slam sin apuntar siga fallando y termine mucho antes de la meta. Usa un archivo de prueba separado.
+`impulsos.gd` revisa que todo el terreno sea plano, la separación de los melones, el límite de generación y la retirada de los que quedan atrás. Compara 18 carreras con las ayudas adicionales activas o desactivadas, con las mismas semillas y controles. Comprueba que apuntar los slams permita llegar con menos mejoras. Otras tres carreras verifican que pulsar slam sin apuntar siga fallando y termine mucho antes de la meta. Usa un archivo de prueba separado. Esta comparación y la prueba de vuelo desactivan los pájaros para medir los impulsos sin frenones. `penalizaciones.gd` verifica esos frenones con los tres tamaños.
 
 `penalizaciones.gd` compara melones con pizza, con y sin pájaro, charco o coladera. Comprueba que los tres tamaños pierdan velocidad y que el efecto dure al menos medio segundo. También verifica que el slam conserve un frenón del mismo paso y que encadenarlo no acumule velocidad sin límite.
+
+`pizza_ovni.gd` comprueba los tres segundos de ascenso, la velocidad horizontal, la pausa, el regreso de la gravedad y la sustitución del efecto al recoger otra pizza. `objetos_compartidos.gd` comprueba que los rivales no gasten las ayudas del jugador ni repitan el mismo poder o papalote.
 
 `vuelo.gd` comprueba el consumo y bloqueo de saltos, el alcance de E y el uso único de cada ayuda sin recargar saltos ni perder las cargas extra de la jarana. También recorre la ruta aérea con tres tamaños y tres semillas, sin mejoras ni accesorios, tanto con D sostenida como sin ella. Exige encadenar al menos dos ayudas, llegar a 140 metros de altura y permanecer seis segundos sobre los 40 metros. Las carreras deben terminar dentro de dos minutos y, sin mejoras, antes de la meta. Repite con el melón mediano y mejoras máximas y exige alcanzar al menos la salida de Xalapa. El límite de tiempo detecta vuelos que no terminan; no es un tope dentro del juego. Usa un guardado de prueba separado.
 

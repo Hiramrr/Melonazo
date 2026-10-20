@@ -76,7 +76,7 @@ func _draw() -> void:
 		_regiones[corriente] = Rect2(tex.get_image().get_used_rect())
 	draw_texture_rect_region(tex, Rect2(-tam * 0.5, tam), _regiones[corriente], tinte)
 	if en_rango and not usado:
-		draw_arc(Vector2.ZERO, 95.0, 0, TAU, 40, Color("ffe488"), 3.0)
+		Sprites.aro(self, Vector2.ZERO, 95.0, Color("ffe488"))
 		draw_string(ThemeDB.fallback_font, Vector2(-55, -105), "E · Impulso", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color("fff4d6"))
 
 

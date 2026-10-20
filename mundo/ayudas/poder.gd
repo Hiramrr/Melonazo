@@ -92,7 +92,7 @@ func _draw() -> void:
 	var color: Color = colores.get(tipo, Color.WHITE)
 	for capa in range(8, 0, -1):
 		color.a = 0.025 + (8 - capa) * 0.009
-		draw_circle(Vector2.ZERO, 25.0 + capa * 4.0 + sin(tiempo * 3.0) * 2.0, color)
+		Sprites.disco(self, Vector2.ZERO, 25.0 + capa * 4.0 + sin(tiempo * 3.0) * 2.0, color)
 	draw_set_transform(flotacion, 0.0, Vector2(1.6, 1.6))
 	dibujar_insignia(self, tipo)
 
