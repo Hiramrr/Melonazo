@@ -13,7 +13,7 @@ extends Area2D
 ## `tipo` y reenvía `recogido` como su señal poder_recogido, que atiende
 ## Recorrido._al_recoger_poder(). Este nodo solo avisa y desaparece; el efecto lo aplica
 ## Melon.recibir_poder(). Los rivales no tienen física: GeneradorTerreno.actualizar_melones()
-## mide la distancia y llama consumir(); entonces el jugador ya no puede recogerlo.
+## mide la distancia y llama recibir_rival(), sin gastar el poder del jugador.
 ## Nombres y efectos de cada tipo: Config.poderes. Como es @tool, `tipo` también se
 ## puede cambiar desde el inspector para ver el dibujo en el editor.
 
@@ -21,7 +21,7 @@ extends Area2D
 signal recogido(tipo: String)
 
 const RADIO_INSIGNIA := 25.0
-# shortcut: imágenes provisionales de Fluent Emoji, sustituir al recibir el arte propio.
+# Sprites proporcionados para el juego.
 const TEXTURAS := {
 	"chile": preload("res://recursos/poderes/chile.png"),
 	"cafe": preload("res://recursos/poderes/cafe.png"),
@@ -38,9 +38,12 @@ const TEXTURAS := {
 		_actualizar_nombre.call_deferred()
 ## true en cuanto se cobra; evita cobrarlo dos veces antes de liberarse.
 var consumido := false
+var _rivales: Array[int] = []
+var tiempo := 0.0
 
 
 func _ready() -> void:
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_actualizar_nombre()
 	queue_redraw()
 
@@ -63,23 +66,34 @@ func _recoger(cuerpo: Node2D) -> void:
 	queue_free()
 
 
-## Un rival se lo lleva: igual que _recoger() pero sin emitir `recogido`. Crece y se
-## desvanece antes de liberarse para que se note quién lo ganó.
-func consumir() -> void:
-	if consumido:
-		return
-	consumido = true
-	var efecto := create_tween().set_parallel()
-	efecto.tween_property(self, "scale", Vector2.ONE * 1.6, 0.25)
-	efecto.tween_property(self, "modulate:a", 0.0, 0.25)
-	efecto.chain().tween_callback(queue_free)
+## Los rivales reciben el poder una sola vez sin retirarlo del mapa.
+func usado_por_rival(rival: Node) -> bool:
+	return rival.get_instance_id() in _rivales
+
+func recibir_rival(rival: Node) -> bool:
+	if consumido or usado_por_rival(rival):
+		return false
+	_rivales.append(rival.get_instance_id())
+	rival.recibir_poder(tipo)
+	return true
 
 
 # --- Dibujo ------------------------------------------------------------------
 
+func _process(delta: float) -> void:
+	tiempo += delta
+	queue_redraw()
+
+
 func _draw() -> void:
-	Sprites.poner(self, "ayudas/insignia")
-	draw_set_transform(Vector2.ZERO, 0.0, Vector2(1.35, 1.35))
+	var flotacion := Vector2(0, sin(tiempo * 2.8 + position.x * 0.01) * 7.0)
+	draw_set_transform(flotacion)
+	var colores := {"chile": Color("ff765c"), "cafe": Color("ffdba0"), "pizza": Color("ff8ae0"), "elote": Color("ffe768")}
+	var color: Color = colores.get(tipo, Color.WHITE)
+	for capa in range(8, 0, -1):
+		color.a = 0.025 + (8 - capa) * 0.009
+		draw_circle(Vector2.ZERO, 25.0 + capa * 4.0 + sin(tiempo * 3.0) * 2.0, color)
+	draw_set_transform(flotacion, 0.0, Vector2(1.6, 1.6))
 	dibujar_insignia(self, tipo)
 
 

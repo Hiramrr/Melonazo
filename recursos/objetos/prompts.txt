@@ -1,0 +1,12 @@
+Herramienta: image_gen integrada. Referencia de estilo: paloma del usuario.
+Prompt común: Use case: stylized-concept. Game sprite: SUBJECT. Single isolated object on transparent background. Match the supplied pigeon reference's chunky 64x64 pixel-art aesthetic: dark charcoal stepped outlines, limited softly shaded colors, crisp square pixels, simple readable silhouette. Side-scrolling 2D game. Square canvas, entire object visible, centered, small transparent margin. Design on a 64x64 pixel grid, no text, no ground, no cast shadow, no border, no additional objects. Reference is style only, do not draw a pigeon.
+coladera: flat iron street drain grate, wide shallow ellipse, dark grey metal slits
+charco: wide shallow blue street puddle with a few pale reflections, no ground
+puesto: small Mexican wooden market stall with red and cream striped canopy, front view
+puesto_roto: collapsed broken Mexican wooden market stall, red cream canopy scraps and wooden planks
+poste: single tall narrow concrete street utility pole, simple crossbar, no wires extending outside
+banqueta: short raised grey sidewalk curb block, shallow wide rectangular step
+rampa: wooden wedge launch ramp rising toward the right, side view
+toldo: red and cream striped springy fabric awning, wide shallow canopy without posts
+papalote: colorful Mexican diamond kite with short ribbon tail
+corriente: small swirling turquoise and pale white upward gust of wind, readable spiral

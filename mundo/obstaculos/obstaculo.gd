@@ -80,9 +80,9 @@ func tocar(melon: Melon) -> String:
 
 
 ## Efecto sobre un rival, una sola vez por rival. No gasta el obstáculo para el jugador,
-## salvo el puesto, que queda destrozado. Devuelve true si hubo efecto.
+## incluido el puesto, que permanece intacto. Devuelve true si hubo efecto.
 ##   coladera, charco  frenan como al jugador
-##   puesto            frena, daña media resistencia (Config.rival_dano_puesto) y se rompe
+##   puesto            frena y daña media resistencia (Config.rival_dano_puesto)
 ##   poste, banqueta   golpe completo (Config.rival_dano_golpe) y frenan; la banqueta
 ##                     además lo hace saltar
 ##   rampa, toldo      lo lanzan como al jugador (el toldo solo si cae encima)
@@ -99,7 +99,6 @@ func tocar_rival(rival: MelonRodante) -> bool:
 		"charco":
 			rival.frenar(Config.charco_freno)
 		"puesto":
-			romper()
 			rival.frenar(Config.puesto_freno)
 			rival.danar(Config.rival_dano_puesto)
 		"poste":
@@ -140,13 +139,38 @@ func romper() -> void:
 	queue_redraw()
 
 
+const ICONOS := {
+	"coladera": preload("res://recursos/objetos/coladera.png"),
+	"charco": preload("res://recursos/objetos/charco.png"),
+	"puesto": preload("res://recursos/objetos/puesto.png"),
+	"puesto_roto": preload("res://recursos/objetos/puesto_roto.png"),
+	"poste": preload("res://recursos/objetos/poste.png"),
+	"banqueta": preload("res://recursos/objetos/banqueta.png"),
+	"rampa": preload("res://recursos/objetos/rampa.png"),
+	"toldo": preload("res://recursos/objetos/toldo.png"),
+}
+
+var _regiones: Dictionary = {}
+
 func _draw() -> void:
-	var medidas := {"coladera": Vector2(56, 10), "charco": Vector2(130, 8), "puesto": Vector2(110, 80),
-		"poste": Vector2(14, 150), "banqueta": Vector2(90, 30), "rampa": Vector2(130, 46),
-		"toldo": Vector2(150, 18), "aplauso": Vector2(44, 44)}
-	var escala: Vector2 = medida / medidas[tipo]
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	if tipo == "aplauso":
-		escala = Vector2.ONE * radio_aplauso / 22.0
+		var escala := radio_aplauso / 22.0
+		Sprites.dibujar(self, "obstaculos/aplauso", Rect2(Vector2(-90, -170) * escala, Vector2(180, 200) * escala))
+		return
 	var id := "puesto_roto" if tipo == "puesto" and roto else tipo
-	var pos := Vector2(0, 115.0 * escala.y - altura_toldo) if tipo == "toldo" else Vector2.ZERO
-	Sprites.dibujar(self, "obstaculos/" + id, Rect2(Vector2(-90, -170) * escala + pos, Vector2(180, 200) * escala))
+	var tam := medida
+	if id == "puesto_roto":
+		tam.y *= 0.4
+	var pos := Vector2(-tam.x * 0.5, -tam.y)
+	if tipo == "toldo":
+		pos.y = -altura_toldo - tam.y * 0.5
+	var tex: Texture2D = ICONOS[id]
+	# Los archivos son cuadrados; solo la silueta visible ocupa el área de juego.
+	if not _regiones.has(id):
+		_regiones[id] = Rect2(tex.get_image().get_used_rect())
+	var fuente: Rect2 = _regiones[id]
+	if tipo == "poste":
+		tam.x = tam.y * fuente.size.x / fuente.size.y
+		pos.x = -tam.x * 0.5
+	draw_texture_rect_region(tex, Rect2(pos, tam), Rect2(fuente))

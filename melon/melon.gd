@@ -24,8 +24,6 @@ signal maniobra(tipo: String)          ## rebote impulsado o slam acertado
 
 # Imágenes de los poderes sobre el melón. Se cambian en el inspector de melon.tscn
 # (cualquier Texture2D: PNG, WebP o un AtlasTexture de una hoja de sprites).
-## Pizza en la que viaja el melón mientras dura la pizza con yogur.
-@export var textura_pizza: Texture2D
 ## Explosión del chile jalapeño. Si es una tira horizontal, indica sus cuadros.
 @export var textura_explosion: Texture2D
 @export_range(1, 32) var cuadros_explosion := 1
@@ -68,8 +66,9 @@ var v_paraguas := INF                   # velocidad máxima de caída
 var escudo := false                     # la siguiente caída fuerte no cuesta resistencia
 var t_invulnerable := 0.0               # parpadeo tras un golpe
 var t_cafe := 0.0                       # saltos sin gastar cargas
-var t_pizza := 0.0                      # avanza sin perder altura
-var y_pizza := 0.0                      # altura que conserva la pizza
+var t_pizza := 0.0                      # tiempo restante de abducción
+var y_pizza := 0.0                      # altura inicial de la abducción
+var velocidad_pizza := 0.0
 var t_explosion := 0.0                  # dibujo de la explosión del chile
 var t_iman := 0.0                       # atrae aplausos (lo aplica Recorrido)
 const TEMPORIZADORES := ["t_rebote", "t_bloqueo", "t_planeo", "t_embestida", "t_llantas",
@@ -154,7 +153,7 @@ func empujar(dv: Vector2) -> void:
 
 
 ## Multiplica la velocidad; los melones con más inercia lo resienten menos.
-## Un frenón tira la pizza: su avance mínimo lo borraría en el siguiente paso.
+## Un frenón interrumpe la abducción para conservar la penalización.
 func frenar(mult: float) -> void:
 	_mult *= lerpf(mult, 1.0, datos()["inercia"])
 	if mult < 1.0:
@@ -331,6 +330,14 @@ func recibir_poder(id: String) -> void:
 		"pizza":
 			t_pizza = duracion
 			y_pizza = global_position.y
+			velocidad_pizza = linear_velocity.x
+			var anterior = get_node_or_null("PizzaOvni")
+			if anterior != null:
+				remove_child(anterior)
+				anterior.queue_free()
+			var ovni = load("res://melon/pizza_ovni.gd").new()
+			ovni.name = "PizzaOvni"
+			add_child(ovni)
 			slam_activo = false
 			t_planeo = 0.0
 			t_paraguas = 0.0
@@ -470,10 +477,6 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 
 	if t_paraguas > 0.0:
 		v.y = minf(v.y, v_paraguas)
-	if t_pizza > 0.0 and controlable:
-		# Vuelve con suavidad a la altura en que la tomó y no baja del avance mínimo.
-		v.y = (y_pizza - state.transform.origin.y) * 6.0
-		v.x = maxf(v.x, Config.pizza_vel)
 
 	if en_suelo and llantas_armadas:
 		llantas_armadas = false
@@ -503,6 +506,8 @@ func _integrate_forces(state: PhysicsDirectBodyState2D) -> void:
 	v = v * _mult + _dv
 	if slam_activo:
 		v.y = maxf(v.y, Config.slam_caida)
+	if t_pizza > 0.0 and controlable:
+		v = Vector2(velocidad_pizza, -360.0)
 	_mult = 1.0
 	_dv = Vector2.ZERO
 	state.linear_velocity = v
@@ -576,11 +581,8 @@ func _draw() -> void:
 		Sprites.aro(self, Vector2.ZERO, radio + 10, Color(0.7, 0.4, 1, 0.5))
 	if t_cafe > 0.0:
 		Sprites.dibujar(self, "efectos/cafe_velocidad", Rect2(-radio - 26, -10, 24, 20), Color("d6a471"))
-	if t_pizza > 0.0 or t_explosion > 0.0:
+	if t_explosion > 0.0:
 		draw_set_transform(Vector2.ZERO, -global_rotation)
-		if t_pizza > 0.0 and textura_pizza != null:
-			var lado := radio * 2.8
-			draw_texture_rect(textura_pizza, Rect2(-lado * 0.5, radio * 0.25, lado, lado), false)
 		if t_explosion > 0.0 and textura_explosion != null:
 			_dibujar_explosion(1.0 - t_explosion / DURACION_EXPLOSION)
 		draw_set_transform(Vector2.ZERO)

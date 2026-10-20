@@ -218,8 +218,8 @@ func objetivos_rival(rival: MelonRodante) -> Array[Node2D]:
 
 
 ## Lo que toca un rival vivo en este paso, por distancia (no tiene física):
-## poderes (compite con el jugador), papalotes (se recargan, ver Papalote.impulsar_rival),
-## pájaros (lo frenan y huyen) y obstáculos (Obstaculo.tocar_rival).
+## poderes (sin gastarlos), papalotes (sin gastarlos),
+## pájaros (lo frenan sin desaparecer) y obstáculos (Obstaculo.tocar_rival).
 func _interactuar_rival(rival: MelonRodante) -> void:
 	if rival.en_bajada:
 		return
@@ -235,8 +235,7 @@ func _interactuar_rival(rival: MelonRodante) -> void:
 			if nodo is Poder:
 				_tocar_poder(rival, nodo)
 			elif nodo is Pajaro and nodo.activo and nodo.global_position.distance_to(pos) <= rival.radio + nodo.radio_toque():
-				rival.frenar(Config.pajaro_freno)
-				nodo.huir()
+				nodo.tocar_rival(rival)
 		for p in t.papalotes:
 			if not p.usado and p.global_position.distance_to(pos) <= Config.papalote_rango:
 				p.impulsar_rival(rival)          # el aviso llega por la maniobra "papalote"
@@ -250,8 +249,8 @@ func _interactuar_rival(rival: MelonRodante) -> void:
 func _tocar_poder(rival: MelonRodante, poder: Poder) -> void:
 	if poder.consumido or poder.global_position.distance_to(rival.global_position) > rival.radio + Poder.RADIO_INSIGNIA:
 		return
-	poder.consumir()
-	rival.recibir_poder(poder.tipo)
+	if not poder.recibir_rival(rival):
+		return
 	_avisar_rival(rival, AVISOS_RIVAL.get(poder.tipo, ""))
 
 

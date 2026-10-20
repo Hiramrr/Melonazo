@@ -12,17 +12,17 @@ extends Node2D
 ## del tramo (y lo anota en Tramo.papalotes). Recorrido._actualizar_interacciones()
 ## asigna `en_rango` cada cuadro y llama impulsar() con el más cercano al presionar E.
 ## GeneradorTerreno.actualizar_melones() llama impulsar_rival() cuando un rival pasa
-## cerca. Para que el jugador no se quede sin ruta aérea, el papalote que usa un rival
-## vuelve a servir tras Config.papalote_recarga_rival segundos; el del jugador no vuelve.
-## Ajustes: Config.papalote_rango, papalote_avance, papalote_elevacion y papalote_recarga_rival.
+## cerca. Los rivales no gastan el papalote ni provocan recargas.
+## Ajustes: Config.papalote_rango, papalote_avance, papalote_elevacion.
 
 const TINTA := Color("294b43")
 const CREMA := Color("fff4d6")
 
 @export var corriente := false
 
-## Ya se usó en esta carrera (o un rival lo usó y se está recargando); se dibuja en gris.
+## Ya lo usó el jugador en esta carrera; se dibuja en gris.
 var usado := false
+var _rivales: Array[int] = []
 ## El melón está lo bastante cerca para usarlo (muestra el aro y "E · Impulso").
 var en_rango := false:
 	set(valor):
@@ -48,29 +48,36 @@ func impulsar(melon: Melon) -> bool:
 	return true
 
 
-## Lo usa un rival que pasa a alcance. Devuelve true si hubo impulso. Queda gris
-## un rato y después se recarga para el jugador (la pausa también detiene la recarga).
+## Cada rival recibe el impulso una vez, sin gastar la ayuda del jugador.
 func impulsar_rival(rival: MelonRodante) -> bool:
-	if usado or global_position.distance_to(rival.global_position) > Config.papalote_rango:
+	if usado or usado_por_rival(rival) or global_position.distance_to(rival.global_position) > Config.papalote_rango:
 		return false
-	usado = true
-	en_rango = false
+	_rivales.append(rival.get_instance_id())
 	rival.impulsar_papalote(Vector2(Config.papalote_avance, -Config.papalote_elevacion))
-	queue_redraw()
-	create_tween().tween_callback(_recargar).set_delay(Config.papalote_recarga_rival)
 	return true
 
-
-func _recargar() -> void:
-	usado = false
-	queue_redraw()
+func usado_por_rival(rival: Node) -> bool:
+	return rival.get_instance_id() in _rivales
 
 
 # --- Dibujo ------------------------------------------------------------------
 
+const ICONO := preload("res://recursos/objetos/papalote.png")
+const VIENTO := preload("res://recursos/objetos/corriente.png")
+
+var _regiones: Dictionary = {}
+
 func _draw() -> void:
-	var estado := 2 if usado else (1 if en_rango else 0)
-	Sprites.dibujar(self, "ayudas/%s_%d" % ["corriente" if corriente else "papalote", estado], Rect2(-112, -100, 224, 200))
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+	var tex: Texture2D = VIENTO if corriente else ICONO
+	var tam := Vector2(180, 110) if corriente else Vector2(125, 170)
+	var tinte := Color(0.45, 0.45, 0.45, 0.6) if usado else Color.WHITE
+	if not _regiones.has(corriente):
+		_regiones[corriente] = Rect2(tex.get_image().get_used_rect())
+	draw_texture_rect_region(tex, Rect2(-tam * 0.5, tam), _regiones[corriente], tinte)
+	if en_rango and not usado:
+		draw_arc(Vector2.ZERO, 95.0, 0, TAU, 40, Color("ffe488"), 3.0)
+		draw_string(ThemeDB.fallback_font, Vector2(-55, -105), "E · Impulso", HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color("fff4d6"))
 
 
 func nombre() -> String:

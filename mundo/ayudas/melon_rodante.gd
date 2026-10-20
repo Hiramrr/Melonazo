@@ -394,10 +394,11 @@ func _elegir_objetivo(terreno: GeneradorTerreno) -> void:
 		_error_objetivo = rng.randf_range(-1.0, 1.0) * (1.0 - punteria) * 160.0
 
 
-## Sigue delante y sin usar (los poderes se consumen; los papalotes se gastan un rato).
+## Sigue delante y todavía no lo ha usado este rival ni el jugador.
 func _objetivo_vigente(nodo: Variant) -> bool:
 	return is_instance_valid(nodo) and nodo.global_position.x > global_position.x - radio \
-		and not nodo.get("consumido") and not nodo.get("usado")
+		and not nodo.get("consumido") and not nodo.get("usado") \
+		and not nodo.usado_por_rival(self)
 
 
 ## true si un salto de esa fuerza ahora lo deja a la altura de su objetivo al llegar a él.

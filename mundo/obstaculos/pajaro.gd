@@ -11,7 +11,7 @@ extends Area2D
 ## del tramo y reenvía `tocado` como su señal pajaro_tocado, que atiende
 ## Recorrido._al_tocar_pajaro(). Ese método llama a tocar(), que aplica el freno.
 ## Los rivales no tienen física: GeneradorTerreno.actualizar_melones() mide la distancia
-## (radio_toque()), los frena y llama huir().
+## (radio_toque()) y los frena sin hacer huir al pájaro.
 ## Ajustes: Config, sección Pájaros.
 
 ## Se emite una sola vez, cuando el melón (controlable) lo toca.
@@ -24,6 +24,7 @@ signal tocado(pajaro: Pajaro)
 @export var cuadros_por_segundo := 10.0
 @export var lado := 64.0                ## tamaño en pantalla
 
+var _rivales: Array[int] = []
 var activo := true                      # false = ya chocó en esta carrera
 var fase := 0.0                         # desfase del aleteo; lo elige el generador
 var _t := 0.0
@@ -31,6 +32,7 @@ var _y_base := 0.0
 
 
 func _ready() -> void:
+	texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
 	_y_base = position.y
 
 
@@ -55,6 +57,14 @@ func tocar(melon: Melon) -> String:
 	melon.frenar(Config.pajaro_freno)
 	huir()
 	return "¡Pájaro! Te frena"
+
+
+## Los rivales chocan una vez, pero no hacen desaparecer al pájaro.
+func tocar_rival(rival: MelonRodante) -> void:
+	if not activo or rival.get_instance_id() in _rivales:
+		return
+	_rivales.append(rival.get_instance_id())
+	rival.frenar(Config.pajaro_freno)
 
 
 ## Deja de estorbar y sale volando hacia arriba hasta desaparecer.

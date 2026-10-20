@@ -79,7 +79,7 @@ Los slams y los rebotes impulsados recuperan velocidad hasta el ritmo de crucero
 
 Durante el picado tu melón corrige un poco su avance hacia el rival que tiene debajo, hasta 1700 px/s². Picar desde más alto da más tiempo para corregir. Picar encima del rival apenas cambia nada. Un mal cálculo sigue fallando. El rival que apuntas deja de saltar mientras caes, aunque sigue rebotando si venía en el aire. El golpe admite entre 16 y 40 píxeles de margen lateral según la velocidad relativa. Los golpes laterales y desde abajo no cuentan. El HUD solo muestra el aviso de S cuando la caída sale con la mitad de esa corrección, y tiene en cuenta el arco del rival si está en el aire. En ese momento el rival lleva una mira amarilla con una flecha hacia abajo: si pulsas S, aciertas. Durante el picado, la mira se vuelve coral sobre el rival hacia el que se corrige la caída.
 
-Las rampas dan 280 px/s de impulso, frente a los 240 anteriores. Caer sobre un toldo añade 160 px/s hacia delante y devuelve el 90 % de la velocidad de caída como rebote. Tocar el toldo al subir no da impulso. Ambos se usan una sola vez por carrera.
+Las rampas dan 280 px/s de impulso, frente a los 240 anteriores. Caer sobre un toldo añade 160 px/s hacia delante y devuelve el 90 % de la velocidad de caída como rebote. Tocar el toldo al subir no da impulso. El jugador puede gastar ambos una sola vez por carrera; los rivales los usan sin retirarlos.
 
 ## Ruta aérea
 
@@ -99,7 +99,7 @@ Se activan al recogerlos y tienen siluetas diferentes. El primero aparece a los 
 | --- | --- |
 | Chile jalapeño | Parpadea durante 1 segundo; después explota con audio y partículas, lanza al melón hacia adelante (mínimo 110 m/s) y hacia arriba, y deja fuego rojo durante 2,5 segundos |
 | Café de Coatepec | Durante 2 segundos saltas y rebotas sin gastar cargas, con al menos 0.28 s entre saltos |
-| Pizza con yogur | El melón se sube a una pizza que avanza 2.5 segundos sin perder altura. Saltar, hacer slam o chocar con algo que frene lo baja |
+| Pizza con yogur | Una pizza ovni eleva al melón durante 3 segundos conservando su velocidad horizontal. Saltar, hacer slam o un frenón interrumpen la abducción |
 | Elote de feria | Recupera todas tus cargas de salto. Si la jarana te dio una extra, la conservas |
 
 El elote no entra en la alternancia: aparece por su cuenta cada 260 a 360 metros, desde los 260 metros hasta la meta. Los rivales también pueden ganártelo.

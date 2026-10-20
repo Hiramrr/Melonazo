@@ -28,6 +28,8 @@ func crear_melon(tamano: int, x: float):
 
 
 func _verificar() -> void:
+	# Resuelve primero las dependencias compartidas de terreno y obstáculos.
+	var recorrido = load("res://pantallas/recorrido/recorrido.tscn")
 	var config := root.get_node("Config")
 	for tamano in 3:
 		for tipo in ["pajaro", "charco", "coladera"]:
@@ -46,7 +48,7 @@ func _verificar() -> void:
 				await physics_frame
 				if cuadro in [5, 59]:
 					comprobar(penalizado.linear_velocity.x < control.linear_velocity.x * 0.9, "%s conserva su penalización tras %.2f s, tamaño %d" % [tipo, (cuadro + 1) / 120.0, tamano])
-			comprobar(control.t_pizza > 0.0 and control.linear_velocity.x >= config.pizza_vel * 0.95, "La pizza sin golpes conserva su impulso")
+			comprobar(control.t_pizza > 0.0 and absf(control.linear_velocity.x - control.velocidad_pizza) < 1.0, "La pizza sin golpes conserva su impulso")
 			control.queue_free()
 			penalizado.queue_free()
 			obstaculo.queue_free()

@@ -31,7 +31,6 @@ func _ready() -> void:
 			persona.position = Vector2(x + fila * 24.0, altura(x + fila * 24.0) + (-12.0 if fila == 0 else 132.0))
 			persona.color_ropa = GeneradorTerreno.COLORES_ROPA[(i + fila * 2) % GeneradorTerreno.COLORES_ROPA.size()]
 			persona.color_piel = Color("d4a17d").darkened(0.12 * (i % 4))
-			persona.usado = i % 4 == 0
 			get_node("Decoracion" if fila == 0 else "Publico").add_child(persona)
 	get_node("Publico").z_index = 2
 	marcadores.append({"pos": Vector2(inicio.x - 80, altura(inicio.x - 80)), "texto": "Salida"})

@@ -352,7 +352,7 @@ var orden_poderes: Array = ["chile", "cafe", "pizza"]   # se alternan en el cami
 var poderes: Dictionary = {
 	"chile": {"nombre": "Chile jalapeño", "descripcion": "Parpadea 1 s, explota y te lanza con una estela de fuego.", "color": Color("4f9a3a"), "duracion": 0.0, "impulso": Vector2(900, -320)},
 	"cafe": {"nombre": "Café de Coatepec", "descripcion": "Saltas sin gastar cargas durante 2 s.", "color": Color("a56d43"), "duracion": 2.0, "impulso": Vector2.ZERO},
-	"pizza": {"nombre": "Pizza con yogur", "descripcion": "Te subes a una pizza que avanza unos metros sin perder altura. Un frenón te tira.", "color": Color("f1ce67"), "duracion": 2.5, "impulso": Vector2.ZERO},
+	"pizza": {"nombre": "Pizza con yogur", "descripcion": "Una pizza ovni te eleva durante 3 segundos conservando tu velocidad horizontal. Un frenón interrumpe la abducción.", "color": Color("f58bdb"), "duracion": 3.0, "impulso": Vector2.ZERO},
 	"elote": {"nombre": "Elote de feria", "descripcion": "Recupera todos tus saltos.", "color": Color("f2c230"), "duracion": 0.0, "impulso": Vector2.ZERO},
 }
 var chile_vel_min := 1100.0          # px/s hacia adelante tras la explosión, como mínimo
@@ -425,7 +425,6 @@ func _cargar_accesorios() -> void:
 # Cómo usan los rivales la ruta (GeneradorTerreno.actualizar_melones): poderes,
 # papalotes, pájaros, obstáculos y slams entre ellos; y cómo se reponen al romperse.
 var rival_vista := 900.0               # px por delante en que un rival busca poderes y papalotes
-var papalote_recarga_rival := 4.0      # s hasta que un papalote usado por un rival vuelve a servir
 var rival_dano_golpe := 1.0            # resistencia que quita un poste o una banqueta (como al jugador)
 var rival_dano_puesto := 0.5           # al llevarse un puesto
 # Relevo: cuando un rival se rompe por delante del jugador aparece otro más adelante,

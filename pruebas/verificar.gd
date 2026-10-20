@@ -209,9 +209,10 @@ func _verificar() -> void:
 	await physics_frame
 	melon.recibir_poder("pizza")
 	var y_pizza: float = melon.global_position.y
+	var vx_pizza: float = melon.velocidad_pizza
 	for i in 40:
 		await physics_frame
-	comprobar(absf(melon.global_position.y - y_pizza) < 12.0 and melon.linear_velocity.x >= config.pizza_vel * 0.95, "Pizza avanza sin perder altura")
+	comprobar(melon.global_position.y < y_pizza - 80.0 and absf(melon.linear_velocity.x - vx_pizza) < 1.0, "Pizza eleva conservando la velocidad horizontal")
 	melon.resistencia = 0.5
 	melon.danar(1.0)
 	comprobar(melon.roto and not melon.controlable, "Sin resistencia el melón se rompe")

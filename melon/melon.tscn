@@ -3,7 +3,6 @@
 [ext_resource type="Script" uid="uid://5mq1ci64n2fu" path="res://melon/melon.gd" id="1"]
 [ext_resource type="Script" uid="uid://b11hx6rwlxav7" path="res://melon/estela.gd" id="2"]
 [ext_resource type="Texture2D" uid="uid://86407rq7jswv" path="res://recursos/poderes/explosion.png" id="tex_explosion"]
-[ext_resource type="Texture2D" uid="uid://cs0t77fnimr6" path="res://recursos/poderes/pizza.png" id="tex_pizza"]
 
 [sub_resource type="CircleShape2D" id="Cuerpo"]
 radius = 22.0
@@ -15,7 +14,6 @@ continuous_cd = 2
 contact_monitor = true
 max_contacts_reported = 4
 script = ExtResource("1")
-textura_pizza = ExtResource("tex_pizza")
 textura_explosion = ExtResource("tex_explosion")
 
 [node name="Cuerpo" type="CollisionShape2D" parent="." unique_id=1786919660]
