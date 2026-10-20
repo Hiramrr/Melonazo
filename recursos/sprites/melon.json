@@ -357,7 +357,7 @@
 			},
 			"duration": 100
 		},
-		"cara_guino": {
+		"cara_colosal": {
 			"frame": {
 				"x": 850,
 				"y": 0,
@@ -378,7 +378,7 @@
 			},
 			"duration": 100
 		},
-		"cara_lengua": {
+		"cara_jack": {
 			"frame": {
 				"x": 900,
 				"y": 0,
@@ -399,7 +399,7 @@
 			},
 			"duration": 100
 		},
-		"cara_enamorado": {
+		"cara_frijolito": {
 			"frame": {
 				"x": 950,
 				"y": 0,
